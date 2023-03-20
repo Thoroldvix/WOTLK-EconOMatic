@@ -1,0 +1,75 @@
+package com.example.g2gcalculator.controller;
+
+
+import com.example.g2gcalculator.dto.RealmResponse;
+import com.example.g2gcalculator.service.RealmService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.api.Assertions;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(RealmController.class)
+@ActiveProfiles("test")
+public class RealmControllerTest {
+
+    public static final String API_V_1_REALMS = "/api/v1/realms";
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private RealmService realmService;
+
+    @Test
+    void getAllRealms_shouldWork() throws Exception {
+        RealmResponse everlook = RealmResponse.builder()
+                .name("Everlook")
+                .build();
+         RealmResponse gehenas = RealmResponse.builder()
+                .name("Gehenas")
+                .build();
+
+        List<RealmResponse> realms = List.of(everlook,
+                gehenas);
+
+        when(realmService.getAllRealms()).thenReturn(realms);
+
+        MvcResult mvcResult = mockMvc.perform(get(API_V_1_REALMS))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+
+        assertThat(contentAsString).isNotBlank();
+
+        List<RealmResponse> result = objectMapper.readValue(contentAsString,
+                objectMapper.getTypeFactory().constructCollectionType(List.class, RealmResponse.class));
+
+        assertThat(result).hasSize(2);
+        assertThat(result).isEqualTo(realms);
+    }
+}
