@@ -6,6 +6,7 @@ import com.example.g2gcalculator.model.AuctionHouse;
 import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.model.Type;
 import com.example.g2gcalculator.repository.AuctionHouseRepository;
+import com.example.g2gcalculator.service.impl.AuctionHouseServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

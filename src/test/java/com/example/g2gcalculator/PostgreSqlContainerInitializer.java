@@ -1,8 +1,5 @@
 package com.example.g2gcalculator;
 
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -11,10 +8,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 
 @Testcontainers
-public abstract class AbstractIntegrationTest {
+
+public interface PostgreSqlContainerInitializer {
 
     @Container
-    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres");
+    PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres");
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry dymDynamicPropertyRegistry) {

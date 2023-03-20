@@ -15,10 +15,13 @@ import java.util.List;
 @Table(name = "realm")
 public class Realm {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(unique = true, nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String faction;
 
     @ManyToOne
     private Region region;
@@ -29,6 +32,7 @@ public class Realm {
     private List<Price> prices;
 
     @OneToMany
+    @JoinColumn(name = "realm_id")
     @ToString.Exclude
     private List<AuctionHouse> auctionHouses;
 }

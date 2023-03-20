@@ -1,11 +1,18 @@
 package com.example.g2gcalculator.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "price")
 public class Price {
 
@@ -18,5 +25,5 @@ public class Price {
     private Instant createdAt;
 
     @ManyToOne
-    private Region region;
+    private Realm realm;
 }

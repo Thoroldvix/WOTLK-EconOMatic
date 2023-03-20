@@ -13,12 +13,10 @@ import java.util.List;
 @RequestMapping("/api/v1/realms")
 @RequiredArgsConstructor
 public class RealmController {
-    private final RealmService realmServiceImpl;
+    private final RealmService classicRealmService;
 
-    @GetMapping
-    public ResponseEntity<List<RealmResponse>> getAllRealms() {
-        return ResponseEntity.ok(realmServiceImpl.getAllRealms());
+    @GetMapping("/{version}")
+    public ResponseEntity<List<RealmResponse>> getAllRealms(@PathVariable String version) {
+        return ResponseEntity.ok(classicRealmService.getAllRealms());
     }
-
-
 }

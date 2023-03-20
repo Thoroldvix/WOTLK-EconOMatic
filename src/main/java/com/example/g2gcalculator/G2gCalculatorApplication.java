@@ -1,7 +1,10 @@
 package com.example.g2gcalculator;
 
+import com.example.g2gcalculator.config.G2GConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
 public class G2gCalculatorApplication {

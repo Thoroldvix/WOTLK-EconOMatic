@@ -4,7 +4,8 @@ import com.example.g2gcalculator.dto.PriceResponse;
 import com.example.g2gcalculator.dto.RealmResponse;
 import com.example.g2gcalculator.mapper.RealmMapper;
 import com.example.g2gcalculator.model.Realm;
-import com.example.g2gcalculator.repository.RealmRepository;
+import com.example.g2gcalculator.repository.ClassicRealmRepository;
+import com.example.g2gcalculator.service.impl.ClassicRealmService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,13 +21,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RealmServiceImplTest {
+class ClassicRealmServiceTest {
     @Mock
-    private RealmRepository realmRepository;
+    private ClassicRealmRepository ClassicRealmRepository;
     @Mock
     private RealmMapper realmMapper;
     @InjectMocks
-    private RealmServiceImpl realmService;
+    private ClassicRealmService realmService;
 
 
     @Test
@@ -38,7 +39,7 @@ class RealmServiceImplTest {
         when(realmMapper.toRealmResponse(any(Realm.class))).thenReturn(mockRealmResponse);
         List<Realm> mockResult = List.of(Realm.builder().id(1).name("Everlook").build());
 
-        when(realmRepository.findAllFetch()).thenReturn(mockResult);
+        when(ClassicRealmRepository.findAllFetch()).thenReturn(mockResult);
 
         List<RealmResponse> result = realmService.getAllRealms();
 
@@ -51,8 +52,8 @@ class RealmServiceImplTest {
     void getAllRealms_callsRepo() {
         realmService.getAllRealms();
 
-        verify(realmRepository).findAllFetch();
-        verifyNoMoreInteractions(realmRepository);
+        verify(ClassicRealmRepository).findAllFetch();
+        verifyNoMoreInteractions(ClassicRealmRepository);
     }
 
     @Test
@@ -61,7 +62,7 @@ class RealmServiceImplTest {
                 Collections.emptyList());
         List<Realm> mockResult = List.of(Realm.builder().id(1).name("Everlook").build());
 
-        when(realmRepository.findAllFetch()).thenReturn(mockResult);
+        when(ClassicRealmRepository.findAllFetch()).thenReturn(mockResult);
         when(realmMapper.toRealmResponse(any(Realm.class))).thenReturn(mockRealmResponse);
         realmService.getAllRealms();
 

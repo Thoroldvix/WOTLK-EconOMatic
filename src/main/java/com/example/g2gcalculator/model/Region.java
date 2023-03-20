@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -15,9 +16,9 @@ import java.util.List;
 @Table(name = "region")
 public class Region {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private UUID id;
 
+    @Column(unique = true, nullable = false)
     private String name;
 
     @OneToMany
@@ -26,7 +27,7 @@ public class Region {
     private List<Realm> realms;
 
     @Enumerated(value = EnumType.STRING)
-    public GameVersion version;
+    public GameVersion gameVersion;
 
 
 }

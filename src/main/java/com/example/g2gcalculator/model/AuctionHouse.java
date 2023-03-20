@@ -17,8 +17,6 @@ public class AuctionHouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Type type;
-
     @ManyToOne
     private Realm realm;
 }
