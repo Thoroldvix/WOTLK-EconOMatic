@@ -12,7 +12,9 @@ public class ClassicScraperService implements ScraperService {
 
 
     @Override
-    public PriceResponse getPriceForRealm(Realm realm) {
+    public PriceResponse getPriceDataForRealm(Realm realm) {
+        Jsoup
+
         return null;
     }
 }
