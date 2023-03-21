@@ -20,7 +20,7 @@ repositories {
 ext {
     testcontainers = "1.17.5"
     mapstruct = "1.5.3.Final"
-    jsoup = "1.15.4"
+    selenium = "4.8.1"
 }
 
 dependencies {
@@ -28,7 +28,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "org.mapstruct:mapstruct:${mapstruct}"
     implementation 'org.liquibase:liquibase-core'
-    implementation "org.jsoup:jsoup:${jsoup}"
+    implementation "org.seleniumhq.selenium:selenium-java:${selenium}"
+
+
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'

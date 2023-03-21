@@ -4,17 +4,14 @@ import com.example.g2gcalculator.dto.PriceResponse;
 import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.service.ScraperService;
 
-public class ClassicScraperService implements ScraperService {
+public class ClassicScraperService implements ScraperService{
 
-    private final String rootUrl = "https://g2g.com/categories";
-    private final String wowClassicGoldCategory = "wow-classic-gold";
-
+    private  final String url = "https://g2g.com/categories/wow-classic-gold?sort=lowest_price";
 
 
-    @Override
-    public PriceResponse getPriceDataForRealm(Realm realm) {
-        Jsoup
 
+    public  PriceResponse getPriceDataForRealm(Realm realm) {
         return null;
     }
+
 }
