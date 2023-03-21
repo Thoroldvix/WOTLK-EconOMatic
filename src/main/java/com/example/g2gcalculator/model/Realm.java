@@ -21,10 +21,14 @@ public class Realm {
     private String name;
 
     @Column(nullable = false)
-    private String faction;
+    @Enumerated(EnumType.STRING)
+    private Faction faction;
 
     @ManyToOne
     private Region region;
+
+    @Enumerated(EnumType.STRING)
+    private GameVersion gameVersion;
 
     @OneToMany
     @JoinColumn(name = "realm_id")

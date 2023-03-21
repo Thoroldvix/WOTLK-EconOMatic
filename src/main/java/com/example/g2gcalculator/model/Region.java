@@ -16,18 +16,11 @@ import java.util.UUID;
 @Table(name = "region")
 public class Region {
     @Id
-    private UUID id;
-
-    @Column(unique = true, nullable = false)
     private String name;
-
+    private UUID g2gId;
     @OneToMany
-    @JoinColumn(name = "region_id")
+    @JoinColumn(name = "region_name")
     @ToString.Exclude
     private List<Realm> realms;
-
-    @Enumerated(value = EnumType.STRING)
-    public GameVersion gameVersion;
-
 
 }

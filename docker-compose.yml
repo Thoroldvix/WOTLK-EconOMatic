@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres-g2g-calc:
+    image: postgres
+    container_name: postgres-g2g-calc
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=g2g_calculator
+      - PGDATA=/data/postgres
+    volumes:
+        - ./postgres-g2g-calc:/data/postgres
+    expose:
+        - "5433"
+    ports:
+      - "5433:5433"
+    command: -p 5433
+    restart: unless-stopped

@@ -1,9 +1,13 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/g2g_calculator/wow
+    url: jdbc:postgresql://localhost:5433/g2g_calculator
     username: postgres
     password: pass
     driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yml
+    default-schema: wow
+    enabled: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
