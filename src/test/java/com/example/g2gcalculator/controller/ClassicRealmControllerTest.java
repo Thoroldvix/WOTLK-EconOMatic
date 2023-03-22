@@ -19,9 +19,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(RealmController.class)
+@WebMvcTest(ClassicRealmController.class)
 @ActiveProfiles("test")
-public class RealmControllerTest {
+public class ClassicRealmControllerTest {
 
     public static final String API_V_1_REALMS_CLASSIC = "/api/v1/realms/classic";
     public static final String API_V_1_REALMS_RETAIL = "/api/v1/realms/retail";

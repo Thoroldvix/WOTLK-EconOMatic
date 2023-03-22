@@ -38,17 +38,17 @@ class AuctionHouseServiceImplTest {
         Realm mockRealm = Realm.builder().id(realmId).name("Everlook").build();
 
         List<AuctionHouse> mockAuctionHouses = List.of(
-                new AuctionHouse(1, Type.ALLIANCE, mockRealm));
+                new AuctionHouse(1, mockRealm));
 
         when(auctionHouseRepository.findAllByRealmId(realmId)).thenReturn(mockAuctionHouses);
 
         List<AuctionHouseResponse> mockResponses = List.of(
-                new AuctionHouseResponse(1, Type.ALLIANCE.toString()));
+                new AuctionHouseResponse(1));
 
         when(auctionHouseMapper.toAuctionHouseResponse(any(AuctionHouse.class)))
                 .thenAnswer(invocation -> {
                     AuctionHouse ah = invocation.getArgument(0);
-                    return new AuctionHouseResponse(ah.getId(), ah.getType().toString());
+                    return new AuctionHouseResponse(ah.getId());
                 });
 
 
@@ -88,7 +88,7 @@ class AuctionHouseServiceImplTest {
         Integer realmId = 456;
         Realm mockRealm = Realm.builder().id(realmId).name("Everlook").build();
         List<AuctionHouse> mockAuctionHouses = List.of(
-                new AuctionHouse(1, Type.ALLIANCE, mockRealm));
+                new AuctionHouse(1,  mockRealm));
 
         when(auctionHouseRepository.findAllByRealmId(realmId)).thenReturn(mockAuctionHouses);
 

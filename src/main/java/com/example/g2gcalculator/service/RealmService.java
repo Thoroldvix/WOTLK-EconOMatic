@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface RealmService {
     List<RealmResponse> getAllRealms();
+
+    RealmResponse getRealmById(Integer realmId);
 }

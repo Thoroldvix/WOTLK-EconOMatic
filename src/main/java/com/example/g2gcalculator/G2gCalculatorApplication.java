@@ -17,28 +17,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-@RequiredArgsConstructor
 public class G2gCalculatorApplication {
 
-    private final ClassicRealmRepository classicRealmRepository;
     public static void main(String[] args) {
         SpringApplication.run(G2gCalculatorApplication.class, args);
     }
 
-//    @Bean
-//    public CommandLineRunner commandLineRunner() {
-//        return args -> {
-//            Realm realm = Realm.builder()
-//                    .name("Cock")
-//                    .id(1)
-//                    .faction(Faction.ALLIANCE)
-//                    .region(Region.builder()
-//                            .name("EU")
-//                            .build())
-//                    .gameVersion(GameVersion.CLASSIC)
-//                    .build();
-//            classicRealmRepository.save(realm);
-//        };
-//    }
+
 
 }

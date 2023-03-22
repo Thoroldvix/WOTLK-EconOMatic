@@ -39,7 +39,7 @@ class ClassicPriceRepositoryTest implements PostgreSqlContainerInitializer {
         entityManager.persist(price2);
 
 
-        Optional<Price> mostRecentPrice = ClassicPriceRepository.findMostRecentByRealmId(realm.getId());
+        Optional<Price> mostRecentPrice = ClassicPriceRepository.findMostRecentPriceByRealm(realm);
 
 
         assertTrue(mostRecentPrice.isPresent());

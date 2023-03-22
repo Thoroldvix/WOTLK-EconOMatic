@@ -3,6 +3,7 @@ package com.example.g2gcalculator.service;
 import com.example.g2gcalculator.dto.PriceResponse;
 import com.example.g2gcalculator.dto.RealmResponse;
 import com.example.g2gcalculator.mapper.RealmMapper;
+import com.example.g2gcalculator.model.GameVersion;
 import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.repository.ClassicRealmRepository;
 import com.example.g2gcalculator.service.impl.ClassicRealmService;
@@ -33,7 +34,7 @@ class ClassicRealmServiceTest {
     @Test
     void getAllRealms_shouldWork() {
         RealmResponse mockRealmResponse = new RealmResponse(1, "Everlook", new PriceResponse(BigDecimal.valueOf(0.5)),
-                Collections.emptyList());
+                GameVersion.CLASSIC.name(), Collections.emptyList());
 
 
         when(realmMapper.toRealmResponse(any(Realm.class))).thenReturn(mockRealmResponse);
@@ -58,7 +59,7 @@ class ClassicRealmServiceTest {
 
     @Test
     void getAllRealms_callsMapper() {
-        RealmResponse mockRealmResponse = new RealmResponse(1, "Everlook", new PriceResponse(BigDecimal.valueOf(0.5)),
+        RealmResponse mockRealmResponse = new RealmResponse(1, "Everlook", new PriceResponse(BigDecimal.valueOf(0.5)), GameVersion.CLASSIC.name(),
                 Collections.emptyList());
         List<Realm> mockResult = List.of(Realm.builder().id(1).name("Everlook").build());
 

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,8 +23,13 @@ public class Price {
 
     private BigDecimal value;
 
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @ManyToOne
     private Realm realm;
+
+    public void setRealm(Realm realm) {
+        realm.getPrices().add(this);
+        this.realm = realm;
+    }
 }

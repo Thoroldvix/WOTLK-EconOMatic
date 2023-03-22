@@ -16,8 +16,11 @@ import java.util.UUID;
 @Table(name = "region")
 public class Region {
     @Id
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private RegionName name;
+
     private UUID g2gId;
+
     @OneToMany
     @JoinColumn(name = "region_name")
     @ToString.Exclude

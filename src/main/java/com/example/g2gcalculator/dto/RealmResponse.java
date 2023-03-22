@@ -13,6 +13,7 @@ public record RealmResponse(
         Integer id,
         String name,
         PriceResponse price,
+        String gameVersion,
         List<AuctionHouseResponse> auctionHouses
 ) {
 }

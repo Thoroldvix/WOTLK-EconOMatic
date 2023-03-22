@@ -49,17 +49,17 @@ VALUES (46472,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41005,
         'Everlook',
-        'EU',
+        'DE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41117,
         'Transcendence',
-        'EU',
+        'DE',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (40972,
         'Auberdine',
-        'EU',
+        'FR',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41072,
@@ -74,12 +74,12 @@ VALUES (41064,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41003,
         'Everlook',
-        'EU',
+        'DE',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41089,
         'Razorzen',
-        'EU',
+        'DE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (40969,
@@ -89,12 +89,12 @@ VALUES (40969,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (40974,
         'Auberdine',
-        'EU',
+        'FR',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41063,
         'Mandokir',
-        'EU',
+        'ES',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41002,
@@ -109,17 +109,17 @@ VALUES (46324,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (46256,
         'Mandokir',
-        'EU',
+        'ES',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41118,
         'Transcendence',
-        'EU',
+        'DE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (40958,
         'Amnennar',
-        'EU',
+        'FR',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41027,
@@ -134,7 +134,7 @@ VALUES (41068,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41087,
         'Razorfen',
-        'EU',
+        'DE',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41029,
@@ -144,7 +144,7 @@ VALUES (41029,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41045,
         'Lakeshire',
-        'EU',
+        'DE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41013,
@@ -164,17 +164,17 @@ VALUES (41000,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41044,
         'Lakeshire',
-        'EU',
+        'DE',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41109,
         'Sulfuron',
-        'EU',
+        'FR',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (40957,
         'Amnennar',
-        'EU',
+        'FR',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41038,
@@ -184,7 +184,7 @@ VALUES (41038,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41122,
         'Venoxis',
-        'EU',
+        'DE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41085,
@@ -199,7 +199,7 @@ VALUES (41021,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41107,
         'Sulfuron',
-        'EU',
+        'FR',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41012,
@@ -209,12 +209,12 @@ VALUES (41012,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41120,
         'Venoxis',
-        'EU',
+        'DE',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41081,
         'Patchwerk',
-        'EU',
+        'DE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41023,
@@ -229,7 +229,7 @@ VALUES (46473,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41079,
         'Patchwerk',
-        'EU',
+        'DE',
         'ALLIANCE', 'CLASSIC');
 --changeset thorold:us
 INSERT INTO realm (id, name, region_name, faction, game_version)
@@ -240,7 +240,7 @@ VALUES (46320,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41310,
         'Yojamba',
-        'US',
+        'OCE',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (46321,
@@ -255,7 +255,7 @@ VALUES (41200,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41311,
         'Yojamba',
-        'US',
+        'OCE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (46319,
@@ -305,7 +305,7 @@ VALUES (41305,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41271,
         'Remulos',
-        'US',
+        'OCE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41155,
@@ -355,7 +355,7 @@ VALUES (41287,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41269,
         'Remulos',
-        'US',
+        'OCE',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41263,
@@ -390,7 +390,7 @@ VALUES (41149,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41145,
         'Arugal',
-        'US',
+        'OCE',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (46451,
@@ -445,7 +445,7 @@ VALUES (41224,
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41146,
         'Arugal',
-        'US',
+        'OCE',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region_name, faction, game_version)
 VALUES (41261,

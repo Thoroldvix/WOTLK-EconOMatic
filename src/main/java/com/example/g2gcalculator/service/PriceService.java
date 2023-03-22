@@ -1,6 +1,7 @@
 package com.example.g2gcalculator.service;
 
 import com.example.g2gcalculator.dto.PriceResponse;
+import com.example.g2gcalculator.model.Faction;
 import com.example.g2gcalculator.model.Price;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,8 +12,9 @@ import java.util.List;
 
 public interface PriceService {
 
-    PriceResponse getPriceByRealmId(Integer realmId);
+
+    PriceResponse getPriceByRealmName(String realmName, Faction faction);
 
 
-    List<PriceResponse> getAllPricesForRealm(Integer realmId, Pageable pageable);
+    List<PriceResponse> getAllPricesForRealm(String realmName, Faction faction, Pageable pageable);
 }
