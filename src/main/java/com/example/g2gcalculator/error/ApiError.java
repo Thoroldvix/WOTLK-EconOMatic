@@ -1,29 +1,29 @@
 package com.example.g2gcalculator.error;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
 @Data
 public class ApiError {
-
-    private HttpStatus status;
+    private int statusCode;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String message;
-    private List<String> errors;
 
-    public ApiError(HttpStatus status, String message, List<String> errors) {
-        super();
-        this.status = status;
+    private Instant timestamp;
+
+
+    public ApiError(int statusCode, String message) {
+        this.statusCode = statusCode;
         this.message = message;
-        this.errors = errors;
+        this.timestamp = Instant.now();
     }
-
-    public ApiError(HttpStatus status, String message, String error) {
-        super();
-        this.status = status;
-        this.message = message;
-        errors = Collections.singletonList(error);
+    public ApiError(int statusCode) {
+        this.statusCode = statusCode;
+        this.timestamp = Instant.now();
     }
 }

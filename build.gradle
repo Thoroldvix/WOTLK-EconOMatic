@@ -29,15 +29,15 @@ dependencies {
     implementation "org.mapstruct:mapstruct:${mapstruct}"
     implementation 'org.liquibase:liquibase-core'
     implementation 'com.codeborne:selenide:6.12.3'
-
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     implementation 'org.jsoup:jsoup:1.15.4'
 
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct}"
     testImplementation "org.testcontainers:postgresql:${testcontainers}"
     testImplementation "org.testcontainers:junit-jupiter:${testcontainers}"

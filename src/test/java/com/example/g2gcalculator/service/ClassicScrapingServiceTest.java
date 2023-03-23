@@ -1,12 +1,10 @@
 package com.example.g2gcalculator.service;
 
 import com.example.g2gcalculator.dto.PriceResponse;
-import com.example.g2gcalculator.model.Faction;
-import com.example.g2gcalculator.model.Realm;
-import com.example.g2gcalculator.model.Region;
-import com.example.g2gcalculator.model.RegionName;
+import com.example.g2gcalculator.model.*;
 import com.example.g2gcalculator.repository.ClassicRealmRepository;
 import com.example.g2gcalculator.service.impl.ClassicScrapingService;
+import com.example.g2gcalculator.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
+import static com.example.g2gcalculator.util.TestUtil.createRealm;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,17 +27,14 @@ class ClassicScrapingServiceTest {
     private  ClassicScrapingService classicScrapingService;
 
     @Test
-    void getPriceDataForRealm_shouldWork() {
-        Realm realm = Realm.builder()
-                .name("Mograine")
-                .region(Region.builder().name(RegionName.EU)
-                        .g2gId(UUID.fromString("ac3f85c1-7562-437e-b125-e89576b9a38e"))
-                        .build())
-                .faction(Faction.HORDE)
-                .build();
+    void getPriceDataForRealm_shouldReturnValidPrice() {
+        Realm realm = createRealm();
+        realm.setName("Everlook");
+        realm.setRegion(Region.DE);
 
-        PriceResponse priceDataForRealm = classicScrapingService.fetchRealmPrice(realm);
-        assertThat(priceDataForRealm.value()).isNotNull();
+        Price priceDataForRealm = classicScrapingService.fetchRealmPrice(realm);
+        assertThat(priceDataForRealm.getPrice()).isNotNull();
+        assertThat(priceDataForRealm.getUpdatedAt()).isNotNull();
     }
 
 }

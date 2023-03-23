@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 @Builder
 public record PriceResponse(
         String price,
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        LocalDateTime createdAt
+
+        String realmName,
+
+        LocalDateTime updatedAt
 ) {
 }

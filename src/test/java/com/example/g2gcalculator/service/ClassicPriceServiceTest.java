@@ -1,5 +1,6 @@
 package com.example.g2gcalculator.service;
 
+import com.example.g2gcalculator.config.G2GProperties;
 import com.example.g2gcalculator.dto.PriceResponse;
 import com.example.g2gcalculator.error.NotFoundException;
 import com.example.g2gcalculator.mapper.PriceMapper;
@@ -17,19 +18,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.example.g2gcalculator.util.TestUtil.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class ClassicPriceServiceTest {
 
     @Mock
@@ -44,88 +48,152 @@ class ClassicPriceServiceTest {
     @Mock
     private PriceMapper priceMapper;
 
+    @Mock
+    private G2GProperties g2gProperties;
+
     @InjectMocks
     private ClassicPriceService priceService;
 
-    @Test
-    void getPriceByRealmId_returnsPriceResponse_whenPriceExistsForRealmId() {
-        Integer realmId = 1;
-        Price price = new Price();
-        PriceResponse priceResponse = PriceResponse.builder().build();
 
-        when(classicPriceRepository.findMostRecentPriceByRealm(any(Realm.class))).thenReturn(Optional.of(price));
-        when(classicRealmRepository.findById(realmId)).thenReturn(Optional.of(new Realm()));
+    @Test
+    void getPriceForRealm_whenPriceExistsInDB_returnsValidPriceResponse() {
+        Realm realm = createRealm();
+        Price price = createPrice(BigDecimal.valueOf(100), realm);
+        PriceResponse priceResponse = createPriceResponse(BigDecimal.valueOf(100));
+        String fullRealmName = getFullRealmName(realm);
+        Duration scrapingInterval = Duration.ofMinutes(60);
+        boolean forceUpdate = false;
+
+        when(g2gProperties.getScrapingInterval()).thenReturn(scrapingInterval);
+        when(g2gProperties.isForceUpdate()).thenReturn(forceUpdate);
+
+        when(classicPriceRepository.findMostRecentPriceByRealm(realm)).thenReturn(Optional.of(price));
+        when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.of(realm));
         when(priceMapper.toPriceResponse(price)).thenReturn(priceResponse);
 
 
-        PriceResponse result = priceService.getPriceByRealmId(realmId);
+        PriceResponse result = priceService.getPriceForRealm(fullRealmName);
 
-        assertEquals(priceResponse, result);
+
+        verify(classicScrapingService, never()).fetchRealmPrice(any(Realm.class));
+        verify(classicPriceRepository, never()).save(any(Price.class));
+        verify(classicPriceRepository, times(1)).findMostRecentPriceByRealm(any(Realm.class));
+
+        assertThat(result.price()).isEqualTo(price.getPrice() + "/1k");
     }
 
     @Test
-    void getPriceByRealmId_throwsNotFoundException_whenPriceAndRealmDoesNotExist() {
-        Integer realmId = 999;
-        when(classicPriceRepository.findMostRecentPriceByRealm(any(Realm.class))).thenReturn(Optional.empty());
-        when(classicRealmRepository.findById(realmId)).thenReturn(Optional.empty());
+    void getPriceForRealm_whenRealmNameInvalid_throwsNotFoundException() {
+        Realm realm = createRealm();
+        realm.setName("invalid");
+        String fullRealmName = getFullRealmName(realm);
 
-        assertThrows(NotFoundException.class, () -> priceService.getPriceByRealmId(realmId));
+
+        when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> priceService.getPriceForRealm(fullRealmName));
     }
 
     @Test
-    void getPriceByRealmId_returnsPriceResponse_whenPriceDoesNotExistsInDB() {
-        Integer realmId = 1;
-        BigDecimal priceValue = new BigDecimal(100);
-        PriceResponse price = new PriceResponse(priceValue);
+    void getPriceForRealm_whenFactionInvalid_throwsNotFoundException() {
+        Realm realm = createRealm();
 
-        Realm realm = new Realm();
+
+        String fullRealmName = getFullRealmName(realm);
+
+        verifyNoInteractions(classicRealmRepository);
+        assertThrows(NotFoundException.class, () -> priceService.getPriceForRealm(fullRealmName));
+    }
+
+    @Test
+    void getPriceForRealm_whenPriceDoesNotExistsInDB_callsScraperAndReturnsValidPriceResponse() {
+        Realm realm = createRealm();
+        Price price = createPrice();
+        PriceResponse priceResponse = createPriceResponse();
+        String fullRealmName = getFullRealmName(realm);
+        Duration scrapingInterval = Duration.ofMinutes(60);
+        boolean forceUpdate = false;
+        when(g2gProperties.getScrapingInterval()).thenReturn(scrapingInterval);
+        when(g2gProperties.isForceUpdate()).thenReturn(forceUpdate);
 
         when(classicPriceRepository.findMostRecentPriceByRealm(realm)).thenReturn(Optional.empty());
-        when(classicRealmRepository.findById(realmId)).thenReturn(Optional.of(realm));
+        when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.of(realm));
         when(classicScrapingService.fetchRealmPrice(realm)).thenReturn(price);
+        when(priceMapper.toPriceResponse(price)).thenReturn(priceResponse);
 
-        PriceResponse result = priceService.getPriceByRealmId(realmId);
+        PriceResponse result = priceService.getPriceForRealm(fullRealmName);
 
-
-        assertEquals(price, result);
+        verify(classicScrapingService, times(1)).fetchRealmPrice(any(Realm.class));
+        assertThat(result.price()).isEqualTo(price.getPrice() + "/1k");
     }
 
     @Test
-    void getPriceByRealmId_savesNewRecentPrice_whenPriceDoesNotExistsInDB() {
-        Integer realmId = 1;
-        BigDecimal priceValue = new BigDecimal(100);
-        PriceResponse price = new PriceResponse(priceValue);
-        Realm realm = new Realm();
-        Price savedPrice = new Price();
-        savedPrice.setValue(priceValue);
-        savedPrice.setRealm(realm);
+    void getPriceForRealm_savesNewRecentPrice_whenPriceDoesNotExistsInDB() {
+        Realm realm = createRealm();
+        Price price = createPrice();
+        PriceResponse priceResponse = createPriceResponse();
+        String fullRealmName = getFullRealmName(realm);
+        Duration scrapingInterval = Duration.ofMinutes(60);
+        boolean forceUpdate = false;
+        when(g2gProperties.getScrapingInterval()).thenReturn(scrapingInterval);
+        when(g2gProperties.isForceUpdate()).thenReturn(forceUpdate);
 
 
         when(classicPriceRepository.findMostRecentPriceByRealm(realm)).thenReturn(Optional.empty());
-        when(classicPriceRepository.save(any(Price.class))).thenReturn(savedPrice);
-        when(classicRealmRepository.findById(realmId)).thenReturn(Optional.of(realm));
+        when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.of(realm));
         when(classicScrapingService.fetchRealmPrice(realm)).thenReturn(price);
+        when(priceMapper.toPriceResponse(price)).thenReturn(priceResponse);
 
-        priceService.getPriceByRealmId(realmId);
+        priceService.getPriceForRealm(fullRealmName);
 
-        verify(classicPriceRepository, times(1)).save(any(Price.class));
+        verify(classicPriceRepository, times(1)).save(price);
     }
-
 
     @Test
     void getAllPricesForRealm_returnsListOfPriceResponses() {
-        Integer realmId = 1;
+        Realm realm = createRealm();
+        PriceResponse priceResponse = createPriceResponse();
+        String fullRealmName = getFullRealmName(realm);
+
+        List<PriceResponse> expectedResponse = createPriceResponseList(10);
+
+        Page<Price> pricePage = new PageImpl<>(createPriceList(10));
+
+
         Pageable pageable = PageRequest.of(0, 10);
-        Price price = new Price();
-        PriceResponse priceResponse = PriceResponse.builder().build();
-        Page<Price> pricePage = new PageImpl<>(List.of(price));
 
-        when(classicPriceRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(pricePage);
-        when(priceMapper.toPriceResponse(price)).thenReturn(priceResponse);
+        when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.of(realm));
+        when(classicPriceRepository.findAllByRealm(realm, pageable)).thenReturn(pricePage);
+        when(priceMapper.toPriceResponse(any(Price.class))).thenReturn(priceResponse);
 
-        List<PriceResponse> result = priceService.getAllPricesForRealm(realmId, pageable);
+        List<PriceResponse> actualResponse = priceService.getAllPricesForRealm(fullRealmName, pageable);
 
-        assertEquals(List.of(priceResponse), result);
+        verify(classicPriceRepository, times(1)).findAllByRealm(realm, pageable);
+        assertThat(actualResponse.size()).isEqualTo(expectedResponse.size());
+    }
+
+
+    @Test
+    void getAllPricesForRealm_whenRealmNameInvalid_throwsNotFoundException() {
+        Realm realm = createRealm();
+        realm.setName("invalid");
+        String fullRealmName = getFullRealmName(realm);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> priceService.getAllPricesForRealm(fullRealmName, pageable));
+    }
+
+    @Test
+    void getAllPricesForRealm_whenFactionInvalid_throwsNotFoundException() {
+        Realm realm = createRealm();
+        realm.setFaction(null);
+        String fullRealmName = getFullRealmName(realm);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        verifyNoInteractions(classicRealmRepository);
+        assertThrows(NotFoundException.class, () -> priceService.getAllPricesForRealm(fullRealmName, pageable));
     }
 
 }

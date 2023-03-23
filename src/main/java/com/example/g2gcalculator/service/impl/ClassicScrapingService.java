@@ -2,11 +2,9 @@ package com.example.g2gcalculator.service.impl;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
-import com.example.g2gcalculator.dto.PriceResponse;
-import com.example.g2gcalculator.error.WebScrapingException;
+import com.example.g2gcalculator.error.NotFoundException;
 import com.example.g2gcalculator.model.Price;
 import com.example.g2gcalculator.model.Realm;
-import com.example.g2gcalculator.repository.ClassicRealmRepository;
 import com.example.g2gcalculator.service.ScrapingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,35 +19,39 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ClassicScrapingService implements ScrapingService {
+    private final String URL = "https://g2g.com/categories/wow-classic-gold?sort=lowest_price";
 
     @Override
     public Price fetchRealmPrice(Realm realm) {
         Element realmDiv = findRealmDiv(realm)
-                .orElseThrow(() -> new WebScrapingException("Didn't find realm with name: "
-                                                            + realm.getName()
-                                                            + " and faction: " + realm.getFaction().name() + " on g2g.com"));
+                .orElseThrow(() -> new NotFoundException("Didn't find realm with name: "
+                                                         + realm.getName()
+                                                         + " and faction: " + realm.getFaction().name() + " on g2g.com"));
         log.debug("Found div for realm: " + realm.getName());
         BigDecimal price = extractPrice(realmDiv);
         log.debug("Extracted price: " + price);
 
         return Price.builder()
-                .value(price)
-                .createdAt(LocalDateTime.now())
+                .price(price)
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 
     private Optional<Element> findRealmDiv(Realm realm) {
         configureSelenide();
-        final String URL = "https://g2g.com/categories/wow-classic-gold?sort=lowest_price";
+
         open(URL + "&region_id=" + realm.getRegion().getG2gId());
+
         $(By.cssSelector("div.row.q-col-gutter-sm-md.q-px-sm-md")).shouldHave(Condition.text(getFullRealmName(realm)));
+
         String html = getWebDriver().getPageSource();
         Document document = Jsoup.parse(html);
         Elements elements = document.getElementsByClass("col-xs-12 col-sm-6 col-md-3");
@@ -72,7 +74,7 @@ public class ClassicScrapingService implements ScrapingService {
 
     private String getFullRealmName(Realm realm) {
         return String.format("%s [%s] - %s", realm.getName(),
-                realm.getRegion().getName(), realm.getFaction().toString());
+                realm.getRegion(), realm.getFaction().toString());
     }
 
     private void configureSelenide() {

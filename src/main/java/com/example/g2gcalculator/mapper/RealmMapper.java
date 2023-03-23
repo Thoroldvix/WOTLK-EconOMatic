@@ -6,7 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {AuctionHouseMapper.class, PriceMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
+        uses = {AuctionHouseMapper.class, PriceMapper.class})
 public interface RealmMapper {
 
 

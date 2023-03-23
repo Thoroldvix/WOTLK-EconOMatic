@@ -2,10 +2,13 @@ package com.example.g2gcalculator.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+
+import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
 @Getter
@@ -21,11 +24,12 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private BigDecimal value;
+    private BigDecimal price;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
+    @JoinColumn(name = "realm_id")
     private Realm realm;
 
     public void setRealm(Realm realm) {

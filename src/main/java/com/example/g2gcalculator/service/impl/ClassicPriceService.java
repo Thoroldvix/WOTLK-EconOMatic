@@ -1,5 +1,6 @@
 package com.example.g2gcalculator.service.impl;
 
+import com.example.g2gcalculator.config.G2GProperties;
 import com.example.g2gcalculator.dto.PriceResponse;
 import com.example.g2gcalculator.error.NotFoundException;
 import com.example.g2gcalculator.mapper.PriceMapper;
@@ -9,22 +10,23 @@ import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.repository.ClassicPriceRepository;
 import com.example.g2gcalculator.repository.ClassicRealmRepository;
 import com.example.g2gcalculator.service.PriceService;
-import com.example.g2gcalculator.service.PriceSpecification;
 import com.example.g2gcalculator.service.ScrapingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.g2gcalculator.util.CalculatorUtils.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ClassicPriceService implements PriceService {
+    private final G2GProperties g2gProperties;
     private final ClassicPriceRepository classicPriceRepository;
     private final ClassicRealmRepository classicRealmRepository;
     private final ScrapingService classicScrapingService;
@@ -32,52 +34,44 @@ public class ClassicPriceService implements PriceService {
 
     @Override
     @Transactional
-    public PriceResponse getPriceByRealmName(String realmName, Faction faction) {
-        String formattedRealmName = formatRealmName(realmName);
+    public PriceResponse getPriceForRealm(String realmName) {
+        String exactRealmName = getExactRealmName(realmName);
+        Faction faction = getFaction(realmName);
+        Duration updateFrequency = g2gProperties.getScrapingInterval();
+        boolean forceUpdate = g2gProperties.isForceUpdate();
 
-        Realm realm = classicRealmRepository.findByNameAndFaction(formattedRealmName, faction)
-                .orElseThrow(() -> new NotFoundException("No realm found for name: " + formattedRealmName + " and faction: " + faction));
+        Realm realm = classicRealmRepository.findByNameAndFaction(exactRealmName, faction)
+                .orElseThrow(() -> new NotFoundException("No realm found for name: " + exactRealmName + " and faction: " + faction));
         Optional<Price> recentPrice = classicPriceRepository.findMostRecentPriceByRealm(realm);
 
-        if (recentPrice.isEmpty() || isOneHourOld(recentPrice)) {
-            Price priceDataForRealm = classicScrapingService.fetchRealmPrice(realm);
-            priceDataForRealm.setRealm(realm);
-            classicPriceRepository.save(priceDataForRealm);
-            return priceMapper.toPriceResponse(priceDataForRealm);
-        }
-        else {
+        if (recentPrice.isEmpty() || forceUpdate || checkIfOld(recentPrice.get(), updateFrequency)) {
+            return priceMapper.toPriceResponse(updatePrice(realm));
+        } else {
             return priceMapper.toPriceResponse(recentPrice.get());
         }
     }
-    private String formatRealmName(String realmName) {
-        String[] split = realmName.split("-");
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(s.substring(0, 1).toUpperCase()).append(s.substring(1).toLowerCase()).append(" ");
-        }
-        return sb.toString().trim();
+
+    private Price updatePrice(Realm realm) {
+        Price price = classicScrapingService.fetchRealmPrice(realm);
+        realm.addPrice(price);
+        classicPriceRepository.save(price);
+        return price;
     }
-
-
-    private boolean isOneHourOld(Optional<Price> recentPrice) {
-        return recentPrice
-                .map(price ->
-                        price.getCreatedAt().isBefore(LocalDateTime.now().minusSeconds(3600)))
-                .orElse(false);
-    }
-
 
     @Override
-    public List<PriceResponse> getAllPricesForRealm(String realmName, Faction faction,  Pageable pageable) {
-         String formattedRealmName = formatRealmName(realmName);
-        Realm realm = classicRealmRepository.findByNameAndFaction(formattedRealmName, faction)
-                .orElseThrow(() -> new NotFoundException("No realm found for name: " + realmName + " and faction: " + faction));
-        Specification<Price> spec = PriceSpecification.matchId(realm.getId());
+    public List<PriceResponse> getAllPricesForRealm(String realmName, Pageable pageable) {
+        String exactRealmName = getExactRealmName(realmName);
+        Faction faction = getFaction(realmName);
 
-        return classicPriceRepository.findAll(spec, pageable).getContent().stream()
+        Realm realm = classicRealmRepository.findByNameAndFaction(exactRealmName, faction)
+                .orElseThrow(() -> new NotFoundException("No realm found for name: " + exactRealmName + " and faction: " + faction));
+
+        return classicPriceRepository.findAllByRealm(realm, pageable).getContent().stream()
                 .map(priceMapper::toPriceResponse)
                 .toList();
     }
+
+
 
 
 }

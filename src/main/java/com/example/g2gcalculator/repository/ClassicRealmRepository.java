@@ -15,9 +15,6 @@ import java.util.Optional;
 public interface ClassicRealmRepository extends JpaRepository<Realm, Integer> {
 
 
-    @Query("select r from Realm r join fetch r.region join fetch r.auctionHouses")
-    List<Realm> findAllFetch();
-
-    @Query("select r from Realm r where r.name = ?1 and r.faction = ?2")
+    @Query("select r from Realm r  where lower(r.name) = lower(?1) and r.faction = ?2")
     Optional<Realm> findByNameAndFaction(String name, Faction faction);
 }

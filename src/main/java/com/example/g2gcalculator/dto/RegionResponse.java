@@ -1,9 +1,13 @@
 package com.example.g2gcalculator.dto;
 
-public record RegionResponse(
-        Integer regionId,
-        String name
+import lombok.Builder;
 
+import java.util.UUID;
+
+@Builder
+public record RegionResponse(
+        UUID g2gRegionId,
+        String name
 ) {
 
 }

@@ -2,13 +2,8 @@ package com.example.g2gcalculator.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
-
 
 import java.util.List;
-
-import static org.hibernate.annotations.CascadeType.MERGE;
-import static org.hibernate.annotations.CascadeType.PERSIST;
 
 @Entity
 @Getter
@@ -29,22 +24,21 @@ public class Realm {
     @Enumerated(EnumType.STRING)
     private Faction faction;
 
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+
     private Region region;
 
     @Enumerated(EnumType.STRING)
     private GameVersion gameVersion;
 
-    @OneToMany
-    @JoinColumn(name = "realm_id")
-    @Cascade(MERGE)
+    @OneToMany(mappedBy = "realm", orphanRemoval = true)
     @ToString.Exclude
     private List<Price> prices;
 
     public void addPrice(Price price) {
         prices.add(price);
+        price.setRealm(this);
     }
-
     @OneToMany
     @JoinColumn(name = "realm_id")
     @ToString.Exclude

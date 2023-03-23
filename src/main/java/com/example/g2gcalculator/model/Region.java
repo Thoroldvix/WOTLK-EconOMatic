@@ -1,29 +1,19 @@
 package com.example.g2gcalculator.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.List;
-import java.util.UUID;
-
-@Entity
+import lombok.Getter;
 @Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Table(name = "region")
-public class Region {
-    @Id
-    @Enumerated(EnumType.STRING)
-    private RegionName name;
+public enum Region {
+    EU("ac3f85c1-7562-437e-b125-e89576b9a38e"),
+    US(("dfced32f-2f0a-4df5-a218-1e068cfadffa")),
+    FR("ac3f85c1-7562-437e-b125-e89576b9a38e"),
+    DE("ac3f85c1-7562-437e-b125-e89576b9a38e"),
+    ES("ac3f85c1-7562-437e-b125-e89576b9a38e"),
+    OCE("dfced32f-2f0a-4df5-a218-1e068cfadffa");
 
-    private UUID g2gId;
+    public final String g2gId;
 
-    @OneToMany
-    @JoinColumn(name = "region_name")
-    @ToString.Exclude
-    private List<Realm> realms;
+    Region(String g2gId) {
+        this.g2gId = g2gId;
+    }
 
 }

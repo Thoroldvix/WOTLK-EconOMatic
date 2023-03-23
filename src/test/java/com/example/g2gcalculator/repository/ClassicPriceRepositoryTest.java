@@ -1,8 +1,8 @@
 package com.example.g2gcalculator.repository;
 
 import com.example.g2gcalculator.PostgreSqlContainerInitializer;
-import com.example.g2gcalculator.model.Price;
-import com.example.g2gcalculator.model.Realm;
+import com.example.g2gcalculator.model.*;
+import com.example.g2gcalculator.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -12,9 +12,11 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import static com.example.g2gcalculator.util.TestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,18 +33,18 @@ class ClassicPriceRepositoryTest implements PostgreSqlContainerInitializer {
 
     @Test
     void findMostRecentByRealmId_shouldWork() {
-        Realm realm = Realm.builder().name("Test Realm").build();
+        Realm realm =  createRealm();
         entityManager.persist(realm);
-        Price price1 = new Price(null,BigDecimal.valueOf(0.5), Instant.now().minus(1, ChronoUnit.HOURS), realm);
-        Price price2 = new Price(null, BigDecimal.valueOf(0.4), Instant.now(), realm);
-        entityManager.persist(price1);
-        entityManager.persist(price2);
+        Price oldPrice = new Price(null,BigDecimal.valueOf(0.5), LocalDateTime.now().minus(1, ChronoUnit.HOURS), realm);
+        Price expectedRecentPrice = new Price(null, BigDecimal.valueOf(0.4), LocalDateTime.now(), realm);
+        entityManager.persist(oldPrice);
+        entityManager.persist(expectedRecentPrice);
 
 
-        Optional<Price> mostRecentPrice = ClassicPriceRepository.findMostRecentPriceByRealm(realm);
+        Optional<Price> actualRecentPrice = ClassicPriceRepository.findMostRecentPriceByRealm(realm);
 
 
-        assertTrue(mostRecentPrice.isPresent());
-        assertEquals(price2, mostRecentPrice.get());
+        assertTrue(actualRecentPrice.isPresent());
+        assertEquals(expectedRecentPrice, actualRecentPrice.get());
     }
 }
