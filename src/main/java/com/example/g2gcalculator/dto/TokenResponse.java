@@ -1,12 +1,15 @@
 package com.example.g2gcalculator.dto;
 
-import java.time.Instant;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record TokenResponse(
+        @JsonProperty("access_token")
         String accessToken,
+        @JsonProperty("refresh_token")
         String refreshToken,
+        @JsonProperty("token_type")
         String tokenType,
-        Instant issuedAt,
+        @JsonProperty("expires_in")
         Long expiresIn
 ) {
 
