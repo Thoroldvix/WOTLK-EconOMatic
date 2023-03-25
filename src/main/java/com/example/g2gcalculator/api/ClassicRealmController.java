@@ -5,11 +5,12 @@ import com.example.g2gcalculator.service.RealmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static com.example.g2gcalculator.util.CalculatorUtils.constructPageable;
 
 @RestController
 @RequestMapping("/wow-classic/v1/realms")
@@ -24,10 +25,7 @@ public class ClassicRealmController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RealmResponse>> getAllRealms(@RequestParam(defaultValue = "0") int page,
-                                                            @RequestParam(defaultValue = "10") int size,
-                                                            @RequestParam(defaultValue = "id,asc") String sort) {
-        Pageable pageable = constructPageable(page, size, sort);
+    public ResponseEntity<List<RealmResponse>> getAllRealms(Pageable pageable) {
         return ResponseEntity.ok(classicRealmService.getAllRealms(pageable));
     }
 }

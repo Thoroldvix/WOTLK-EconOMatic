@@ -14,12 +14,6 @@ public final class CalculatorUtils {
 
     private CalculatorUtils() { }
 
-     public static PageRequest constructPageable(int page, int size, String sort) {
-        String sortField = sort.split(",")[0];
-        Sort.Direction sortDirection = sort.split(",")[1].equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-
-        return PageRequest.of(page, size, Sort.by(sortDirection, sortField));
-    }
 
       public static String getExactRealmName(String realmName) {
         return realmName.split("-")[0];

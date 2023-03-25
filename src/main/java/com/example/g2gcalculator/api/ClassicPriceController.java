@@ -5,11 +5,12 @@ import com.example.g2gcalculator.service.PriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static com.example.g2gcalculator.util.CalculatorUtils.constructPageable;
 
 @RestController
 @RequestMapping("/wow-classic/v1/prices")
@@ -25,11 +26,9 @@ public class ClassicPriceController {
 
     @GetMapping("/{realmName}/all")
     public ResponseEntity<List<PriceResponse>> getAllPricesForRealm(@PathVariable String realmName,
-                                                                    @RequestParam(defaultValue = "0") int page,
-                                                                    @RequestParam(defaultValue = "10") int size,
-                                                                    @RequestParam(defaultValue = "id,asc") String sort) {
+                                                                    Pageable pageable) {
 
-        Pageable pageable = constructPageable(page, size, sort);
+
         return ResponseEntity.ok(classicPriceService.getAllPricesForRealm(realmName, pageable));
     }
 

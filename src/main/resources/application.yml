@@ -11,5 +11,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  data:
+    web:
+      pageable:
+        max-page-size: 2000
+        default-page-size: 100
 server:
   port: 8080
