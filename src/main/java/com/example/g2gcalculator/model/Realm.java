@@ -25,7 +25,6 @@ public class Realm {
     private Faction faction;
 
     @Enumerated(EnumType.STRING)
-
     private Region region;
 
     @Enumerated(EnumType.STRING)
@@ -34,13 +33,17 @@ public class Realm {
     @OneToMany(mappedBy = "realm", orphanRemoval = true)
     @ToString.Exclude
     private List<Price> prices;
+    @OneToOne
+    @JoinColumn(name = "auction_house_id", unique = true)
+    private AuctionHouse auctionHouse;
 
-    public void addPrice(Price price) {
+    public void setPrice(Price price) {
         prices.add(price);
         price.setRealm(this);
     }
-    @OneToMany
-    @JoinColumn(name = "realm_id")
-    @ToString.Exclude
-    private List<AuctionHouse> auctionHouses;
+
+    public void setAuctionHouse(AuctionHouse auctionHouse) {
+        this.auctionHouse = auctionHouse;
+        auctionHouse.setRealm(this);
+    }
 }

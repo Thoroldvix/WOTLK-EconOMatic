@@ -17,6 +17,6 @@ public class AuctionHouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @OneToOne(mappedBy = "auctionHouse")
     private Realm realm;
 }

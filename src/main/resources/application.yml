@@ -7,9 +7,9 @@ spring:
   liquibase:
     change-log: db/changelog/db.changelog-master.yml
     default-schema: wow
-    enabled: true
+    enabled: false
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 server:
   port: 8080

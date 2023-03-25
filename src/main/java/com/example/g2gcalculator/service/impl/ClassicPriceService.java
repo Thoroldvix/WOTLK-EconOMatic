@@ -53,7 +53,7 @@ public class ClassicPriceService implements PriceService {
 
     private Price updatePrice(Realm realm) {
         Price price = classicScrapingService.fetchRealmPrice(realm);
-        realm.addPrice(price);
+        realm.setPrice(price);
         classicPriceRepository.save(price);
         return price;
     }

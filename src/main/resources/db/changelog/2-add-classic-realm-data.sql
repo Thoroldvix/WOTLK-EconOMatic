@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset thorold:eu
+--changeset thorold:realm.eu.1
 INSERT INTO realm (id, name, region, faction, game_version)
 VALUES (41074,
         'Nethergarde Keep',
@@ -193,7 +193,7 @@ VALUES (41085,
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region, faction, game_version)
 VALUES (41021,
-        'Gahennas',
+        'Gehennas',
         'EU',
         'ALLIANCE', 'CLASSIC');
 INSERT INTO realm (id, name, region, faction, game_version)
@@ -218,7 +218,7 @@ VALUES (41081,
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region, faction, game_version)
 VALUES (41023,
-        'Gahennas',
+        'Gehennas',
         'EU',
         'HORDE', 'CLASSIC');
 INSERT INTO realm (id, name, region, faction, game_version)
@@ -231,7 +231,7 @@ VALUES (41079,
         'Patchwerk',
         'DE',
         'ALLIANCE', 'CLASSIC');
---changeset thorold:us
+--changeset thorold:realm.us.1
 INSERT INTO realm (id, name, region, faction, game_version)
 VALUES (46320,
         'Skyfury',
