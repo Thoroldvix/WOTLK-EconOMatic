@@ -33,8 +33,7 @@ public class Realm {
     @OneToMany(mappedBy = "realm", orphanRemoval = true)
     @ToString.Exclude
     private List<Price> prices;
-    @OneToOne
-    @JoinColumn(name = "auction_house_id", unique = true)
+    @OneToOne(mappedBy = "realm")
     private AuctionHouse auctionHouse;
 
     public void setPrice(Price price) {

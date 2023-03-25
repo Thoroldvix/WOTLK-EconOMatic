@@ -3,3 +3,5 @@ databaseChangeLog:
         file: db/changelog/1-database-ddl.sql
   - include:
       file: db/changelog/2-add-classic-realm-data.sql
+  - include:
+        file: db/changelog/3-add-classic-auction-house-data.sql

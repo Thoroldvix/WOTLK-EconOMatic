@@ -1,5 +1,6 @@
 package com.example.g2gcalculator.util;
 
+import com.example.g2gcalculator.dto.AuctionHouseResponse;
 import com.example.g2gcalculator.dto.PriceResponse;
 import com.example.g2gcalculator.dto.RealmResponse;
 import com.example.g2gcalculator.model.*;
@@ -91,7 +92,9 @@ public final class TestUtil {
                 .faction(Faction.ALLIANCE)
                 .build();
     }
-     public static Realm createRealm(int id) {
+
+
+    public static Realm createRealm(int id) {
          Realm realm = createRealm();
          realm.setId(id);
          return realm;
@@ -109,17 +112,18 @@ public final class TestUtil {
                 .name(name)
                 .region("EU")
                 .gameVersion(gameVersion)
-                .auctionHouses(new ArrayList<>())
+                .auctionHouse(new AuctionHouseResponse(1))
                 .faction(faction)
                 .build();
     }
+
     public static RealmResponse createRealmResponse(int id) {
         return RealmResponse.builder()
                 .id(id)
                 .name("test")
                 .region("EU")
                 .gameVersion(GameVersion.CLASSIC)
-                .auctionHouses(new ArrayList<>())
+                .auctionHouse(new AuctionHouseResponse(1))
                 .faction(Faction.ALLIANCE)
                 .build();
     }

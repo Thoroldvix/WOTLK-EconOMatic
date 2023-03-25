@@ -17,7 +17,7 @@ public record RealmResponse(
         @JsonProperty("version")
         GameVersion gameVersion,
         String region,
-        @JsonProperty("auction houses")
-        List<AuctionHouseResponse> auctionHouses
+        @JsonProperty("auction house")
+        AuctionHouseResponse auctionHouse
 ) {
 }

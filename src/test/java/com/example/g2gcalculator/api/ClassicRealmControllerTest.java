@@ -1,6 +1,7 @@
 package com.example.g2gcalculator.api;
 
 import com.example.g2gcalculator.dto.RealmResponse;
+import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.service.RealmService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.example.g2gcalculator.util.TestUtil.createRealm;
 import static com.example.g2gcalculator.util.TestUtil.createRealmResponseList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -96,4 +98,5 @@ class ClassicRealmControllerTest {
         assertThat(actualResponse.size()).isEqualTo(5);
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
+
 }

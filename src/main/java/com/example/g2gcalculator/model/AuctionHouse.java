@@ -3,6 +3,8 @@ package com.example.g2gcalculator.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -17,6 +19,9 @@ public class AuctionHouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(mappedBy = "auctionHouse")
+    @OneToOne
+    @JoinColumn(name = "realm_id", unique = true)
     private Realm realm;
+
+
 }
