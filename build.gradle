@@ -20,7 +20,13 @@ repositories {
 ext {
     testcontainers = "1.17.5"
     mapstruct = "1.5.3.Final"
+    springCloudVersion = "2022.0.0"
 
+}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 dependencies {

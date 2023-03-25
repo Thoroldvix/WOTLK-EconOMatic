@@ -1,4 +1,18 @@
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          external:
+           client-id: "c260f00d-1071-409a-992f-dda2e5498536"
+           authorization-grant-type: "api_token"
+           scope:
+             - app:realm-api
+             - app:pricing-api
+        provider:
+          external:
+            token-uri: https://auth.tradeskillmaster.com/oauth2/token
+
   datasource:
     url: jdbc:postgresql://localhost:5433/g2g_calculator
     username: postgres
@@ -18,3 +32,6 @@ spring:
         default-page-size: 100
 server:
   port: 8080
+g2g:
+  force-update: ${G2G_FORCE_UPDATE:false}
+  scraping-interval: ${G2G_SCRAPING_INTERVAL:60}
