@@ -60,7 +60,7 @@ class ClassicRealmServiceTest {
         when(realmMapper.toRealmResponse(realm)).thenReturn(mockRealmResponse);
         when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.of(realm));
 
-        RealmResponse result = realmService.getRealm(getFullRealmName(realm));
+        RealmResponse result = realmService.getRealmResponse(getFullRealmName(realm));
 
         assertThat(result).isNotNull();
         assertThat(result).isEqualTo(mockRealmResponse);
@@ -70,7 +70,7 @@ class ClassicRealmServiceTest {
     void getRealm_whenRealmNotFound_throwsNotFound() {
         Realm realm = createRealm(1);
         when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> realmService.getRealm(getFullRealmName(realm)))
+        assertThatThrownBy(() -> realmService.getRealmResponse(getFullRealmName(realm)))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("No realm found for name: " + realm.getName() + " and faction: " + realm.getFaction());
 

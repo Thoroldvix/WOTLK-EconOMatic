@@ -40,7 +40,7 @@ public class ClassicScrapingService implements ScrapingService {
         log.debug("Extracted price: " + price);
 
         return Price.builder()
-                .price(price)
+                .value(price)
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
