@@ -6,6 +6,7 @@ import com.example.g2gcalculator.error.NotFoundException;
 import com.example.g2gcalculator.model.Price;
 import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.service.ScrapingService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -29,6 +30,15 @@ import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 public class ClassicScrapingService implements ScrapingService {
     private final String URL = "https://g2g.com/categories/wow-classic-gold?sort=lowest_price";
 
+    @PostConstruct
+    private void init() {
+        Configuration.driverManagerEnabled = false;
+        Configuration.browser = "chrome";
+        Configuration.timeout = 6000;
+        Configuration.remote = "http://localhost:4444/wd/hub";
+    }
+
+
     @Override
     public Price fetchRealmPrice(Realm realm) {
         Element realmDiv = findRealmDiv(realm)
@@ -46,8 +56,6 @@ public class ClassicScrapingService implements ScrapingService {
     }
 
     private Optional<Element> findRealmDiv(Realm realm) {
-        configureSelenide();
-
         open(URL + "&region_id=" + realm.getRegion().getG2gId());
 
         $(By.cssSelector("div.row.q-col-gutter-sm-md.q-px-sm-md")).shouldHave(Condition.text(getFullRealmName(realm)));
@@ -77,10 +85,5 @@ public class ClassicScrapingService implements ScrapingService {
                 realm.getRegion(), realm.getFaction().toString());
     }
 
-    private void configureSelenide() {
-        Configuration.driverManagerEnabled = false;
-        Configuration.browser = "chrome";
-        Configuration.timeout = 5000;
-        Configuration.remote = "http://localhost:4444/wd/hub";
-    }
+
 }
