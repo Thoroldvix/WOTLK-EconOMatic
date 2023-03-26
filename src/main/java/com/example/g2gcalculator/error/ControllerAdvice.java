@@ -11,14 +11,10 @@ public class ControllerAdvice {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFoundException(NotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(HttpStatus.NOT_FOUND.value(), "Not found"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(HttpStatus.NOT_FOUND.value(), "Not found", e.getMessage()));
     }
     @ExceptionHandler(FeignException.NotFound.class)
     public ResponseEntity<ApiError> handleFeignNotFoundException(FeignException.NotFound e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError(HttpStatus.BAD_REQUEST.value(), "Not found"));
-    }
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError(HttpStatus.BAD_REQUEST.value(), "Bad request"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(HttpStatus.NOT_FOUND.value(), "Not found"));
     }
 }
