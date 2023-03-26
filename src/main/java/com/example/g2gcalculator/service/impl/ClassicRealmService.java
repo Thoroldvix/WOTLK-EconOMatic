@@ -14,9 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.g2gcalculator.util.CalculatorUtils.getExactRealmName;
-import static com.example.g2gcalculator.util.CalculatorUtils.getFaction;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -42,12 +39,26 @@ public class ClassicRealmService implements RealmService {
                 .map(realmMapper::toRealmResponse)
                 .orElseThrow(() -> new NotFoundException("No realm found for name: " + exactRealmName + " and faction: " + faction));
     }
+
     @Override
     public Realm getRealm(String realmName) {
         String exactRealmName = getExactRealmName(realmName);
         Faction faction = getFaction(realmName);
         return classicRealmRepository.findByNameAndFaction(exactRealmName, faction)
                 .orElseThrow(() -> new NotFoundException("No realm found for name: " + exactRealmName + " and faction: " + faction));
+    }
+
+    private String getExactRealmName(String realmName) {
+        return realmName.split("-")[0];
+    }
+
+    private Faction getFaction(String realmName) {
+        String[] split = realmName.split("-");
+        String faction = split[split.length - 1];
+        if (!Faction.contains(faction)) {
+            throw new NotFoundException("No faction found for name: " + faction);
+        }
+        return faction.equalsIgnoreCase("horde") ? Faction.HORDE : Faction.ALLIANCE;
     }
 
 }

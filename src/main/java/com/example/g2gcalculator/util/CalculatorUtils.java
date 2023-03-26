@@ -14,21 +14,6 @@ public final class CalculatorUtils {
 
     private CalculatorUtils() { }
 
-
-      public static String getExactRealmName(String realmName) {
-        return realmName.split("-")[0];
-    }
-
-
-    public static Faction getFaction(String realmName) {
-        String[] split = realmName.split("-");
-        String faction = split[split.length - 1];
-        if (split.length != 2 || !Faction.contains(faction)) {
-            throw new NotFoundException("No faction found for name: " + faction);
-        }
-        return faction.equalsIgnoreCase("horde") ? Faction.HORDE : Faction.ALLIANCE;
-    }
-
     public static boolean checkIfOld(Price recentPrice, Duration priceUpdateInterval) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime lastUpdated = recentPrice.getUpdatedAt();
