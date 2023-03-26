@@ -14,7 +14,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class TSMAuthService implements AuthService {
     private final TSMAuthClient tsmAuthClient;
-    @Value("${g2g.api-key}")
+    @Value("${g2g.tsm.api-key}")
     private String apiKey;
     private String accessToken;
     private String refreshToken;

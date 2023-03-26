@@ -19,6 +19,5 @@ spring:
 server:
   port: 8080
 g2g:
-  force-update: ${G2G_FORCE_UPDATE:false}
-  scraping-interval: ${G2G_SCRAPING_INTERVAL:60}
-  api-key: YOUR_API_KEY
+  tsm:
+    api-key: "_PO23Wa-25DW2ncYziRgGNp6YF3_E2e0"

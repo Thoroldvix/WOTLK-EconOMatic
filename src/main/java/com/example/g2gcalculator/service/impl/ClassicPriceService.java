@@ -32,9 +32,9 @@ public class ClassicPriceService implements PriceService {
     private final ClassicRealmRepository classicRealmRepository;
     private final ScrapingService classicScrapingService;
     private final PriceMapper priceMapper;
-    @Value("${g2g.scraping-interval}")
+    @Value("${g2g.scraping-interval:60}")
     private Duration updateFrequency;
-    @Value("${g2g.force-update}")
+    @Value("${g2g.force-update:false}")
     private boolean forceUpdate;
 
     @Override

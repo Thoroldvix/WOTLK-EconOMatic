@@ -16,8 +16,6 @@ public class FeignConfig {
 
     @Bean
     public RequestInterceptor requestInterceptor() {
-        return requestTemplate -> {
-            requestTemplate.header("Authorization", "Bearer " + tsmAuthService.getAccessToken());
-        };
+        return requestTemplate -> requestTemplate.header("Authorization", "Bearer " + tsmAuthService.getAccessToken());
     }
 }

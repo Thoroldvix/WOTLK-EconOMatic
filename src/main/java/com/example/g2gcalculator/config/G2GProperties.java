@@ -27,9 +27,21 @@ public record G2GProperties(
          */
         Currency currency,
 
-        String apiKey
+        String apiKey,
+
+        TsmProperties tsm
+
 
 ) {
+    public record TsmProperties(
+            String apiKey
+    ) {
+        public TsmProperties {
+            if (apiKey == null || apiKey.isBlank()) {
+                throw new IllegalArgumentException("TSM API key must not be null or blank");
+            }
+        }
+    }
 
     public G2GProperties {
        scrapingInterval =  scrapingInterval == null ? Duration.ofMinutes(60) : scrapingInterval;
