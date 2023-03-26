@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface AuctionHouseService {
 
-    List<AuctionHouseResponse> getAuctionHousesByRealmId(Integer realmId);
+    AuctionHouseResponse getAuctionHouseByRealmName(String realmName);
+
+    AuctionHouseResponse getAuctionHouseById(Integer auctionHouseId);
 
     List<ItemResponse> getAllItemsByAuctionHouseId(Integer auctionHouseId);
 

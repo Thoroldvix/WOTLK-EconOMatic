@@ -3,7 +3,9 @@ package com.example.g2gcalculator.service.impl;
 import com.example.g2gcalculator.api.AuctionHouseClient;
 import com.example.g2gcalculator.dto.AuctionHouseResponse;
 import com.example.g2gcalculator.dto.ItemResponse;
+import com.example.g2gcalculator.error.NotFoundException;
 import com.example.g2gcalculator.mapper.AuctionHouseMapper;
+import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.repository.AuctionHouseRepository;
 import com.example.g2gcalculator.service.AuctionHouseService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,18 +28,24 @@ public class ClassicAuctionHouseService implements AuctionHouseService {
     private final AuctionHouseRepository auctionHouseRepository;
 
     private final AuctionHouseMapper auctionHouseMapper;
+
+    private final ClassicRealmService classicRealmService;
     @Override
-    public List<AuctionHouseResponse> getAuctionHousesByRealmId(Integer realmId) {
-        return auctionHouseRepository.findAllByRealmId(realmId).stream()
-                .map(auctionHouseMapper::toAuctionHouseResponse)
-                .toList();
+    public AuctionHouseResponse getAuctionHouseByRealmName(String realmName) {
+        Realm realm = classicRealmService.getRealm(realmName);
+        return auctionHouseRepository.findByRealm(realm).map(auctionHouseMapper::toAuctionHouseResponse)
+                .orElseThrow(() -> new NotFoundException("No auction house found for realm: " + realmName));
+    }
+     @Override
+     public AuctionHouseResponse getAuctionHouseById(Integer auctionHouseId) {
+        return auctionHouseRepository.findById(auctionHouseId).map(auctionHouseMapper::toAuctionHouseResponse)
+                .orElseThrow(() -> new NotFoundException("No auction house found for id: " + auctionHouseId));
     }
 
     @Override
     @SneakyThrows
     public List<ItemResponse> getAllItemsByAuctionHouseId(Integer auctionHouseId) {
         return objectMapper.readValue(auctionHouseClient.getAllAuctionHouseItems(auctionHouseId), new TypeReference<List<ItemResponse>>() {});
-
     }
 
     @Override
