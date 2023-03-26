@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 public interface PriceMapper {
 
     @Mapping(target = "realmName", source = "realm", qualifiedByName = "mapRealmName")
-    @Mapping(target = "price", source ="price", qualifiedByName = "mapPriceValue")
     PriceResponse toPriceResponse(Price price);
 
     @Named(value = "mapPriceValue")
