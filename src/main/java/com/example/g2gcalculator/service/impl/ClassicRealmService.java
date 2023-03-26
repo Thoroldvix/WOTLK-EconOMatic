@@ -4,6 +4,7 @@ import com.example.g2gcalculator.dto.RealmResponse;
 import com.example.g2gcalculator.error.NotFoundException;
 import com.example.g2gcalculator.mapper.RealmMapper;
 import com.example.g2gcalculator.model.Faction;
+import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.repository.ClassicRealmRepository;
 import com.example.g2gcalculator.service.RealmService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import static com.example.g2gcalculator.util.CalculatorUtils.getExactRealmName;
 import static com.example.g2gcalculator.util.CalculatorUtils.getFaction;
 
 @Service
-
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ClassicRealmService implements RealmService {
@@ -35,11 +35,18 @@ public class ClassicRealmService implements RealmService {
     }
 
     @Override
-    public RealmResponse getRealm(String realmName) {
+    public RealmResponse getRealmResponse(String realmName) {
         String exactRealmName = getExactRealmName(realmName);
         Faction faction = getFaction(realmName);
         return classicRealmRepository.findByNameAndFaction(exactRealmName, faction)
                 .map(realmMapper::toRealmResponse)
+                .orElseThrow(() -> new NotFoundException("No realm found for name: " + exactRealmName + " and faction: " + faction));
+    }
+    @Override
+    public Realm getRealm(String realmName) {
+        String exactRealmName = getExactRealmName(realmName);
+        Faction faction = getFaction(realmName);
+        return classicRealmRepository.findByNameAndFaction(exactRealmName, faction)
                 .orElseThrow(() -> new NotFoundException("No realm found for name: " + exactRealmName + " and faction: " + faction));
     }
 
