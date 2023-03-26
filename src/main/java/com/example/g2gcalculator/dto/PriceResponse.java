@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record PriceResponse(
-        String price,
+        BigDecimal value,
 
         String realmName,
 

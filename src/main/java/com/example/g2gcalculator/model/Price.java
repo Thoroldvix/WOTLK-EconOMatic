@@ -24,7 +24,7 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private BigDecimal price;
+    private BigDecimal value;
 
     private LocalDateTime updatedAt;
 
