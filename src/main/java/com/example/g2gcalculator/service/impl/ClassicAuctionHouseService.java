@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,13 +34,15 @@ public class ClassicAuctionHouseService implements AuctionHouseService {
     }
 
     @Override
+    @SneakyThrows
     public List<ItemResponse> getAllItemsByAuctionHouseId(Integer auctionHouseId) {
-        try {
-            return objectMapper.readValue(auctionHouseClient.getAllAuctionHouseItems(auctionHouseId), new TypeReference<List<ItemResponse>>() {});
-        }
-        catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return objectMapper.readValue(auctionHouseClient.getAllAuctionHouseItems(auctionHouseId), new TypeReference<List<ItemResponse>>() {});
+
     }
 
+    @Override
+    @SneakyThrows
+    public ItemResponse getAuctionHouseItem(Integer auctionHouseId, Integer itemId) {
+        return objectMapper.readValue(auctionHouseClient.getAuctionHouseItem(auctionHouseId, itemId), ItemResponse.class);
+    }
 }

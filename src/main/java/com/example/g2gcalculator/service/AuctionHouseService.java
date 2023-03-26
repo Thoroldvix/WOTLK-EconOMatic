@@ -12,4 +12,6 @@ public interface AuctionHouseService {
     List<AuctionHouseResponse> getAuctionHousesByRealmId(Integer realmId);
 
     List<ItemResponse> getAllItemsByAuctionHouseId(Integer auctionHouseId);
+
+    ItemResponse getAuctionHouseItem(Integer auctionHouseId, Integer itemId);
 }
