@@ -1,6 +1,7 @@
 package com.example.g2gcalculator.api;
 
 import com.example.g2gcalculator.dto.PriceResponse;
+import com.example.g2gcalculator.error.NotFoundException;
 import com.example.g2gcalculator.service.PriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -27,9 +28,15 @@ public class ClassicPriceController {
     @GetMapping("/{realmName}/all")
     public ResponseEntity<List<PriceResponse>> getAllPricesForRealm(@PathVariable String realmName,
                                                                     Pageable pageable) {
-
-
-        return ResponseEntity.ok(classicPriceService.getAllPricesForRealm(realmName, pageable));
+         return ResponseEntity.ok(classicPriceService.getAllPricesForRealm(realmName, pageable));
+    }
+    @GetMapping("/{auctionHouseId}/item/{itemId}")
+    public ResponseEntity<?> getPriceForItem(@PathVariable Integer auctionHouseId,
+                                             @PathVariable Integer itemId) {
+         if (itemId <= 0 || auctionHouseId <= 0) {
+             throw new IllegalArgumentException("Bad request");
+         }
+        return ResponseEntity.ok(classicPriceService.getPriceForItem(auctionHouseId, itemId));
     }
 
 }
