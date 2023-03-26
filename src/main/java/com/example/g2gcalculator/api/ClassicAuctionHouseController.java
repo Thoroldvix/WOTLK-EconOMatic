@@ -20,4 +20,8 @@ public class ClassicAuctionHouseController {
     public ResponseEntity<?> getAllAuctionHouseItems(@PathVariable Integer auctionHouseId) {
         return ResponseEntity.ok(classicAuctionHouseService.getAllItemsByAuctionHouseId(auctionHouseId));
     }
+    @GetMapping("/{auctionHouseId}/item/{itemId}")
+    public ResponseEntity<?> getAuctionHouseItem(@PathVariable Integer auctionHouseId, @PathVariable Integer itemId) {
+        return ResponseEntity.ok(classicAuctionHouseService.getAuctionHouseItem(auctionHouseId, itemId));
+    }
 }
