@@ -2,6 +2,7 @@ package com.example.g2gcalculator.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import java.util.List;
 
@@ -30,10 +31,11 @@ public class Realm {
     @Enumerated(EnumType.STRING)
     private GameVersion gameVersion;
 
-    @OneToMany(mappedBy = "realm", orphanRemoval = true)
+    @OneToMany(mappedBy = "realm", orphanRemoval = true, cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Price> prices;
-    @OneToOne(mappedBy = "realm")
+
+    @OneToOne(mappedBy = "realm", cascade = CascadeType.ALL)
     private AuctionHouse auctionHouse;
 
     public void setPrice(Price price) {
