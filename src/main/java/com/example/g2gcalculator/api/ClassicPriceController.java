@@ -30,13 +30,13 @@ public class ClassicPriceController {
                                                                     Pageable pageable) {
          return ResponseEntity.ok(classicPriceService.getAllPricesForRealm(realmName, pageable));
     }
-    @GetMapping("/{auctionHouseId}/item/{itemId}")
-    public ResponseEntity<?> getPriceForItem(@PathVariable Integer auctionHouseId,
+    @GetMapping("/{realmName}/items/{itemId}")
+    public ResponseEntity<?> getPriceForItem(@PathVariable String realmName,
                                              @PathVariable Integer itemId) {
-         if (itemId <= 0 || auctionHouseId <= 0) {
+         if (itemId <= 0) {
              throw new IllegalArgumentException("Bad request");
          }
-        return ResponseEntity.ok(classicPriceService.getPriceForItem(auctionHouseId, itemId));
+        return ResponseEntity.ok(classicPriceService.getPriceForItem(realmName, itemId));
     }
 
 }
