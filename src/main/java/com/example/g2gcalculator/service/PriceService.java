@@ -14,4 +14,6 @@ public interface PriceService {
 
 
     List<PriceResponse> getAllPricesForRealm(String realmName, Pageable pageable);
+
+    PriceResponse getPriceForItem(Integer auctionHouseId, Integer itemId);
 }
