@@ -1,5 +1,6 @@
 package com.example.g2gcalculator.service;
 
+import com.example.g2gcalculator.dto.ItemPriceResponse;
 import com.example.g2gcalculator.dto.PriceResponse;
 import com.example.g2gcalculator.model.Faction;
 import org.springframework.data.domain.Page;
@@ -15,5 +16,5 @@ public interface PriceService {
 
     List<PriceResponse> getAllPricesForRealm(String realmName, Pageable pageable);
 
-    PriceResponse getPriceForItem(Integer auctionHouseId, Integer itemId);
+    ItemPriceResponse getPriceForItem(String realmName, Integer itemId);
 }
