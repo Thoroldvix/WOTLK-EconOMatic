@@ -1,39 +1,37 @@
 package com.example.g2gcalculator.service;
 
-import com.example.g2gcalculator.dto.PriceResponse;
-import com.example.g2gcalculator.model.*;
-import com.example.g2gcalculator.repository.ClassicRealmRepository;
-import com.example.g2gcalculator.service.impl.ClassicScrapingService;
-import com.example.g2gcalculator.util.TestUtil;
+import com.example.g2gcalculator.model.Faction;
+import com.example.g2gcalculator.model.Price;
+import com.example.g2gcalculator.model.Realm;
+import com.example.g2gcalculator.model.Region;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.UUID;
-
-import static com.example.g2gcalculator.util.TestUtil.createRealm;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 @ActiveProfiles("test")
 class ClassicScrapingServiceTest {
-    @Mock
-    private ClassicRealmRepository classicRealmRepository;
 
-    @InjectMocks
-    private  ClassicScrapingService classicScrapingService;
+    @Autowired
+    private  ScrapingService classicScrapingService;
+
 
     @Test
     void getPriceDataForRealm_shouldReturnValidPrice() {
-        Realm realm = createRealm();
-        realm.setName("Everlook");
-        realm.setRegion(Region.DE);
+        Realm realm = Realm.builder()
+                .id(1)
+                .name("Everlook")
+                .faction(Faction.ALLIANCE)
+                .region(Region.DE)
+                .build();
+
+
 
         Price priceDataForRealm = classicScrapingService.fetchRealmPrice(realm);
-        assertThat(priceDataForRealm.getPrice()).isNotNull();
+        assertThat(priceDataForRealm.getValue()).isNotNull();
         assertThat(priceDataForRealm.getUpdatedAt()).isNotNull();
     }
 

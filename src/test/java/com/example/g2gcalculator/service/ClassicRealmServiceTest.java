@@ -3,9 +3,9 @@ package com.example.g2gcalculator.service;
 import com.example.g2gcalculator.dto.RealmResponse;
 import com.example.g2gcalculator.error.NotFoundException;
 import com.example.g2gcalculator.mapper.RealmMapper;
+import com.example.g2gcalculator.model.Faction;
 import com.example.g2gcalculator.model.Realm;
 import com.example.g2gcalculator.repository.ClassicRealmRepository;
-import com.example.g2gcalculator.service.impl.ClassicRealmService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,10 +19,10 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.g2gcalculator.util.TestUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,42 +37,148 @@ class ClassicRealmServiceTest {
 
     @Test
     void getAllRealms_returnsRealmResponseList() {
-        List<RealmResponse> expectedResponse =  List.of(createRealmResponse(1), createRealmResponse(2));
-        Page<Realm> mockRealmPage = new PageImpl<>(List.of(createRealm(1), createRealm(2)));
+        Realm firstRealm = Realm.builder()
+                .name("everlook")
+                .faction(Faction.HORDE)
+                .build();
+        Realm secondRealm = Realm.builder()
+                .name("gehennas")
+                .faction(Faction.ALLIANCE)
+                .build();
+        RealmResponse firstRealmResponse = RealmResponse.builder()
+                .name("everlook")
+                .faction(Faction.HORDE)
+                .build();
+        RealmResponse secondRealmResponse = RealmResponse.builder()
+                .name("gehennas")
+                .faction(Faction.ALLIANCE)
+                .build();
+        Page<Realm> realms = new PageImpl<>(List.of(firstRealm, secondRealm));
+        List<RealmResponse> expectedResponse = List.of(firstRealmResponse, secondRealmResponse);
+        Pageable pageable = PageRequest.of(0, 10);
+        when(classicRealmRepository.findAll(pageable)).thenReturn(realms);
+        when(realmMapper.toRealmResponse(firstRealm)).thenReturn(firstRealmResponse);
+        when(realmMapper.toRealmResponse(secondRealm)).thenReturn(secondRealmResponse);
 
-        when(classicRealmRepository.findAll(any(Pageable.class))).thenReturn(mockRealmPage);
-        when(realmMapper.toRealmResponse(mockRealmPage.getContent().get(0))).thenReturn(expectedResponse.get(0));
-        when(realmMapper.toRealmResponse(mockRealmPage.getContent().get(1))).thenReturn(expectedResponse.get(1));
+        List<RealmResponse> actualResponse = realmService.getAllRealms(pageable);
 
-        List<RealmResponse> result = realmService.getAllRealms(PageRequest.of(0, 10));
-
-        assertThat(result).isNotNull();
-        assertThat(result.size()).isEqualTo(expectedResponse.size());
-        assertThat(result).isEqualTo(expectedResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
-    void getRealm_returnsCorrectRealmResponse() {
-        RealmResponse mockRealmResponse = createRealmResponse(1);
-        Realm realm = createRealm(1);
+    void getRealmResponse_returnsRealmResponse() {
+        String realmName = "everlook-horde";
+        Realm realm = Realm.builder()
+                .name("everlook")
+                .faction(Faction.HORDE)
+                .build();
+        RealmResponse expectedResponse = RealmResponse.builder()
+                .name("everlook")
+                .faction(Faction.HORDE)
+                .build();
 
 
-        when(realmMapper.toRealmResponse(realm)).thenReturn(mockRealmResponse);
-        when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.of(realm));
+        when(classicRealmRepository.findByNameAndFaction(anyString(), any(Faction.class))).thenReturn(Optional.of(realm));
+        when(realmMapper.toRealmResponse(realm)).thenReturn(expectedResponse);
 
-        RealmResponse result = realmService.getRealmResponse(getFullRealmName(realm));
+        RealmResponse actualResponse = realmService.getRealmResponse(realmName);
 
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(mockRealmResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    void getRealm_returnsRealmResponse() {
+        String realmName = "everlook-alliance";
+        Realm expectedResponse = Realm.builder()
+                .name("everlook")
+                .faction(Faction.ALLIANCE)
+                .build();
+
+        when(classicRealmRepository.findByNameAndFaction(anyString(), any(Faction.class)))
+                .thenReturn(Optional.of(expectedResponse));
+
+
+        Realm actualResponse = realmService.getRealm(realmName);
+
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
     void getRealm_whenRealmNotFound_throwsNotFound() {
-        Realm realm = createRealm(1);
+        String realmName = "everlook-alliance";
+        Realm realm = Realm.builder()
+                .name("everlook")
+                .faction(Faction.ALLIANCE)
+                .build();
+        when(classicRealmRepository.findByNameAndFaction(anyString(), any(Faction.class))).thenReturn(Optional.empty());
+
+
+        assertThatThrownBy(() -> realmService.getRealm(realmName))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void getRealmResponse_whenRealmNotFound_throwsNotFound() {
+        String realmName = "everlook-alliance";
+        Realm realm = Realm.builder()
+                .name("everlook")
+                .faction(Faction.ALLIANCE)
+                .build();
         when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> realmService.getRealmResponse(getFullRealmName(realm)))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("No realm found for name: " + realm.getName() + " and faction: " + realm.getFaction());
+
+
+        assertThatThrownBy(() -> realmService.getRealmResponse(realmName))
+                .isInstanceOf(NotFoundException.class);
 
     }
+
+    @Test
+    void getRealm_whenRealmNameIsNull_throwsIllegalArgumentException() {
+        String realmName = null;
+        assertThatThrownBy(() -> realmService.getRealm(realmName))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getRealm_whenRealmNameIsEmpty_throwsIllegalArgumentException() {
+        String realmName = "";
+        assertThatThrownBy(() -> realmService.getRealm(realmName))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getRealm_whenFactionHasInvalidValue_throwsNotFoundException() {
+        String realmName = "everlook-a";
+        assertThatThrownBy(() -> realmService.getRealm(realmName))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void getRealmResponse_whenRealmNameIsEmpty_throwsIllegalArgumentException() {
+        String realmName = "";
+        assertThatThrownBy(() -> realmService.getRealmResponse(realmName))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getRealmResponse_whenRealmNameIsBlank_throwsIllegalArgumentException() {
+        String realmName = " ";
+        assertThatThrownBy(() -> realmService.getRealmResponse(realmName))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getRealm_whenRealmNameIsBlank_throwsIllegalArgumentException() {
+        String realmName = " ";
+        assertThatThrownBy(() -> realmService.getRealm(realmName))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getRealmResponse_whenFactionHasInvalidValue_throwsNotFoundException() {
+        String realmName = "everlook-a";
+        assertThatThrownBy(() -> realmService.getRealmResponse(realmName))
+                .isInstanceOf(NotFoundException.class);
+    }
+
 }

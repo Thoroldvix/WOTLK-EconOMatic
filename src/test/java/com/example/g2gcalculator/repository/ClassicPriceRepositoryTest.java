@@ -1,8 +1,10 @@
 package com.example.g2gcalculator.repository;
 
 import com.example.g2gcalculator.PostgreSqlContainerInitializer;
-import com.example.g2gcalculator.model.*;
-import com.example.g2gcalculator.util.TestUtil;
+import com.example.g2gcalculator.model.AuctionHouse;
+import com.example.g2gcalculator.model.Faction;
+import com.example.g2gcalculator.model.Price;
+import com.example.g2gcalculator.model.Realm;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -11,12 +13,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Optional;
 
-import static com.example.g2gcalculator.util.TestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,9 +34,19 @@ class ClassicPriceRepositoryTest implements PostgreSqlContainerInitializer {
 
     @Test
     void findMostRecentByRealmId_shouldWork() {
-        Realm realm =  createRealm();
+        Realm realm = Realm.builder()
+                .id(1)
+                .name("test")
+                .faction(Faction.HORDE)
+                .prices(new ArrayList<>())
+                .build();
+        AuctionHouse auctionHouse = AuctionHouse.builder()
+                .id(1)
+                .build();
+        realm.setAuctionHouse(auctionHouse);
+
         entityManager.persist(realm);
-        Price oldPrice = new Price(null,BigDecimal.valueOf(0.5), LocalDateTime.now().minus(1, ChronoUnit.HOURS), realm);
+        Price oldPrice = new Price(null, BigDecimal.valueOf(0.5), LocalDateTime.now().minus(1, ChronoUnit.HOURS), realm);
         Price expectedRecentPrice = new Price(null, BigDecimal.valueOf(0.4), LocalDateTime.now(), realm);
         entityManager.persist(oldPrice);
         entityManager.persist(expectedRecentPrice);
