@@ -1,4 +1,4 @@
-package com.example.g2gcalculator.service.impl;
+package com.example.g2gcalculator.service;
 
 import com.example.g2gcalculator.api.TSMAuthClient;
 import com.example.g2gcalculator.dto.TokenRequest;
