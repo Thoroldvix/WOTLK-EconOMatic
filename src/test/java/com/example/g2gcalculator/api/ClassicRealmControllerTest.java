@@ -1,25 +1,20 @@
 package com.example.g2gcalculator.api;
 
 import com.example.g2gcalculator.dto.RealmResponse;
-import com.example.g2gcalculator.model.Realm;
+import com.example.g2gcalculator.error.ApiError;
 import com.example.g2gcalculator.service.RealmService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Comparator;
 import java.util.List;
 
-import static com.example.g2gcalculator.util.TestUtil.createRealm;
-import static com.example.g2gcalculator.util.TestUtil.createRealmResponseList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,64 +34,42 @@ class ClassicRealmControllerTest {
 
     @Test
     void getAllRealms_returnsListOfRealmResponse() throws Exception {
-        List<RealmResponse> expectedRealms = createRealmResponseList(10);
+        RealmResponse firstRealmResponse = RealmResponse.builder()
+                .id(1)
+                .name("test-realm")
+                .build();
+        RealmResponse secondRealmResponse = RealmResponse.builder()
+                .id(2)
+                .name("test-realm")
+                .build();
+        List<RealmResponse> expectedRealms = List.of(firstRealmResponse, secondRealmResponse);
 
         when(classicRealmService.getAllRealms(any(Pageable.class))).thenReturn(expectedRealms);
 
-        MvcResult mvcResult = mockMvc.perform(get(API_REALMS))
+        mockMvc.perform(get(API_REALMS))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(expectedRealms)))
-                .andReturn();
-
-        List<RealmResponse> actualRealms = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                new TypeReference<List<RealmResponse>>() {
-                });
-
-        assertThat(actualRealms).hasSize(10);
-        assertThat(actualRealms).isEqualTo(expectedRealms);
-    }
-
-    @Test
-    public void getAllRealms_returnsCorrectPageSize() throws Exception {
-        int page = 0;
-        int size = 5;
-        String sort = "id,asc";
-
-        when(classicRealmService.getAllRealms(any(Pageable.class))).thenReturn(createRealmResponseList(size));
-
-        MvcResult result = mockMvc.perform(get(API_REALMS + "?page={page}&size={size}&sort={sort}", page, size, sort))
-                .andExpect(status().isOk())
-                .andReturn();
-
-
-        List<RealmResponse> realms = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
-
-        assertThat(realms.size()).isEqualTo(size);
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedRealms)));
     }
     @Test
-    public void getAllRealms_returnsCorrectlySortedList() throws Exception {
-        String sort = "id,desc";
+    void getRealm_whenRealmNameValid_returnsRealmResponse() throws Exception {
+        String realmName = "test-realm";
+        RealmResponse expectedResponse = RealmResponse.builder()
+                .id(1)
+                .name(realmName)
+                .build();
 
-        List<RealmResponse> expectedResponse = createRealmResponseList(5);
+        when(classicRealmService.getRealmResponse(realmName)).thenReturn(expectedResponse);
 
-        expectedResponse.sort(Comparator.comparing(RealmResponse::id).reversed());
-
-
-        when(classicRealmService.getAllRealms(any(Pageable.class))).thenReturn(expectedResponse);
-
-        MvcResult result = mockMvc.perform(get(API_REALMS + "?sort={sort}", sort))
+        mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
 
-
-        List<RealmResponse> actualResponse = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
-
-        assertThat(actualResponse.size()).isEqualTo(5);
-        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
+    @Test
+    void getRealm_whenRealmNameInvalid_returnsNotFound() throws Exception {
+        String realmName = "test";
+        mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
+                .andExpect(status().isNotFound());
 
+    }
 }

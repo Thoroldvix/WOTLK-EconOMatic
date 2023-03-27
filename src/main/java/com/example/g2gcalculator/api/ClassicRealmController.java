@@ -19,9 +19,9 @@ public class ClassicRealmController {
 
     private final RealmService classicRealmService;
 
-    @GetMapping("/{realmName}")
-    public ResponseEntity<?> getRealm(@PathVariable String realmName) {
-        return ResponseEntity.ok(classicRealmService.getRealm(realmName));
+    @GetMapping("/{realmName:\\w+-\\w+}")
+    public ResponseEntity<RealmResponse> getRealm(@PathVariable String realmName) {
+        return ResponseEntity.ok(classicRealmService.getRealmResponse(realmName));
     }
 
     @GetMapping

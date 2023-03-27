@@ -9,13 +9,13 @@ import java.time.temporal.ChronoUnit;
 
 
 @ConfigurationProperties(prefix = "g2g")
-public record G2GProperties(
+public record G2GProp(
         /**
          * The interval between updates of the price data, in minutes.
          * Default value is 60 (1 hour).
          */
         @DurationUnit(ChronoUnit.MINUTES)
-        Duration scrapingInterval,
+        Duration updateFreq,
         /**
          * Flag indicating whether to force an update of the price data, effectively ignoring update interval.
          * Default value is false.
@@ -29,27 +29,25 @@ public record G2GProperties(
 
         String apiKey,
 
-        TsmProperties tsm
+        TsmProp tsm
 
 
 ) {
-    public record TsmProperties(
+    public record TsmProp(
             String apiKey
     ) {
-        public TsmProperties {
+        public TsmProp {
             if (apiKey == null || apiKey.isBlank()) {
                 throw new IllegalArgumentException("TSM API key must not be null or blank");
             }
         }
     }
 
-    public G2GProperties {
-       scrapingInterval =  scrapingInterval == null ? Duration.ofMinutes(60) : scrapingInterval;
-       currency = currency == null ? Currency.EUR : currency;
-
-
-        if (scrapingInterval.isNegative() || scrapingInterval.isZero()) {
+    public G2GProp {
+       updateFreq = updateFreq == null ? Duration.ofMinutes(60) : updateFreq;
+       if (updateFreq.isNegative() || updateFreq.isZero()) {
             throw new IllegalArgumentException("Scraping interval must be a positive value");
         }
+       currency = currency == null ? Currency.EUR : currency;
     }
 }

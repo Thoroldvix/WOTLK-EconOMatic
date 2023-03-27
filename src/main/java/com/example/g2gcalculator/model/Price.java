@@ -24,8 +24,10 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private BigDecimal price;
+    @Column(name = "value")
+    private BigDecimal value;
 
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @ManyToOne
