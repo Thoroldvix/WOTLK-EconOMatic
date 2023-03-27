@@ -16,12 +16,9 @@ import java.util.List;
 public class AuctionHouse {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @OneToOne
     @JoinColumn(name = "realm_id", unique = true)
     private Realm realm;
-
-
 }
