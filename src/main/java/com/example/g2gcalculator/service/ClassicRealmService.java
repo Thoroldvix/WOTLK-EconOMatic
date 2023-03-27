@@ -1,4 +1,4 @@
-package com.example.g2gcalculator.service.impl;
+package com.example.g2gcalculator.service;
 
 import com.example.g2gcalculator.dto.RealmResponse;
 import com.example.g2gcalculator.error.NotFoundException;
@@ -20,9 +20,7 @@ import java.util.List;
 public class ClassicRealmService implements RealmService {
 
     private final ClassicRealmRepository classicRealmRepository;
-
     private final RealmMapper realmMapper;
-
 
     @Override
     public List<RealmResponse> getAllRealms(Pageable pageable) {
@@ -35,9 +33,9 @@ public class ClassicRealmService implements RealmService {
     public RealmResponse getRealmResponse(String realmName) {
         String exactRealmName = getExactRealmName(realmName);
         Faction faction = getFaction(realmName);
-        return classicRealmRepository.findByNameAndFaction(exactRealmName, faction)
-                .map(realmMapper::toRealmResponse)
+        Realm realm = classicRealmRepository.findByNameAndFaction(exactRealmName, faction)
                 .orElseThrow(() -> new NotFoundException("No realm found for name: " + exactRealmName + " and faction: " + faction));
+        return realmMapper.toRealmResponse(realm);
     }
 
     @Override
@@ -49,10 +47,16 @@ public class ClassicRealmService implements RealmService {
     }
 
     private String getExactRealmName(String realmName) {
+        if (realmName == null || realmName.isBlank()) {
+            throw new IllegalArgumentException("Realm name cannot be null or empty");
+        }
         return realmName.split("-")[0];
     }
 
     private Faction getFaction(String realmName) {
+        if (realmName == null || realmName.isBlank()) {
+            throw new IllegalArgumentException("Realm name cannot be null or empty");
+        }
         String[] split = realmName.split("-");
         String faction = split[split.length - 1];
         if (!Faction.contains(faction)) {
