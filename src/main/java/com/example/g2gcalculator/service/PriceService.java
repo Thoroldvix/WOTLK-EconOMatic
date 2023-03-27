@@ -16,5 +16,5 @@ public interface PriceService {
 
     List<PriceResponse> getAllPricesForRealm(String realmName, Pageable pageable);
 
-    ItemPriceResponse getPriceForItem(String realmName, Integer itemId);
+    ItemPriceResponse getPriceForItem(String realmName, int itemId, int amount, boolean minBuyout);
 }
