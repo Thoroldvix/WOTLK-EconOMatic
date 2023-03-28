@@ -1,8 +1,9 @@
-package com.example.g2gcalculator.api;
+package com.thoroldvix.g2gcalculator.api;
 
-import com.example.g2gcalculator.dto.ItemPriceResponse;
-import com.example.g2gcalculator.dto.PriceResponse;
-import com.example.g2gcalculator.service.PriceService;
+import com.thoroldvix.g2gcalculator.dto.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.dto.PriceResponse;
+import com.thoroldvix.g2gcalculator.service.ItemPriceService;
+import com.thoroldvix.g2gcalculator.service.PriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,11 @@ import java.util.List;
 public class ClassicPriceController {
 
     private final PriceService classicPriceService;
+    private final ItemPriceService classicItemPriceService;
 
      @GetMapping("/{realmName:\\w+-\\w+}")
     public ResponseEntity<PriceResponse> getPriceForRealm(@PathVariable  String realmName) {
-        return ResponseEntity.ok(classicPriceService.getPriceForRealm(realmName));
+        return ResponseEntity.ok(classicPriceService.getPriceForRealmName(realmName));
     }
 
     @GetMapping("/{realmName:\\w+-\\w+}/all")
@@ -32,6 +34,6 @@ public class ClassicPriceController {
                                                              @PathVariable Integer itemId,
                                                              @RequestParam(required = false, defaultValue = "1") Integer amount,
                                                              @RequestParam(required = false, defaultValue = "false") Boolean minBuyout) {
-         return ResponseEntity.ok(classicPriceService.getPriceForItem(realmName, itemId, amount, minBuyout));
+         return ResponseEntity.ok(classicItemPriceService.getPriceForItem(realmName, itemId, amount, minBuyout));
     }
 }
