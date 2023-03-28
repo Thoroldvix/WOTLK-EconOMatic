@@ -1,20 +1,17 @@
-package com.example.g2gcalculator.api;
+package com.thoroldvix.g2gcalculator.api;
 
 
-import com.example.g2gcalculator.dto.ItemPriceResponse;
-import com.example.g2gcalculator.dto.PriceResponse;
-import com.example.g2gcalculator.error.ApiError;
-import com.example.g2gcalculator.error.NotFoundException;
-import com.example.g2gcalculator.service.PriceService;
-import com.example.g2gcalculator.service.RealmService;
+import com.thoroldvix.g2gcalculator.dto.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.dto.PriceResponse;
+import com.thoroldvix.g2gcalculator.service.ItemPriceService;
+import com.thoroldvix.g2gcalculator.service.PriceService;
+import com.thoroldvix.g2gcalculator.service.RealmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,6 +37,9 @@ public class ClassicPriceControllerTest {
     private PriceService classicPriceService;
 
     @MockBean
+    private ItemPriceService classicItemPriceService;
+
+    @MockBean
     private RealmService classicRealmService;
 
 
@@ -50,13 +50,13 @@ public class ClassicPriceControllerTest {
                 .value(BigDecimal.valueOf(100))
                 .build();
 
-        when(classicPriceService.getPriceForRealm(realmName)).thenReturn(priceResponse);
+        when(classicPriceService.getPriceForRealmName(realmName)).thenReturn(priceResponse);
 
         mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(priceResponse)));
 
-        verify(classicPriceService).getPriceForRealm(realmName);
+        verify(classicPriceService).getPriceForRealmName(realmName);
     }
 
 
@@ -97,7 +97,7 @@ public class ClassicPriceControllerTest {
         ItemPriceResponse itemPrice = ItemPriceResponse.builder()
                 .price(price)
                 .build();
-        when(classicPriceService.getPriceForItem(anyString(), anyInt(),anyInt(), anyBoolean()))
+        when(classicItemPriceService.getPriceForItem(anyString(), anyInt(),anyInt(), anyBoolean()))
                 .thenReturn(itemPrice);
 
         mockMvc.perform(get(API_REALMS + "/{realmName}/items/{itemId}", realmName, itemId))

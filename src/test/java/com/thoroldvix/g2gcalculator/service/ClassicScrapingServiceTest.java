@@ -1,9 +1,9 @@
-package com.example.g2gcalculator.service;
+package com.thoroldvix.g2gcalculator.service;
 
-import com.example.g2gcalculator.model.Faction;
-import com.example.g2gcalculator.model.Price;
-import com.example.g2gcalculator.model.Realm;
-import com.example.g2gcalculator.model.Region;
+import com.thoroldvix.g2gcalculator.model.Faction;
+import com.thoroldvix.g2gcalculator.model.Price;
+import com.thoroldvix.g2gcalculator.model.Realm;
+import com.thoroldvix.g2gcalculator.model.Region;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

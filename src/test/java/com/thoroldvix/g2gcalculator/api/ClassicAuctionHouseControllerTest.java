@@ -1,7 +1,7 @@
-package com.example.g2gcalculator.api;
+package com.thoroldvix.g2gcalculator.api;
 
-import com.example.g2gcalculator.dto.ItemResponse;
-import com.example.g2gcalculator.service.AuctionHouseService;
+import com.thoroldvix.g2gcalculator.dto.ItemResponse;
+import com.thoroldvix.g2gcalculator.service.AuctionHouseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

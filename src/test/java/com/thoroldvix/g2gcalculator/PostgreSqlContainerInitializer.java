@@ -1,4 +1,4 @@
-package com.example.g2gcalculator;
+package com.thoroldvix.g2gcalculator;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;

@@ -1,10 +1,10 @@
-package com.example.g2gcalculator.repository;
+package com.thoroldvix.g2gcalculator.repository;
 
-import com.example.g2gcalculator.PostgreSqlContainerInitializer;
-import com.example.g2gcalculator.model.AuctionHouse;
-import com.example.g2gcalculator.model.Faction;
-import com.example.g2gcalculator.model.Price;
-import com.example.g2gcalculator.model.Realm;
+import com.thoroldvix.g2gcalculator.PostgreSqlContainerInitializer;
+import com.thoroldvix.g2gcalculator.model.AuctionHouse;
+import com.thoroldvix.g2gcalculator.model.Faction;
+import com.thoroldvix.g2gcalculator.model.Price;
+import com.thoroldvix.g2gcalculator.model.Realm;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

@@ -1,11 +1,11 @@
-package com.example.g2gcalculator.service;
+package com.thoroldvix.g2gcalculator.service;
 
-import com.example.g2gcalculator.dto.RealmResponse;
-import com.example.g2gcalculator.error.NotFoundException;
-import com.example.g2gcalculator.mapper.RealmMapper;
-import com.example.g2gcalculator.model.Faction;
-import com.example.g2gcalculator.model.Realm;
-import com.example.g2gcalculator.repository.ClassicRealmRepository;
+import com.thoroldvix.g2gcalculator.dto.RealmResponse;
+import com.thoroldvix.g2gcalculator.error.NotFoundException;
+import com.thoroldvix.g2gcalculator.mapper.RealmMapper;
+import com.thoroldvix.g2gcalculator.model.Faction;
+import com.thoroldvix.g2gcalculator.model.Realm;
+import com.thoroldvix.g2gcalculator.repository.ClassicRealmRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
