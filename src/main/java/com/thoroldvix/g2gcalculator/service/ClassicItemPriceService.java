@@ -33,8 +33,8 @@ public class ClassicItemPriceService implements ItemPriceService {
         }
         BigDecimal priceOfItemInGold = convertPriceToGold(itemResponse.minBuyout());
         BigDecimal totalPrice = priceResponse.value().multiply(priceOfItemInGold).multiply(BigDecimal.valueOf(amount));
-        log.debug("Calculated total priceResponse for itemResponse {} with minBuyout priceResponse {} and amount {} as {}",
-                itemResponse.itemId(), itemResponse.minBuyout(), amount, totalPrice);
+        log.info("Calculated total price for item {} with minBuyout price {}g and amount {} as {}",
+                itemResponse.itemId(), priceOfItemInGold, amount, totalPrice);
 
         return new ItemPriceResponse(totalPrice);
     }
@@ -45,19 +45,20 @@ public class ClassicItemPriceService implements ItemPriceService {
         }
         BigDecimal priceOfItemInGold = convertPriceToGold(itemResponse.marketValue());
         BigDecimal totalPrice = priceResponse.value().multiply(priceOfItemInGold).multiply(BigDecimal.valueOf(amount));
-        log.debug("Calculated total price for itemResponse {} with market value {} and amount {} as {}",
-                itemResponse.itemId(), itemResponse.marketValue(), amount, totalPrice);
+        log.info("Calculated total price for item {} with market value {}g and amount {} as {}",
+                itemResponse.itemId(), priceOfItemInGold, amount, totalPrice);
 
         return new ItemPriceResponse(totalPrice);
     }
 
     @Override
+    @Transactional
     public ItemPriceResponse getPriceForItem(String realmName, int itemId, int amount, boolean minBuyout) {
         validateInputs(realmName, amount, itemId);
         Realm realm = classicRealmService.getRealm(realmName);
         ItemResponse item = getItemFromAuctionHouse(realm, itemId);
         PriceResponse updatedPrice = classicPriceService.getPriceForRealm(realm);
-        log.info("Retrieved updated price {} for realm {} for item {} with amount {} and minBuyout set to {}",
+        log.debug("Retrieved updated price {} for realm {} for item {} with amount {} and minBuyout set to {}",
                 updatedPrice.value(), realmName, itemId, amount, minBuyout);
 
         return calculateItemPrice(item, updatedPrice, amount, minBuyout);

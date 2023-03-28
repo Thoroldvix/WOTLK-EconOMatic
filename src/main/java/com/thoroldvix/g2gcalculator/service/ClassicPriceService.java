@@ -54,6 +54,7 @@ public class ClassicPriceService implements PriceService {
         return updatePriceForRealm(realm, recentPrice);
     }
 
+
     private PriceResponse updatePriceForRealm(Realm realm, Optional<Price> recentPrice) {
         if (realm == null) {
             throw new IllegalArgumentException("Realm cannot be null");
