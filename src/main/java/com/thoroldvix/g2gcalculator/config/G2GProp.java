@@ -25,7 +25,7 @@ public record G2GProp(
          * The currency used for price calculations.
          * Default value is EUR (Euro).
          */
-        Currency currency,
+        String currency,
 
         String apiKey,
 
@@ -48,6 +48,6 @@ public record G2GProp(
        if (priceUpdateInterval.isNegative() || priceUpdateInterval.isZero()) {
             throw new IllegalArgumentException("Scraping interval must be a positive value");
         }
-       currency = currency == null ? Currency.EUR : currency;
+       currency = currency == null || currency.isBlank() ? Currency.USD.name() : currency;
     }
 }
