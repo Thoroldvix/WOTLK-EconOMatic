@@ -10,10 +10,10 @@ public record RealmResponse(
         Integer id,
         String name,
         Faction faction,
-        @JsonProperty("version")
+        @JsonProperty("game_version")
         GameVersion gameVersion,
         String region,
-        @JsonProperty("auction house")
+        @JsonProperty("auction_house")
         AuctionHouseResponse auctionHouse
 ) {
 }
