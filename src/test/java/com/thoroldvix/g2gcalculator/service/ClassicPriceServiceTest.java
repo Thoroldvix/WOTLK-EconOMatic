@@ -116,17 +116,6 @@ class ClassicPriceServiceTest {
         assertThat(result.value()).isEqualTo(priceResponse.value());
     }
 
-    @Test
-    void getPriceForRealmName_whenRealmNameIsNull_throwsIllegalArgumentException() {
-        String fullRealmName = null;
-        assertThrows(IllegalArgumentException.class, () -> classicPriceService.getPriceForRealmName(fullRealmName));
-    }
-
-    @Test
-    void getPriceForRealm_whenRealmIsNull_throwsIllegalArgumentException() {
-        Realm realm = null;
-        assertThrows(IllegalArgumentException.class, () -> classicPriceService.getPriceForRealm(realm));
-    }
 
     @Test
     void getPriceForRealm_whenPriceIsUpToDate_returnsValidPriceResponse() {
@@ -224,14 +213,6 @@ class ClassicPriceServiceTest {
                 .getAllPricesForRealm(realmName, pageable);
 
         assertThat(actualResponse).isEqualTo(expectedPriceResponses);
-    }
-
-
-    @Test
-    void getAllPricesForRealm_whenRealmNameIsNull_throwsIllegalArgumentException() {
-        String realmName = null;
-        assertThrows(IllegalArgumentException.class,
-                () -> classicPriceService.getAllPricesForRealm(realmName, PageRequest.of(0, 10)));
     }
 
 

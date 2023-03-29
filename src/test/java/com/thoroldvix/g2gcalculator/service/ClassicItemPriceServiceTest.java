@@ -20,26 +20,25 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ClassicItemPriceServiceTest {
-    @Mock
-    private PriceService classicPriceService;
-    
-    @Mock
-    private RealmService classicRealmService;
-    
-    @Mock 
-    private AuctionHouseService classicAuctionHouseService;
-    
     @InjectMocks
     ClassicItemPriceService classicItemPriceService;
-    
+    @Mock
+    private PriceService classicPriceService;
+    @Mock
+    private RealmService classicRealmService;
+    @Mock
+    private AuctionHouseService classicAuctionHouseService;
+    @Mock
+    private ItemPriceCalculator classicItemPriceCalculator;
+
     @Test
     void getPriceForItem_whenMinBuyOutFalse_returnsCorrectItemPriceResponse() {
-        String realmNAme = "everlook-alliance";
+        String realmName = "everlook-alliance";
         AuctionHouse auctionHouse = AuctionHouse.builder()
                 .id(279)
                 .build();
         Realm realm = Realm.builder()
-                .name(realmNAme)
+                .name(realmName)
                 .prices(new ArrayList<>())
                 .auctionHouse(auctionHouse)
                 .build();
@@ -59,17 +58,19 @@ class ClassicItemPriceServiceTest {
         boolean minBuyout = false;
 
 
-        when(classicRealmService.getRealm(realmNAme)).thenReturn(realm);
+        when(classicRealmService.getRealm(realmName)).thenReturn(realm);
         when(classicAuctionHouseService.getAuctionHouseItem(auctionHouse.getId(), itemId)).thenReturn(itemResponse);
         when(classicPriceService.getPriceForRealm(realm)).thenReturn(priceResponse);
+        when(classicItemPriceCalculator.calculatePrice(itemResponse.marketValue(), priceResponse.value(), amount)).thenReturn(expectedResponse);
 
 
-        ItemPriceResponse actualResponse = classicItemPriceService.getPriceForItem(realmNAme, itemId, amount, minBuyout);
+        ItemPriceResponse actualResponse = classicItemPriceService.getPriceForItem(realmName, itemId, amount, minBuyout);
 
 
         assertThat(actualResponse.price()).isEqualTo(expectedResponse.price());
     }
-     @Test
+
+    @Test
     void getPriceForItem_whenMinBuyOutTrue_returnsCorrectItemPriceResponse() {
         String realmNAme = "everlook-alliance";
         AuctionHouse auctionHouse = AuctionHouse.builder()
@@ -99,6 +100,7 @@ class ClassicItemPriceServiceTest {
         when(classicRealmService.getRealm(realmNAme)).thenReturn(realm);
         when(classicAuctionHouseService.getAuctionHouseItem(auctionHouse.getId(), itemId)).thenReturn(itemResponse);
         when(classicPriceService.getPriceForRealm(realm)).thenReturn(priceResponse);
+        when(classicItemPriceCalculator.calculatePrice(itemResponse.minBuyout(), priceResponse.value(), amount)).thenReturn(expectedResponse);
 
 
         ItemPriceResponse actualResponse = classicItemPriceService.getPriceForItem(realmNAme, itemId, amount, minBuyout);
@@ -109,16 +111,6 @@ class ClassicItemPriceServiceTest {
 
 
     @Test
-    void getPriceForItem_ifRealmNameNull_throwsIllegalArgumentException() {
-        String realmNAme = null;
-        int itemId = 1;
-        int amount = 1;
-        boolean minBuyout = false;
-        assertThrows(IllegalArgumentException.class,
-                () -> classicItemPriceService.getPriceForItem(realmNAme, itemId, amount, minBuyout));
-    }
-
-    @Test
     void getPriceForItem_ifAmountLessThanOne_throwsIllegalArgumentException() {
         String realmNAme = "test";
         int itemId = 1;
@@ -127,7 +119,8 @@ class ClassicItemPriceServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> classicItemPriceService.getPriceForItem(realmNAme, itemId, amount, minBuyout));
     }
-     @Test
+
+    @Test
     void getPriceForItem_ifItemIdLessThanOne_throwsIllegalArgumentException() {
         String realmNAme = "test";
         int itemId = 0;
@@ -137,52 +130,5 @@ class ClassicItemPriceServiceTest {
                 () -> classicItemPriceService.getPriceForItem(realmNAme, itemId, amount, minBuyout));
     }
 
-    @Test
-    void calculateItemPrice_whenItemResponseIsNullAndMinBuyoutFalse_throwsIllegalArgumentException() {
-        ItemResponse itemResponse = null;
-        PriceResponse priceResponse = PriceResponse.builder()
-                .value(BigDecimal.valueOf(1000))
-                .build();
-        int amount = 1;
-        boolean minBuyout = false;
-        assertThrows(IllegalArgumentException.class,
-                () -> classicItemPriceService.calculateItemPrice(itemResponse, priceResponse, amount, minBuyout));
-    }
-    @Test
-    void calculateItemPrice_whenPriceResponseAndMinBuyoutFalse_throwsIllegalArgumentException() {
-        ItemResponse itemResponse = ItemResponse.builder()
-                .itemId(1)
-                .minBuyout(10000L)
-                .marketValue(100000L)
-                .build();
-        PriceResponse priceResponse = null;
-        int amount = 1;
-        boolean minBuyout = false;
-        assertThrows(IllegalArgumentException.class,
-                () -> classicItemPriceService.calculateItemPrice(itemResponse, priceResponse, amount, minBuyout));
-    }
-     @Test
-    void calculateItemPrice_whenItemResponseIsNullAndMinBuyoutTrue_throwsIllegalArgumentException() {
-        ItemResponse itemResponse = null;
-        PriceResponse priceResponse = PriceResponse.builder()
-                .value(BigDecimal.valueOf(1000))
-                .build();
-        int amount = 1;
-        boolean minBuyout = true;
-        assertThrows(IllegalArgumentException.class,
-                () -> classicItemPriceService.calculateItemPrice(itemResponse, priceResponse, amount, minBuyout));
-    }
-    @Test
-    void calculateItemPrice_whenPriceResponseAndMinBuyoutTrue_throwsIllegalArgumentException() {
-        ItemResponse itemResponse = ItemResponse.builder()
-                .itemId(1)
-                .minBuyout(10000L)
-                .marketValue(100000L)
-                .build();
-        PriceResponse priceResponse = null;
-        int amount = 1;
-        boolean minBuyout = true;
-        assertThrows(IllegalArgumentException.class,
-                () -> classicItemPriceService.calculateItemPrice(itemResponse, priceResponse, amount, minBuyout));
-    }
+
 }

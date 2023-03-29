@@ -1,8 +1,8 @@
 package com.thoroldvix.g2gcalculator.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.g2gcalculator.dto.ItemResponse;
 import com.thoroldvix.g2gcalculator.service.AuctionHouseService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -57,7 +57,8 @@ class ClassicAuctionHouseControllerTest {
         mockMvc.perform(get(API_AUCTION_HOUSE + "/{auctionHouseId}", auctionHouseId))
                 .andExpect(status().isNotFound());
     }
-     @Test
+
+    @Test
     void getAllAuctionHouseItems_whenAuctionHouseIdLessThanMin_returnsNotFound() throws Exception {
         int auctionHouseId = 278;
         mockMvc.perform(get(API_AUCTION_HOUSE + "/{auctionHouseId}", auctionHouseId))
@@ -78,14 +79,16 @@ class ClassicAuctionHouseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
     }
-     @Test
-    void getAuctionHouseItem_whenAuctionHouseIdGreaterThanMax_returnsNotFound() throws Exception {
+
+    @Test
+    void getAuctionHouseItem_whenAuctionHouseIdGreaterThanMax_returnsNotfound() throws Exception {
         int auctionHouseId = 10000;
         int itemId = 1;
         mockMvc.perform(get(API_AUCTION_HOUSE + "/{auctionHouseId}/items/{itemId}", auctionHouseId, itemId))
                 .andExpect(status().isNotFound());
     }
-      @Test
+
+    @Test
     void getAuctionHouseItem_whenAuctionHouseIdLessThanMin_returnsNotFound() throws Exception {
         int auctionHouseId = 278;
         int itemId = 1;
@@ -98,7 +101,6 @@ class ClassicAuctionHouseControllerTest {
     void getAuctionHouseItem_whenInvalidItemId_returnsNotFound() throws Exception {
         int auctionHouseId = 279;
         int itemId = -1;
-
 
         mockMvc.perform(get(API_AUCTION_HOUSE + "/{auctionHouseId}/items/{itemId}", auctionHouseId, itemId))
                 .andExpect(status().isNotFound());

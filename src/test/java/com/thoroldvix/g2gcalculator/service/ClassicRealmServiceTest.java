@@ -106,12 +106,8 @@ class ClassicRealmServiceTest {
     @Test
     void getRealm_whenRealmNotFound_throwsNotFound() {
         String realmName = "everlook-alliance";
-        Realm realm = Realm.builder()
-                .name("everlook")
-                .faction(Faction.ALLIANCE)
-                .build();
-        when(classicRealmRepository.findByNameAndFaction(anyString(), any(Faction.class))).thenReturn(Optional.empty());
 
+        when(classicRealmRepository.findByNameAndFaction(anyString(), any(Faction.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> realmService.getRealm(realmName))
                 .isInstanceOf(NotFoundException.class);
@@ -124,6 +120,7 @@ class ClassicRealmServiceTest {
                 .name("everlook")
                 .faction(Faction.ALLIANCE)
                 .build();
+
         when(classicRealmRepository.findByNameAndFaction(realm.getName(), realm.getFaction())).thenReturn(Optional.empty());
 
 

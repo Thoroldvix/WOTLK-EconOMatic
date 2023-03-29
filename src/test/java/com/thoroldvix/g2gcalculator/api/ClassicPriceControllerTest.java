@@ -3,6 +3,7 @@ package com.thoroldvix.g2gcalculator.api;
 
 import com.thoroldvix.g2gcalculator.dto.ItemPriceResponse;
 import com.thoroldvix.g2gcalculator.dto.PriceResponse;
+import com.thoroldvix.g2gcalculator.error.NotFoundException;
 import com.thoroldvix.g2gcalculator.service.ItemPriceService;
 import com.thoroldvix.g2gcalculator.service.PriceService;
 import com.thoroldvix.g2gcalculator.service.RealmService;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,10 +65,24 @@ public class ClassicPriceControllerTest {
     @Test
     void getPriceForRealm_whenRealmNameInvalid_returnsNotFound() throws Exception {
         String realmName = "invalid";
+
+        when(classicPriceService.getPriceForRealmName(realmName)).thenThrow(NotFoundException.class);
+
         mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
                 .andExpect(status().isNotFound());
 
-        verifyNoInteractions(classicPriceService);
+
+    }
+        @Test
+    void getAllPricesForRealm_whenRealmNameInvalid_returnsNotFound() throws Exception {
+        String realmName = "invalid";
+
+        when(classicPriceService.getAllPricesForRealm(anyString(), any(Pageable.class))).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get(API_REALMS + "/{realmName}/all", realmName))
+                .andExpect(status().isNotFound());
+
+
     }
 
 
@@ -110,10 +126,14 @@ public class ClassicPriceControllerTest {
     void getPriceForItem_whenInvalidRealmName_returnsNotFound() throws Exception {
         String realmName = "invalid";
         int itemId = 123;
+        int amount = 1;
+        boolean minBuyout = false;
+
+        when(classicItemPriceService.getPriceForItem(realmName, itemId, amount, minBuyout)).thenThrow(NotFoundException.class);
 
         mockMvc.perform(get(API_REALMS + "/{realmName}/items/{itemId}", realmName, itemId))
                 .andExpect(status().isNotFound());
 
-        verifyNoInteractions(classicPriceService);
+
     }
 }

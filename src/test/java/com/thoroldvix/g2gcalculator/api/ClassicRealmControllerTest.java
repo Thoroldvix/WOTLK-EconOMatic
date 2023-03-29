@@ -1,6 +1,7 @@
 package com.thoroldvix.g2gcalculator.api;
 
 import com.thoroldvix.g2gcalculator.dto.RealmResponse;
+import com.thoroldvix.g2gcalculator.error.NotFoundException;
 import com.thoroldvix.g2gcalculator.service.RealmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -66,6 +67,8 @@ class ClassicRealmControllerTest {
     @Test
     void getRealm_whenRealmNameInvalid_returnsNotFound() throws Exception {
         String realmName = "test";
+
+        when(classicRealmService.getRealmResponse(realmName)).thenThrow(NotFoundException.class);
         mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
                 .andExpect(status().isNotFound());
 
