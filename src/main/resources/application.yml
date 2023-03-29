@@ -20,4 +20,4 @@ server:
   port: 8080
 g2g:
   tsm:
-    api-key: "_PO23Wa-25DW2ncYziRgGNp6YF3_E2e0"
+    api-key: "${API_KEY}"
