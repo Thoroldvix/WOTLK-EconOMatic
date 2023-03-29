@@ -36,7 +36,7 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     implementation 'com.codeborne:selenide:6.12.3'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.jsoup:jsoup:1.15.4'
 
 
