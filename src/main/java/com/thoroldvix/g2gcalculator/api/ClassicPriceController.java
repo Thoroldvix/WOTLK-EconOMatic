@@ -19,17 +19,17 @@ public class ClassicPriceController {
     private final PriceService classicPriceService;
     private final ItemPriceService classicItemPriceService;
 
-     @GetMapping("/{realmName:\\w+-\\w+}")
+     @GetMapping("/{realmName}")
     public ResponseEntity<PriceResponse> getPriceForRealm(@PathVariable  String realmName) {
         return ResponseEntity.ok(classicPriceService.getPriceForRealmName(realmName));
     }
 
-    @GetMapping("/{realmName:\\w+-\\w+}/all")
+    @GetMapping("/{realmName}/all")
     public ResponseEntity<List<PriceResponse>> getAllPricesForRealm(@PathVariable String realmName,
                                                                     Pageable pageable) {
          return ResponseEntity.ok(classicPriceService.getAllPricesForRealm(realmName, pageable));
     }
-    @GetMapping("/{realmName:\\w+-\\w+}/items/{itemId:^[1-9]\\d*$}")
+    @GetMapping("/{realmName}/items/{itemId}")
     public ResponseEntity<ItemPriceResponse> getPriceForItem(@PathVariable String realmName,
                                                              @PathVariable Integer itemId,
                                                              @RequestParam(required = false, defaultValue = "1") Integer amount,
