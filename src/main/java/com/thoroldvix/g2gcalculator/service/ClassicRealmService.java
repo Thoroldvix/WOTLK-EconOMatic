@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class ClassicRealmService implements RealmService {
 
     private final ClassicRealmRepository classicRealmRepository;
     private final RealmMapper realmMapper;
+
+
 
     @Override
     public List<RealmResponse> getAllRealms(Pageable pageable) {
@@ -32,9 +35,8 @@ public class ClassicRealmService implements RealmService {
     public RealmResponse getRealmResponse(String realmName) {
         String exactRealmName = getExactRealmName(realmName);
         Faction faction = getFaction(realmName);
-        Realm realm = classicRealmRepository.findByNameAndFaction(exactRealmName, faction)
+        return classicRealmRepository.findByNameAndFaction(exactRealmName, faction).map(realmMapper::toRealmResponse)
                 .orElseThrow(() -> new NotFoundException("No realm found for name: " + exactRealmName + " and faction: " + faction));
-        return realmMapper.toRealmResponse(realm);
     }
 
     @Override
@@ -46,17 +48,17 @@ public class ClassicRealmService implements RealmService {
     }
 
     private String getExactRealmName(String realmName) {
-        if (realmName == null || realmName.isBlank()) {
+        if (!StringUtils.hasText(realmName)) {
             throw new IllegalArgumentException("Realm name cannot be null or empty");
         }
         return realmName.split("-")[0];
     }
 
     private Faction getFaction(String realmName) {
-        if (realmName == null || realmName.isBlank()) {
-            throw new IllegalArgumentException("Realm name cannot be null or empty");
-        }
         String[] split = realmName.split("-");
+        if (split.length == 1) {
+            throw new IllegalArgumentException("Realm name must contain a faction");
+        }
         String faction = split[split.length - 1];
         if (!Faction.contains(faction)) {
             throw new NotFoundException("No faction found for name: " + faction);
