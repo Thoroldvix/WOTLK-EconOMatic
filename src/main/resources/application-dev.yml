@@ -1,5 +1,0 @@
-spring:
-  profiles:
-    active: dev
-g2g:
-  api-key: "_PO23Wa-25DW2ncYziRgGNp6YF3_E2e0"
