@@ -9,5 +9,4 @@ public interface ItemPriceService {
 
     ItemPriceResponse getPriceForItem(String realmName, int itemId, int amount, boolean minBuyout);
 
-    ItemPriceResponse calculateItemPrice(ItemResponse item, PriceResponse price, int amount, boolean minBuyout);
 }
