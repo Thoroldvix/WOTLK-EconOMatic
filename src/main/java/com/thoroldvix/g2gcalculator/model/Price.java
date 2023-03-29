@@ -26,6 +26,9 @@ public class Price {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "currency")
+    private String currency;
+
     @ManyToOne
     @JoinColumn(name = "realm_id")
     private Realm realm;

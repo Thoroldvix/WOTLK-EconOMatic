@@ -23,6 +23,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
+//No longer needed, since I found non-secured api endpoint
 @Service
 @RequiredArgsConstructor
 public class ClassicScrapingService implements ScrapingService {

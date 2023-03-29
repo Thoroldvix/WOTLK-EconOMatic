@@ -28,6 +28,8 @@ public class ClassicPriceService implements PriceService {
     private final ClassicPriceRepository classicPriceRepository;
     private final RealmService classicRealmService;
     private final ScrapingService classicScrapingService;
+
+    private final G2GService g2GService;
     private final PriceMapper priceMapper;
     @Value("${g2g.scraping-interval:PT1H}")
     private Duration priceUpdateInterval;
@@ -76,7 +78,7 @@ public class ClassicPriceService implements PriceService {
     }
 
     private Price fetchPrice(Realm realm) {
-        Price price = classicScrapingService.fetchRealmPrice(realm);
+        Price price = g2GService.fetchRealmPrice(realm);
         price.setRealm(realm);
         return price;
     }

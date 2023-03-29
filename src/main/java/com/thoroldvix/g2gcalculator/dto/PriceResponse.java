@@ -13,6 +13,8 @@ public record PriceResponse(
 
         String realmName,
 
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+
+        String currency
 ) {
 }

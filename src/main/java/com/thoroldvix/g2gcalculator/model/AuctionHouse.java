@@ -18,5 +18,6 @@ public class AuctionHouse {
 
     @OneToOne
     @JoinColumn(name = "realm_id", unique = true)
+    @ToString.Exclude
     private Realm realm;
 }

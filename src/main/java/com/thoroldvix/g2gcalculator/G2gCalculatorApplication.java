@@ -9,11 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @ConfigurationPropertiesScan
 public class G2gCalculatorApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(G2gCalculatorApplication.class, args);
     }
-
-
-
 }

@@ -5,17 +5,13 @@ import com.thoroldvix.g2gcalculator.dto.ItemResponse;
 import com.thoroldvix.g2gcalculator.dto.PriceResponse;
 import com.thoroldvix.g2gcalculator.model.Realm;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ClassicItemPriceService implements ItemPriceService {
-
-
     private final PriceService classicPriceService;
 
     private final RealmService classicRealmService;
@@ -32,20 +28,14 @@ public class ClassicItemPriceService implements ItemPriceService {
             throw new IllegalArgumentException("Realm name, amount, and item id must be valid");
         }
         Realm realm = classicRealmService.getRealm(realmName);
-        ItemResponse item = getItemFromAuctionHouse(realm, itemId);
+        int auctionHouseId = realm.getAuctionHouse().getId();
+        ItemResponse item = classicAuctionHouseService.getAuctionHouseItem(auctionHouseId, itemId);
         PriceResponse updatedPrice = classicPriceService.getPriceForRealm(realm);
 
-        return calculateItemPrice(item, updatedPrice, amount, minBuyout);
-    }
-
-    private ItemPriceResponse calculateItemPrice(ItemResponse itemResponse, PriceResponse priceResponse, int amount, boolean minBuyout) {
-        return minBuyout ? classicItemPriceCalculator.calculatePrice(itemResponse.minBuyout(), priceResponse.value(), amount)
-                : classicItemPriceCalculator.calculatePrice(itemResponse.marketValue(), priceResponse.value(), amount);
+        long itemPrice = minBuyout ? item.minBuyout() : item.marketValue();
+        ItemPriceResponse itemPriceResponse = classicItemPriceCalculator.calculatePrice(itemPrice, updatedPrice, amount);;
+        return itemPriceResponse;
     }
 
 
-    private ItemResponse getItemFromAuctionHouse(Realm realm, int itemId) {
-        int auctionHouseId = realm.getAuctionHouse().getId();
-        return classicAuctionHouseService.getAuctionHouseItem(auctionHouseId, itemId);
-    }
 }

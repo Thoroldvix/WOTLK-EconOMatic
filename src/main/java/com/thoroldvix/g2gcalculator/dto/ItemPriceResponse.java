@@ -6,7 +6,9 @@ import java.math.BigDecimal;
 
 @Builder
 public record ItemPriceResponse(
-        BigDecimal price
+        BigDecimal price,
+
+        String currency
 
 ) {
 
