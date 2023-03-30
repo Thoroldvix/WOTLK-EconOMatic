@@ -6,14 +6,28 @@ services:
     container_name: postgres-g2g-calc
     environment:
       - POSTGRES_USER=postgres
+      - POSTGRES_SCHEMA=wow
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=g2g_calculator
       - PGDATA=/data/postgres
     volumes:
-        - ./postgres-g2g-calc:/data/postgres
+        - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     expose:
         - "5433"
     ports:
       - "5433:5433"
     command: -p 5433
+    restart: unless-stopped
+  g2g-calculator:
+    image: thorold/g2g-calculator
+    container_name: g2g-calculator
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-g2g-calc:5433/g2g_calculator?currentSchema=wow
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+    depends_on:
+      - postgres-g2g-calc
     restart: unless-stopped
