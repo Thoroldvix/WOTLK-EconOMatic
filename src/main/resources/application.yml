@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: g2g-calculator
   datasource:
     url: jdbc:postgresql://localhost:5433/g2g_calculator
     username: postgres
