@@ -2,10 +2,11 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.4'
     id 'io.spring.dependency-management' version '1.1.0'
+    id "com.google.cloud.tools.jib" version "3.3.1"
 }
 
 group = 'com.thoroldvix'
-version = '0.0.1-SNAPSHOT'
+version = '0.5.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 configurations {
@@ -16,6 +17,11 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+jib {
+    to {
+        image = "registry.hub.docker.com/thorold/${rootProject.name}"
+    }
 }
 ext {
     testcontainers = "1.17.5"
