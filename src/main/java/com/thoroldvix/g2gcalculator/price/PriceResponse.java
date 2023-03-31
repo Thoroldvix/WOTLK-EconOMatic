@@ -1,5 +1,6 @@
 package com.thoroldvix.g2gcalculator.price;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 
 import java.math.BigDecimal;

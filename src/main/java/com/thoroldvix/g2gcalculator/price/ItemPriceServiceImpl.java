@@ -5,6 +5,7 @@ import com.thoroldvix.g2gcalculator.items.ItemStats;
 import com.thoroldvix.g2gcalculator.server.Server;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,38 +26,26 @@ public class ItemPriceServiceImpl implements ItemPriceService {
 
     @Override
     @Transactional
-    public ItemPriceResponse getPriceForItem(String serverName, int itemId, int amount, boolean minBuyout) {
-        if (amount < 1 || itemId < 1) {
-            throw new IllegalArgumentException("Server name, amount, and item id must be valid");
+    public ItemPriceResponse getPriceForItem(String serverName, String itemIdentifier, int amount, boolean minBuyout) {
+        if (amount < 1 || !StringUtils.hasText(itemIdentifier)) {
+            throw new IllegalArgumentException("Amount and item identifier must be valid");
         }
-        Server server = serverServiceImpl.getServer(serverName);
-        ItemStats item = itemServiceImpl.getItemById(serverName, itemId);
-        PriceResponse updatedPrice = priceServiceImpl.getPriceForServer(server);
 
+        Server server = serverServiceImpl.getServer(serverName);
+        ItemStats item;
+
+        if (NumberUtils.isCreatable(itemIdentifier)) {
+            item = itemServiceImpl.getItemById(serverName, Integer.parseInt(itemIdentifier));
+        } else {
+            item = itemServiceImpl.getItemByName(serverName, itemIdentifier);
+        }
+
+        PriceResponse updatedPrice = priceServiceImpl.getPriceForServer(server);
         long targetPrice = minBuyout ? item.minBuyout() : item.marketValue();
         BigDecimal itemPrice = itemPriceCalculatorImpl.calculatePrice(targetPrice, updatedPrice, amount);
 
         return ItemPriceResponse.builder()
                 .currency(item.currency())
-                .price(itemPrice)
-                .build();
-    }
-
-    @Override
-    @Transactional
-    public ItemPriceResponse getPriceForItem(String serverName, String itemName, int amount, boolean minBuyout) {
-        if (amount < 1 || !StringUtils.hasText(itemName)) {
-            throw new IllegalArgumentException("Amount, and item name must be valid");
-        }
-        Server server = serverServiceImpl.getServer(serverName);
-        ItemStats item = itemServiceImpl.getItemByName(serverName, itemName);
-        PriceResponse updatedPrice = priceServiceImpl.getPriceForServer(server);
-
-        long priceType = minBuyout ? item.minBuyout() : item.marketValue();
-        BigDecimal itemPrice = itemPriceCalculatorImpl.calculatePrice(priceType, updatedPrice, amount);
-
-        return ItemPriceResponse.builder()
-                .currency(updatedPrice.currency())
                 .price(itemPrice)
                 .build();
     }
