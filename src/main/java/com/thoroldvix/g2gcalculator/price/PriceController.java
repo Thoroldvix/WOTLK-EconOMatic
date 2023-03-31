@@ -1,7 +1,6 @@
 package com.thoroldvix.g2gcalculator.price;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,11 +31,7 @@ public class PriceController {
                                                              @PathVariable String itemName,
                                                              @RequestParam(required = false, defaultValue = "1") Integer amount,
                                                              @RequestParam(required = false, defaultValue = "false") Boolean minBuyout) {
-        if (NumberUtils.isCreatable(itemName)) {
-            return ResponseEntity.ok(classicItemPriceService.getPriceForItem(serverName, Integer.parseInt(itemName), amount, minBuyout));
-        }
+
         return ResponseEntity.ok(classicItemPriceService.getPriceForItem(serverName, itemName, amount, minBuyout));
     }
-
-
 }
