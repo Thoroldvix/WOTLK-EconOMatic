@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.items;
+package com.thoroldvix.g2gcalculator.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

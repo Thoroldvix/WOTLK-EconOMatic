@@ -1,7 +1,7 @@
 package com.thoroldvix.g2gcalculator.price;
 
-import com.thoroldvix.g2gcalculator.items.ItemService;
-import com.thoroldvix.g2gcalculator.items.ItemStats;
+import com.thoroldvix.g2gcalculator.item.ItemService;
+import com.thoroldvix.g2gcalculator.item.ItemStats;
 import com.thoroldvix.g2gcalculator.server.Server;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import lombok.RequiredArgsConstructor;

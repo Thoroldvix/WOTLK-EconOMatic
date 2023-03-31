@@ -1,10 +1,10 @@
-package com.thoroldvix.g2gcalculator.items;
+package com.thoroldvix.g2gcalculator.item;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "items", url = "https://api.nexushub.co/wow-classic/v1/items")
+@FeignClient(name = "item", url = "https://api.nexushub.co/wow-classic/v1/items")
 public interface ItemsClient {
 
     @GetMapping("/{serverName}/{itemId}")

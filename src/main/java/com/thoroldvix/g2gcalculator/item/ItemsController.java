@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.items;
+package com.thoroldvix.g2gcalculator.item;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

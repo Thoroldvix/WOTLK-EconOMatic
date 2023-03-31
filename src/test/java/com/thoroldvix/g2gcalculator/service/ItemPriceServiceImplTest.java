@@ -1,7 +1,7 @@
 package com.thoroldvix.g2gcalculator.service;
 
 import com.thoroldvix.g2gcalculator.price.ItemPriceResponse;
-import com.thoroldvix.g2gcalculator.items.ItemStats;
+import com.thoroldvix.g2gcalculator.item.ItemStats;
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
 import com.thoroldvix.g2gcalculator.server.Server;
 import com.thoroldvix.g2gcalculator.price.ItemPriceServiceImpl;

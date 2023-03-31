@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.items;
+package com.thoroldvix.g2gcalculator.item;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
