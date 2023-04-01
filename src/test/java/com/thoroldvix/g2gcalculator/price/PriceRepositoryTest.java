@@ -1,8 +1,9 @@
-package com.thoroldvix.g2gcalculator.repository;
+package com.thoroldvix.g2gcalculator.price;
 
 import com.thoroldvix.g2gcalculator.PostgreSqlContainerInitializer;
 import com.thoroldvix.g2gcalculator.server.Faction;
 import com.thoroldvix.g2gcalculator.price.Price;
+import com.thoroldvix.g2gcalculator.server.Region;
 import com.thoroldvix.g2gcalculator.server.Server;
 import com.thoroldvix.g2gcalculator.price.PriceRepository;
 import org.junit.jupiter.api.Test;
@@ -38,16 +39,13 @@ class PriceRepositoryTest implements PostgreSqlContainerInitializer {
                 .id(1)
                 .name("test")
                 .faction(Faction.HORDE)
+                .region(Region.EU)
                 .prices(new ArrayList<>())
                 .build();
-        AuctionHouse auctionHouse = AuctionHouse.builder()
-                .id(1)
-                .build();
-        server.setAuctionHouse(auctionHouse);
 
         entityManager.persist(server);
-        Price oldPrice = new Price(null, BigDecimal.valueOf(0.5), LocalDateTime.now().minus(1, ChronoUnit.HOURS), server);
-        Price expectedRecentPrice = new Price(null, BigDecimal.valueOf(0.4), LocalDateTime.now(), server);
+        Price oldPrice = new Price(null, BigDecimal.valueOf(0.5), LocalDateTime.now().minus(1, ChronoUnit.HOURS),"USD", server);
+        Price expectedRecentPrice = new Price(null, BigDecimal.valueOf(0.4), LocalDateTime.now(), "USD", server);
         entityManager.persist(oldPrice);
         entityManager.persist(expectedRecentPrice);
 

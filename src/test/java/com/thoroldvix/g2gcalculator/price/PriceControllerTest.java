@@ -1,12 +1,9 @@
-package com.thoroldvix.g2gcalculator.api;
+package com.thoroldvix.g2gcalculator.price;
 
 
-import com.thoroldvix.g2gcalculator.price.ItemPriceResponse;
-import com.thoroldvix.g2gcalculator.price.PriceResponse;
+import com.thoroldvix.g2gcalculator.item.ItemPriceResponse;
 import com.thoroldvix.g2gcalculator.common.NotFoundException;
-import com.thoroldvix.g2gcalculator.price.PriceController;
-import com.thoroldvix.g2gcalculator.price.ItemPriceService;
-import com.thoroldvix.g2gcalculator.price.PriceService;
+import com.thoroldvix.g2gcalculator.item.ItemPriceService;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -47,39 +44,39 @@ public class PriceControllerTest {
 
     @Test
     void getPriceForRealm_whenValidRealmData_returnsPriceResponse() throws Exception {
-        String realmName = "test-server";
+        String serverName = "test-server";
         PriceResponse priceResponse = PriceResponse.builder()
                 .value(BigDecimal.valueOf(100))
                 .build();
 
-        when(classicPriceService.getPriceForRealmName(realmName)).thenReturn(priceResponse);
+        when(classicPriceService.getPriceForServer((serverName))).thenReturn(priceResponse);
 
-        mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
+        mockMvc.perform(get(API_REALMS + "/{serverName}", serverName))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(priceResponse)));
 
-        verify(classicPriceService).getPriceForRealmName(realmName);
+        verify(classicPriceService).getPriceForServer(serverName);
     }
 
 
     @Test
-    void getPriceForRealm_whenRealmNameInvalid_returnsNotFound() throws Exception {
-        String realmName = "invalid";
+    void getPriceForRealm_whenServerNameInvalid_returnsNotFound() throws Exception {
+        String serverName = "invalid";
 
-        when(classicPriceService.getPriceForRealmName(realmName)).thenThrow(NotFoundException.class);
+        when(classicPriceService.getPriceForServer(serverName)).thenThrow(NotFoundException.class);
 
-        mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
+        mockMvc.perform(get(API_REALMS + "/{serverName}", serverName))
                 .andExpect(status().isNotFound());
 
 
     }
         @Test
-    void getAllPricesForRealm_whenRealmNameInvalid_returnsNotFound() throws Exception {
-        String realmName = "invalid";
+    void getAllPricesForRealm_whenServerNameInvalid_returnsNotFound() throws Exception {
+        String serverName = "invalid";
 
         when(classicPriceService.getAllPricesForServer(anyString(), any(Pageable.class))).thenThrow(NotFoundException.class);
 
-        mockMvc.perform(get(API_REALMS + "/{realmName}/all", realmName))
+        mockMvc.perform(get(API_REALMS + "/{serverName}/all", serverName))
                 .andExpect(status().isNotFound());
 
 
@@ -88,7 +85,7 @@ public class PriceControllerTest {
 
     @Test
     void getAllPricesForRealm_returnsListOfPriceResponse() throws Exception {
-        String realmName = "test-server";
+        String serverName = "test-server";
         PriceResponse firstPriceResponse = PriceResponse.builder()
                 .value(BigDecimal.valueOf(100))
                 .build();
@@ -99,39 +96,39 @@ public class PriceControllerTest {
 
         when(classicPriceService.getAllPricesForServer(anyString(), any(Pageable.class))).thenReturn(expectedResponse);
 
-        mockMvc.perform(get(API_REALMS + "/{realmName}/all", realmName))
+        mockMvc.perform(get(API_REALMS + "/{serverName}/all", serverName))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)))
                 .andReturn();
     }
 
     @Test
-    void getPriceForItem_whenValidRealmNameAndItemId_returnsItemPriceResponse() throws Exception {
-        String realmName = "test-server";
+    void getPriceForItem_whenValidServerNameAndItemId_returnsItemPriceResponse() throws Exception {
+        String serverName = "test-server";
         int itemId = 123;
         BigDecimal price = BigDecimal.valueOf(50.0);
         ItemPriceResponse itemPrice = ItemPriceResponse.builder()
-                .price(price)
+                .value(price)
                 .build();
-        when(classicItemPriceService.getPriceForItemId(anyString(), anyInt(),anyInt(), anyBoolean()))
+        when(classicItemPriceService.getPriceForItem(anyString(), anyString() ,anyInt(), anyBoolean()))
                 .thenReturn(itemPrice);
 
-        mockMvc.perform(get(API_REALMS + "/{realmName}/items/{itemId}", realmName, itemId))
+        mockMvc.perform(get(API_REALMS + "/{serverName}/{itemId}", serverName, itemId))
                 .andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(itemPrice)));
     }
 
 
     @Test
-    void getPriceForItem_whenInvalidRealmName_returnsNotFound() throws Exception {
-        String realmName = "invalid";
-        int itemId = 123;
+    void getPriceForItem_whenInvalidServerName_returnsNotFound() throws Exception {
+        String serverName = "invalid";
+        String itemId = "123";
         int amount = 1;
         boolean minBuyout = false;
 
-        when(classicItemPriceService.getPriceForItemId(realmName, itemId, amount, minBuyout)).thenThrow(NotFoundException.class);
+        when(classicItemPriceService.getPriceForItem(serverName, itemId, amount, minBuyout)).thenThrow(NotFoundException.class);
 
-        mockMvc.perform(get(API_REALMS + "/{realmName}/items/{itemId}", realmName, itemId))
+        mockMvc.perform(get(API_REALMS + "/{serverName}/items/{itemId}", serverName, itemId))
                 .andExpect(status().isNotFound());
 
 
