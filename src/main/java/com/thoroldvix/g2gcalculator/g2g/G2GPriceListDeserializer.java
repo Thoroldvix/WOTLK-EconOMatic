@@ -1,6 +1,5 @@
 package com.thoroldvix.g2gcalculator.g2g;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,17 +10,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class G2GPriceDeserializer extends StdDeserializer<G2GPriceResponse> {
+public class G2GPriceListDeserializer extends StdDeserializer<G2GPriceListResponse> {
 
-    public G2GPriceDeserializer() {
+    public G2GPriceListDeserializer() {
         this(null);
     }
 
-    public G2GPriceDeserializer(Class<?> vc) {
+    public G2GPriceListDeserializer(Class<?> vc) {
         super(vc);
     }
     @Override
-    public G2GPriceResponse deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JacksonException {
+    public G2GPriceListResponse deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         List<PriceResponse> prices = new ArrayList<>();
         JsonNode resultsNode = node.get("payload").get("results");
@@ -35,6 +34,6 @@ public class G2GPriceDeserializer extends StdDeserializer<G2GPriceResponse> {
                 prices.add(price);
             }
         }
-        return new G2GPriceResponse(prices);
+        return new G2GPriceListResponse(prices);
     }
 }
