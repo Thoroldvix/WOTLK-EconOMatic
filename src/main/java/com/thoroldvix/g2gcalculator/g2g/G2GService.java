@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@EnableScheduling
 @RequiredArgsConstructor
 @Slf4j
-@EnableScheduling
 public class G2GService {
     private static final String EU_REGION_ID = "ac3f85c1-7562-437e-b125-e89576b9a38e";
     private static final String US_REGION_ID = "dfced32f-2f0a-4df5-a218-1e068cfadffa";
 
-    private int priceUpdateInterval;
     private final G2GPriceClient g2GPriceClient;
 
     private final ServerService serverServiceImpl;
@@ -34,7 +33,7 @@ public class G2GService {
 
 
     @SneakyThrows
-    @Scheduled(fixedRateString = "${g2g.price-update-interval:PT10M}", timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedDelayString = "${g2g.price-update-interval:PT10M}", timeUnit = TimeUnit.MINUTES)
     public void updateAllServerPrices() {
         updateEUPrices();
         updateUSPrices();
@@ -42,7 +41,7 @@ public class G2GService {
 
     public void updateUSPrices() {
         log.info("Updating US prices");
-        List<ServerResponse> usServers = serverServiceImpl.getAllForRegion(Region.getUSRegions());
+        List<ServerResponse> usServers = serverServiceImpl.getAllServersForRegion(Region.getUSRegions());
         G2GPriceListResponse usPrices = g2GPriceClient.getPrices(US_REGION_ID, currency);
 
         usServers.forEach(server -> {
@@ -55,7 +54,7 @@ public class G2GService {
 
     public void updateEUPrices() {
         log.info("Updating EU prices");
-        List<ServerResponse> euServers = serverServiceImpl.getAllForRegion(Region.getEURegions());
+        List<ServerResponse> euServers = serverServiceImpl.getAllServersForRegion(Region.getEURegions());
         G2GPriceListResponse euPrices = g2GPriceClient.getPrices(EU_REGION_ID, currency);
 
         euServers.forEach(server -> {
