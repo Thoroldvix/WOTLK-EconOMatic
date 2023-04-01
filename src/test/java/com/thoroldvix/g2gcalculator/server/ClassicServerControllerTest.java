@@ -1,5 +1,6 @@
-package com.thoroldvix.g2gcalculator.api;
+package com.thoroldvix.g2gcalculator.server;
 
+import com.thoroldvix.g2gcalculator.server.ServerController;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.common.NotFoundException;
 import com.thoroldvix.g2gcalculator.server.ServerService;
@@ -20,10 +21,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ClassicRealmController.class)
+@WebMvcTest(ServerController.class)
 @ActiveProfiles("test")
 class ClassicServerControllerTest {
-    public static final String API_REALMS = "/wow-classic/v1/realms";
+    public static final String API_SERVERS = "/wow-classic/v1/servers";
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
@@ -32,7 +33,7 @@ class ClassicServerControllerTest {
     private ServerService classicServerService;
 
     @Test
-    void getAllRealms_returnsListOfRealmResponse() throws Exception {
+    void getAllServers_returnsListOfServerResponse() throws Exception {
         ServerResponse firstServerResponse = ServerResponse.builder()
                 .id(1)
                 .name("test-server")
@@ -41,35 +42,35 @@ class ClassicServerControllerTest {
                 .id(2)
                 .name("test-server")
                 .build();
-        List<ServerResponse> expectedRealms = List.of(firstServerResponse, secondServerResponse);
+        List<ServerResponse> expectedServers = List.of(firstServerResponse, secondServerResponse);
 
-        when(classicServerService.getAllServers(any(Pageable.class))).thenReturn(expectedRealms);
+        when(classicServerService.getAllServers(any(Pageable.class))).thenReturn(expectedServers);
 
-        mockMvc.perform(get(API_REALMS))
+        mockMvc.perform(get(API_SERVERS))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(expectedRealms)));
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedServers)));
     }
     @Test
-    void getRealm_whenRealmNameValid_returnsRealmResponse() throws Exception {
-        String realmName = "test-server";
+    void getServer_whenServerNameValid_returnsServerResponse() throws Exception {
+        String serverName = "test-server";
         ServerResponse expectedResponse = ServerResponse.builder()
                 .id(1)
-                .name(realmName)
+                .name(serverName)
                 .build();
 
-        when(classicServerService.getServerResponse(realmName)).thenReturn(expectedResponse);
+        when(classicServerService.getServerResponse(serverName)).thenReturn(expectedResponse);
 
-        mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
+        mockMvc.perform(get(API_SERVERS + "/{serverName}", serverName))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
 
     }
     @Test
-    void getRealm_whenRealmNameInvalid_returnsNotFound() throws Exception {
-        String realmName = "test";
+    void getServer_whenServerNameInvalid_returnsNotFound() throws Exception {
+        String serverName = "test";
 
-        when(classicServerService.getServerResponse(realmName)).thenThrow(NotFoundException.class);
-        mockMvc.perform(get(API_REALMS + "/{realmName}", realmName))
+        when(classicServerService.getServerResponse(serverName)).thenThrow(NotFoundException.class);
+        mockMvc.perform(get(API_SERVERS + "/{serverName}", serverName))
                 .andExpect(status().isNotFound());
 
     }
