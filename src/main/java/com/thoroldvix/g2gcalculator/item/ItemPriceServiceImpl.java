@@ -1,7 +1,7 @@
-package com.thoroldvix.g2gcalculator.price;
+package com.thoroldvix.g2gcalculator.item;
 
-import com.thoroldvix.g2gcalculator.item.ItemService;
-import com.thoroldvix.g2gcalculator.item.ItemStats;
+import com.thoroldvix.g2gcalculator.price.PriceResponse;
+import com.thoroldvix.g2gcalculator.price.PriceService;
 import com.thoroldvix.g2gcalculator.server.Server;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import lombok.RequiredArgsConstructor;
@@ -32,21 +32,28 @@ public class ItemPriceServiceImpl implements ItemPriceService {
         }
 
         Server server = serverServiceImpl.getServer(serverName);
-        ItemStats item;
+        ItemStats itemStats = getItemStats(serverName, itemIdentifier);
 
-        if (NumberUtils.isCreatable(itemIdentifier)) {
-            item = itemServiceImpl.getItemById(serverName, Integer.parseInt(itemIdentifier));
-        } else {
-            item = itemServiceImpl.getItemByName(serverName, itemIdentifier);
-        }
 
-        PriceResponse updatedPrice = priceServiceImpl.getPriceForServer(server);
-        long targetPrice = minBuyout ? item.minBuyout() : item.marketValue();
-        BigDecimal itemPrice = itemPriceCalculatorImpl.calculatePrice(targetPrice, updatedPrice, amount);
+        PriceResponse serverPrice = priceServiceImpl.getPriceForServer(server);
+        long targetPrice = getTargetPrice(minBuyout, itemStats);
+        BigDecimal itemPrice = itemPriceCalculatorImpl.calculatePrice(targetPrice, serverPrice, amount);
 
         return ItemPriceResponse.builder()
-                .currency(item.currency())
-                .price(itemPrice)
+                .currency(serverPrice.currency())
+                .value(itemPrice)
                 .build();
+    }
+
+    private ItemStats getItemStats(final String serverName, final String itemIdentifier) {
+    if (NumberUtils.isCreatable(itemIdentifier)) {
+        return itemServiceImpl.getItemById(serverName, Integer.parseInt(itemIdentifier));
+    } else {
+        return itemServiceImpl.getItemByName(serverName, itemIdentifier);
+    }
+}
+
+    private long getTargetPrice(boolean minBuyout, ItemStats item) {
+        return minBuyout ? item.minBuyout() : item.marketValue();
     }
 }

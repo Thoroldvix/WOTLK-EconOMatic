@@ -1,4 +1,6 @@
-package com.thoroldvix.g2gcalculator.price;
+package com.thoroldvix.g2gcalculator.item;
+
+import com.thoroldvix.g2gcalculator.item.ItemPriceResponse;
 
 public interface ItemPriceService {
 
