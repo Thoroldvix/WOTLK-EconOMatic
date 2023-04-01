@@ -25,6 +25,32 @@ public class ServerServiceImpl implements ServerService {
     }
 
     @Override
+    public Server getServerById(int id) {
+        return serverRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("No server found for id: " + id));
+    }
+
+
+    @Override
+    public List<ServerResponse> getAllForRegion(Region region) {
+        return getAllForRegion(List.of(region));
+    }
+
+    @Override
+    public List<ServerResponse> getAllForRegion(List<Region> regions) {
+        return serverRepository.findAllByRegionIn(regions).stream()
+                .map(serverMapper::toServerResponse)
+                .toList();
+    }
+
+    @Override
+    public List<ServerResponse> getAllServers() {
+        return serverRepository.findAll().stream()
+                .map(serverMapper::toServerResponse)
+                .toList();
+    }
+
+    @Override
     public ServerResponse getServerResponse(String serverName) {
         String exactServerName = getExactServerName(serverName);
         Faction faction = getFaction(serverName);
