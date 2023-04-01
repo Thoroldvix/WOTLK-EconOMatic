@@ -66,14 +66,14 @@ class G2GServiceTest {
         G2GPriceListResponse usPrices = new G2GPriceListResponse(List.of(price1, price2));
 
 
-        when(serverServiceImpl.getAllForRegion(Region.getUSRegions())).thenReturn(usServers);
+        when(serverServiceImpl.getAllServersForRegion(Region.getUSRegions())).thenReturn(usServers);
         when(g2GPriceClient.getPrices(regionId, currency)).thenReturn(usPrices);
 
 
         g2GService.updateUSPrices();
 
 
-        verify(serverServiceImpl, times(1)).getAllForRegion(Region.getUSRegions());
+        verify(serverServiceImpl, times(1)).getAllServersForRegion(Region.getUSRegions());
         verify(g2GPriceClient, times(1)).getPrices(eq(regionId), eq(currency));
         verify(priceServiceImpl, times(1)).updatePrice(eq(1), eq(price1));
         verify(priceServiceImpl, times(1)).updatePrice(eq(2), eq(price2));
@@ -113,14 +113,14 @@ class G2GServiceTest {
         G2GPriceListResponse euPrices = new G2GPriceListResponse(List.of(price1, price2));
 
 
-        when(serverServiceImpl.getAllForRegion(Region.getEURegions())).thenReturn(euServers);
+        when(serverServiceImpl.getAllServersForRegion(Region.getEURegions())).thenReturn(euServers);
         when(g2GPriceClient.getPrices(regionId, currency)).thenReturn(euPrices);
 
 
         g2GService.updateEUPrices();
 
 
-        verify(serverServiceImpl, times(1)).getAllForRegion(Region.getEURegions());
+        verify(serverServiceImpl, times(1)).getAllServersForRegion(Region.getEURegions());
         verify(g2GPriceClient, times(1)).getPrices(eq(regionId), eq(currency));
         verify(priceServiceImpl, times(1)).updatePrice(eq(1), eq(price1));
         verify(priceServiceImpl, times(1)).updatePrice(eq(2), eq(price2));

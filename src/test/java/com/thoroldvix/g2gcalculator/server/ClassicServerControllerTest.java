@@ -1,10 +1,7 @@
 package com.thoroldvix.g2gcalculator.server;
 
-import com.thoroldvix.g2gcalculator.server.ServerController;
-import com.thoroldvix.g2gcalculator.server.ServerResponse;
-import com.thoroldvix.g2gcalculator.common.NotFoundException;
-import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoroldvix.g2gcalculator.common.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,9 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -74,4 +73,81 @@ class ClassicServerControllerTest {
                 .andExpect(status().isNotFound());
 
     }
+    @Test
+    void getAllServersForRegion_whenCalledWithOneRegion_returnsListOfServerResponse() throws Exception {
+        ServerResponse firstServerResponse = ServerResponse.builder()
+                .id(1)
+                .region("EU")
+                .name("test-server")
+                .build();
+        ServerResponse secondServerResponse = ServerResponse.builder()
+                .id(2)
+                .region("EU")
+                .name("test-server")
+                .build();
+        List<ServerResponse> expectedServers = List.of(firstServerResponse, secondServerResponse);
+        List<Region> regions = Collections.singletonList(Region.EU);
+
+        when(classicServerService.getAllServersForRegion(regions)).thenReturn(expectedServers);
+
+
+        mockMvc.perform(get(API_SERVERS + "/regions/{regions}", "eu"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedServers)));
+    }
+     @Test
+    void getAllServersForRegion_whenCalledWithMultipleRegions_returnsListOfServerResponse() throws Exception {
+        ServerResponse firstServerResponse = ServerResponse.builder()
+                .id(1)
+                .region("EU")
+                .name("test-server")
+                .build();
+        ServerResponse secondServerResponse = ServerResponse.builder()
+                .id(2)
+                .region("EU")
+                .name("test-server")
+                .build();
+        ServerResponse thirdServerResponse = ServerResponse.builder()
+                .id(3)
+                .region("US")
+                .name("test-server")
+                .build();
+        List<ServerResponse> expectedServers = List.of(firstServerResponse, secondServerResponse, thirdServerResponse);
+        List<Region> regions = List.of(Region.EU, Region.US);
+
+        when(classicServerService.getAllServersForRegion(regions)).thenReturn(expectedServers);
+
+
+        mockMvc.perform(get(API_SERVERS + "/regions/{regions}", "eu, us"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedServers)));
+    }
+     @Test
+    void getAllServersForRegion_whenCalledWithInvalidRegion_returnsBadRequestResponse() throws Exception {
+
+        ServerResponse firstServerResponse = ServerResponse.builder()
+                .id(1)
+                .region("EU")
+                .name("test-server")
+                .build();
+        ServerResponse secondServerResponse = ServerResponse.builder()
+                .id(2)
+                .region("EU")
+                .name("test-server")
+                .build();
+        ServerResponse thirdServerResponse = ServerResponse.builder()
+                .id(3)
+                .region("US")
+                .name("test-server")
+                .build();
+        List<ServerResponse> expectedServers = List.of(firstServerResponse, secondServerResponse, thirdServerResponse);
+
+        when(classicServerService.getAllServersForRegion(anyList())).thenReturn(expectedServers);
+
+
+        mockMvc.perform(get(API_SERVERS + "/regions/{regions}", "e, u"))
+                .andExpect(status().isBadRequest());
+
+    }
+
 }

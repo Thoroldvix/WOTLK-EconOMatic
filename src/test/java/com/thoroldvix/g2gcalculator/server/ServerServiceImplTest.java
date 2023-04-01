@@ -228,7 +228,7 @@ class ServerServiceImplTest {
         when(serverMapper.toServerResponse(secondServerEntity)).thenReturn(secondServer);
 
 
-        List<ServerResponse> actualResponse = serverServiceImpl.getAllForRegion(euRegions);
+        List<ServerResponse> actualResponse = serverServiceImpl.getAllServersForRegion(euRegions);
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
@@ -261,7 +261,7 @@ class ServerServiceImplTest {
         when(serverMapper.toServerResponse(secondServerEntity)).thenReturn(secondServer);
 
 
-        List<ServerResponse> actualResponse = serverServiceImpl.getAllForRegion(Region.EU);
+        List<ServerResponse> actualResponse = serverServiceImpl.getAllServersForRegion(Region.EU);
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
