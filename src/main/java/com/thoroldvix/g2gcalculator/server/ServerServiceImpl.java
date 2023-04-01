@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +33,14 @@ public class ServerServiceImpl implements ServerService {
 
 
     @Override
-    public List<ServerResponse> getAllForRegion(Region region) {
-        return getAllForRegion(List.of(region));
+    public List<ServerResponse> getAllServersForRegion(Region region) {
+        Objects.requireNonNull(region, "Region cannot be null");
+        return getAllServersForRegion(List.of(region));
     }
 
     @Override
-    public List<ServerResponse> getAllForRegion(List<Region> regions) {
+    public List<ServerResponse> getAllServersForRegion(List<Region> regions) {
+        Objects.requireNonNull(regions, "Regions cannot be null");
         return serverRepository.findAllByRegionIn(regions).stream()
                 .map(serverMapper::toServerResponse)
                 .toList();
