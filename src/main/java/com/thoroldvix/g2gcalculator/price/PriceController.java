@@ -1,5 +1,7 @@
 package com.thoroldvix.g2gcalculator.price;
 
+import com.thoroldvix.g2gcalculator.item.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.item.ItemPriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ public class PriceController {
 
     @GetMapping("/{serverName}")
     public ResponseEntity<PriceResponse> getPriceForRealm(@PathVariable String serverName) {
-        return ResponseEntity.ok(classicPriceService.getPriceForServerName(serverName));
+        return ResponseEntity.ok(classicPriceService.getPriceForServer(serverName));
     }
 
     @GetMapping("/{serverName}/all")

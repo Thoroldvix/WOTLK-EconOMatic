@@ -6,12 +6,12 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 
-import java.math.BigDecimal;
-
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PriceMapper {
     @Mapping(target = "serverName", source = "server", qualifiedByName = "serverName")
     PriceResponse toPriceResponse(Price price);
+
+    Price toPrice(PriceResponse priceResponse);
 
     @Named("serverName")
     default String serverName(Server server) {
