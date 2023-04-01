@@ -11,6 +11,9 @@ public interface PriceMapper {
     @Mapping(target = "serverName", source = "server", qualifiedByName = "serverName")
     PriceResponse toPriceResponse(Price price);
 
+
+    @Mapping(target = "server", ignore = true)
+    @Mapping(target = "id", ignore = true)
     Price toPrice(PriceResponse priceResponse);
 
     @Named("serverName")
