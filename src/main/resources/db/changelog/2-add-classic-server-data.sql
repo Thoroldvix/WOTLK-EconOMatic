@@ -78,7 +78,7 @@ VALUES (41003,
         'ALLIANCE');
 INSERT INTO server (id, name, region, faction)
 VALUES (41089,
-        'Razorzen',
+        'Razorfen',
         'DE',
         'HORDE');
 INSERT INTO server (id, name, region, faction)
