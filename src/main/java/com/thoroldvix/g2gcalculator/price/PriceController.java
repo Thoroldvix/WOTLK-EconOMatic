@@ -1,9 +1,11 @@
 package com.thoroldvix.g2gcalculator.price;
 
+import com.thoroldvix.g2gcalculator.common.ApiError;
 import com.thoroldvix.g2gcalculator.item.ItemPriceResponse;
 import com.thoroldvix.g2gcalculator.item.ItemPriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,5 +37,9 @@ public class PriceController {
                                                              @RequestParam(required = false, defaultValue = "false") Boolean minBuyout) {
 
         return ResponseEntity.ok(classicItemPriceService.getPriceForItem(serverName, itemName, amount, minBuyout));
+    }
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ApiError> handleNullPointerException(NullPointerException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(HttpStatus.NOT_FOUND.value(), "Not found"));
     }
 }
