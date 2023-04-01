@@ -2,7 +2,6 @@ package com.thoroldvix.g2gcalculator.server;
 
 import lombok.Getter;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -20,7 +19,14 @@ public enum Region {
     public static List<Region> getUSRegions() {
         return List.of(US, OCE);
     }
-
+ public static boolean contains(String region) {
+        for (Region r : Region.values()) {
+            if (r.name().equalsIgnoreCase(region)) {
+                return true;
+            }
+        }
+        return false;
+    }
     public final String g2gId;
 
     Region(String g2gId) {
