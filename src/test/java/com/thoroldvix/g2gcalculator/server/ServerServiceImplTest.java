@@ -298,4 +298,68 @@ class ServerServiceImplTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
+    @Test
+    void getAllServersByName_whenValidServerName_returnsListOfServerResponse() {
+        ServerResponse firstServer = ServerResponse.builder()
+                .name("everlook")
+                .region("EU")
+                .faction(Faction.HORDE)
+                .build();
+        ServerResponse secondServer = ServerResponse.builder()
+                .name("gehennas")
+                .region("EU")
+                .faction(Faction.ALLIANCE)
+                .build();
+        Server firstServerEntity = Server.builder()
+                .name("everlook")
+                .region(Region.EU)
+                .faction(Faction.HORDE)
+                .build();
+        Server secondServerEntity = Server.builder()
+                .name("gehennas")
+                .region(Region.EU)
+                .faction(Faction.ALLIANCE)
+                .build();
+        List<Server> servers = List.of(firstServerEntity, secondServerEntity);
+        List<ServerResponse> expectedResponse = List.of(firstServer, secondServer);
+        when(serverRepository.findAllByName("ever")).thenReturn(servers);
+        when(serverMapper.toServerResponse(firstServerEntity)).thenReturn(firstServer);
+        when(serverMapper.toServerResponse(secondServerEntity)).thenReturn(secondServer);
+
+        List<ServerResponse> actualResponse = serverServiceImpl.getAllServersByName("ever");
+
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+    @Test
+    void getAllServersByName_whenServerNameEmptyOrNull_returnsListOfAllServers() {
+        ServerResponse firstServer = ServerResponse.builder()
+                .name("everlook")
+                .region("EU")
+                .faction(Faction.HORDE)
+                .build();
+        ServerResponse secondServer = ServerResponse.builder()
+                .name("gehennas")
+                .region("EU")
+                .faction(Faction.ALLIANCE)
+                .build();
+        Server firstServerEntity = Server.builder()
+                .name("everlook")
+                .region(Region.EU)
+                .faction(Faction.HORDE)
+                .build();
+        Server secondServerEntity = Server.builder()
+                .name("gehennas")
+                .region(Region.EU)
+                .faction(Faction.ALLIANCE)
+                .build();
+        List<Server> servers = List.of(firstServerEntity, secondServerEntity);
+        List<ServerResponse> expectedResponse = List.of(firstServer, secondServer);
+        when(serverRepository.findAll()).thenReturn(servers);
+        when(serverMapper.toServerResponse(firstServerEntity)).thenReturn(firstServer);
+        when(serverMapper.toServerResponse(secondServerEntity)).thenReturn(secondServer);
+
+        List<ServerResponse> actualResponse = serverServiceImpl.getAllServersByName("");
+
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
 }

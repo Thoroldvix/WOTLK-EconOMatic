@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,4 +17,10 @@ public interface ServerRepository extends JpaRepository<Server, Integer> {
 
     @Query("SELECT s FROM Server s WHERE s.region IN (:regions)")
     List<Server> findAllByRegionIn(List<Region> regions);
+
+    @Query("SELECT s " +
+           "FROM Server s " +
+           "WHERE lower( s.name) " +
+           "like lower(concat('%', ?1, '%' ))")
+    List<Server> findAllByName(String name);
 }

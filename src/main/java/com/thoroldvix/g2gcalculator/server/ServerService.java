@@ -6,15 +6,18 @@ import java.util.List;
 
 public interface ServerService {
     List<ServerResponse> getAllServers(Pageable pageable);
+    List<ServerResponse> getAllServers();
 
     Server getServerById(int id);
 
     List<ServerResponse> getAllServersForRegion(Region region);
     List<ServerResponse> getAllServersForRegion(List<Region> regions);
 
-    List<ServerResponse> getAllServers();
+    List<ServerResponse> getAllServersByName(String filterText);
 
     ServerResponse getServerResponse(String serverName);
+
+
 
     Server getServer(String serverName);
 }

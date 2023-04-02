@@ -52,6 +52,15 @@ public class ServerServiceImpl implements ServerService {
                 .map(serverMapper::toServerResponse)
                 .toList();
     }
+     public List<ServerResponse> getAllServersByName(String name) {
+        if (!StringUtils.hasText(name)) {
+            return getAllServers();
+        } else {
+            return serverRepository.findAllByName(name).stream()
+                    .map(serverMapper::toServerResponse)
+                    .toList();
+        }
+    }
 
     @Override
     public ServerResponse getServerResponse(String serverName) {
