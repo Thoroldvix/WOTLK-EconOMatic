@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.0.4'
     id 'io.spring.dependency-management' version '1.1.0'
     id "com.google.cloud.tools.jib" version "3.3.1"
+    id "com.vaadin" version "24.0.2"
 }
 
 group = 'com.thoroldvix'
@@ -17,6 +18,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url "https://maven.vaadin.com/vaadin-addons" }
 }
 jib {
     to {
@@ -27,11 +29,13 @@ ext {
     testcontainers = "1.17.5"
     mapstruct = "1.5.3.Final"
     springCloudVersion = "2022.0.0"
+    vaadinVersion = "24.0.2"
 
 }
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
     }
 }
 
@@ -42,8 +46,7 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-
+    implementation 'com.vaadin:vaadin-spring-boot-starter'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
