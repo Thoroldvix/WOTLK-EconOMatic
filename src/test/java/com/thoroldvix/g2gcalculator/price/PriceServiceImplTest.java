@@ -14,10 +14,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,13 +95,22 @@ class PriceServiceImplTest {
     }
     @Test
     void getPriceForServer_whenServerIsNull_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> priceServiceImpl.getPriceForServer(null));
+        Server server = null;
+        assertThrows(NullPointerException.class, () -> priceServiceImpl.getPriceForServer(server));
+    }
+    @Test
+    void getPriceForServer_whenServerNameIsNull_throwsIllegalArgumentException() {
+        String serverName = null;
+        assertThrows(IllegalArgumentException.class, () -> priceServiceImpl.getPriceForServer(serverName));
+    }
+     @Test
+    void getPriceForServer_whenServerNameIsBlank_throwsIllegalArgumentException() {
+        String serverName = " ";
+        assertThrows(IllegalArgumentException.class, () -> priceServiceImpl.getPriceForServer(serverName));
     }
 
-    @Test
-    void getPriceForServer_whenServerIsNotStringOrServer_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> priceServiceImpl.getPriceForServer(1));
-    }
+
+
 
 
     @Test
@@ -159,12 +166,12 @@ class PriceServiceImplTest {
         when(serverServiceImpl.getServerById(1)).thenReturn(server);
         when(priceMapper.toPrice(priceResponse)).thenReturn(price);
 
-        priceServiceImpl.updatePrice(1, priceResponse);
+        priceServiceImpl.savePrice(1, priceResponse);
 
         verify(priceRepository, times(1)).save(price);
     }
      @Test
     void updatePrice_whenPriceResponseIsNul_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> priceServiceImpl.updatePrice(1, null));
+        assertThrows(NullPointerException.class, () -> priceServiceImpl.savePrice(1, null));
     }
 }

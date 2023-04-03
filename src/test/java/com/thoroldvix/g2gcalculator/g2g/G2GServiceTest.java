@@ -75,8 +75,8 @@ class G2GServiceTest {
 
         verify(serverServiceImpl, times(1)).getAllServersForRegion(Region.getUSRegions());
         verify(g2GPriceClient, times(1)).getPrices(eq(regionId), eq(currency));
-        verify(priceServiceImpl, times(1)).updatePrice(eq(1), eq(price1));
-        verify(priceServiceImpl, times(1)).updatePrice(eq(2), eq(price2));
+        verify(priceServiceImpl, times(1)).savePrice(eq(1), eq(price1));
+        verify(priceServiceImpl, times(1)).savePrice(eq(2), eq(price2));
     }
 
     @Test
@@ -122,8 +122,8 @@ class G2GServiceTest {
 
         verify(serverServiceImpl, times(1)).getAllServersForRegion(Region.getEURegions());
         verify(g2GPriceClient, times(1)).getPrices(eq(regionId), eq(currency));
-        verify(priceServiceImpl, times(1)).updatePrice(eq(1), eq(price1));
-        verify(priceServiceImpl, times(1)).updatePrice(eq(2), eq(price2));
+        verify(priceServiceImpl, times(1)).savePrice(eq(1), eq(price1));
+        verify(priceServiceImpl, times(1)).savePrice(eq(2), eq(price2));
     }
 
 

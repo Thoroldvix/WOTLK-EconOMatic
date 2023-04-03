@@ -1,15 +1,21 @@
 spring:
+  devtools:
+    restart:
+      poll-interval: 2s
+      quiet-period: 1s
+  mustache:
+    check-template-location: false
   application:
     name: g2g-calculator
   datasource:
-    url: jdbc:postgresql://localhost:5433/g2g_calculator
+    url: jdbc:postgresql://localhost:5433/g2g_calculator?currentSchema=wow
     username: postgres
     password: pass
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: db/changelog/db.changelog-master.yml
-    default-schema: wow
     enabled: true
+    default-schema: wow
   jpa:
     hibernate:
       ddl-auto: validate
@@ -20,4 +26,11 @@ spring:
         max-page-size: 2000
         default-page-size: 100
 server:
-  port: 8080
+  port: ${PORT:8080}
+
+logging:
+  level:
+   org:
+    atmosphere: warn
+vaadin:
+  whitelisted-packages: com.vaadin,org.vaadin,dev.hilla,com.example.application,com.vaadin,org.vaadin,com.storedobject,com.thoroldvix.g2gcalculator.ui

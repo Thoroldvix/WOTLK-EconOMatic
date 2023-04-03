@@ -33,7 +33,7 @@ public class G2GService {
 
 
     @SneakyThrows
-    @Scheduled(fixedDelayString = "${g2g.price-update-interval:PT10M}", timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedDelayString = "${g2g.price-update-interval:PT15M}", timeUnit = TimeUnit.MINUTES)
     public void updateAllServerPrices() {
         updateEUPrices();
         updateUSPrices();
@@ -47,7 +47,7 @@ public class G2GService {
         usServers.forEach(server -> {
             String serverName = formatServerName(server);
             PriceResponse price = findPriceInResponse(serverName, usPrices);
-            priceServiceImpl.updatePrice(server.id(), price);
+            priceServiceImpl.savePrice(server.id(), price);
         });
         log.info("Finished updating US prices");
     }
@@ -60,7 +60,7 @@ public class G2GService {
         euServers.forEach(server -> {
             String serverName = formatServerName(server);
             PriceResponse price = findPriceInResponse(serverName, euPrices);
-            priceServiceImpl.updatePrice(server.id(), price);
+            priceServiceImpl.savePrice(server.id(), price);
         });
         log.info("Finished updating EU prices");
     }

@@ -31,6 +31,12 @@ public class ServerServiceImpl implements ServerService {
                 .orElseThrow(() -> new NotFoundException("No server found for id: " + id));
     }
 
+    @Override
+    public ServerResponse getServerResponseById(int id) {
+        return serverRepository.findById(id)
+                .map(serverMapper::toServerResponse)
+                .orElseThrow(() -> new NotFoundException("No server found for id: " + id));
+    }
 
     @Override
     public List<ServerResponse> getAllServersForRegion(Region region) {
@@ -52,7 +58,8 @@ public class ServerServiceImpl implements ServerService {
                 .map(serverMapper::toServerResponse)
                 .toList();
     }
-     public List<ServerResponse> getAllServersByName(String name) {
+
+    public List<ServerResponse> getAllServersByName(String name) {
         if (!StringUtils.hasText(name)) {
             return getAllServers();
         } else {

@@ -9,6 +9,7 @@ public interface ServerService {
     List<ServerResponse> getAllServers();
 
     Server getServerById(int id);
+    ServerResponse getServerResponseById(int id);
 
     List<ServerResponse> getAllServersForRegion(Region region);
     List<ServerResponse> getAllServersForRegion(List<Region> regions);

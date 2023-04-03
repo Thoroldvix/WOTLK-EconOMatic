@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/wow-classic/v1/servers")
+@RequestMapping("/wow-classic/api/v1/servers")
 @RequiredArgsConstructor
 public class ServerController {
 

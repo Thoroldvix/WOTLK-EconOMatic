@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 public class PriceControllerTest {
 
-    public static final String API_REALMS = "/wow-classic/v1/prices";
+    public static final String API_REALMS = "/wow-classic/api/v1/prices";
 
     @Autowired
     private MockMvc mockMvc;

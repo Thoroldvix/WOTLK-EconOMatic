@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ServerController.class)
 @ActiveProfiles("test")
 class ClassicServerControllerTest {
-    public static final String API_SERVERS = "/wow-classic/v1/servers";
+    public static final String API_SERVERS = "/wow-classic/api/v1/servers";
     @Autowired
     ObjectMapper objectMapper;
     @Autowired

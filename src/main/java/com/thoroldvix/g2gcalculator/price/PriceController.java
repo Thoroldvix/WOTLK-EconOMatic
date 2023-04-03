@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/wow-classic/v1/prices")
+@RequestMapping("/wow-classic/api/v1/prices")
 @RequiredArgsConstructor
 public class PriceController {
 
