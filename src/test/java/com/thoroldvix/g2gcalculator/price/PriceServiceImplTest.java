@@ -3,6 +3,7 @@ package com.thoroldvix.g2gcalculator.price;
 import com.thoroldvix.g2gcalculator.g2g.G2GService;
 import com.thoroldvix.g2gcalculator.server.Faction;
 import com.thoroldvix.g2gcalculator.server.Server;
+import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -145,6 +146,8 @@ class PriceServiceImplTest {
 
         assertThat(actualResponse).isEqualTo(expectedPriceResponses);
     }
+
+
 
     @Test
     void updatePrice_whenValidServerIdAndPriceResponseProvided_savesToPriceInDB() {

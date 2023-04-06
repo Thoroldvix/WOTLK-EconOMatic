@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.ui.views;
+package com.thoroldvix.g2gcalculator.ui.views.servers;
 
 import com.storedobject.chart.SOChart;
 import com.sun.jna.platform.win32.COM.IShellFolder;
@@ -58,7 +58,7 @@ public class ServerView extends VerticalLayout implements HasUrlParameter<Intege
     private void configureCharts() {
         SOChart soChart = new SOChart();
         soChart.setSize("1000px", "500px");
-        soChart.add(getOneDayChart(prices));
+        soChart.add(getOneHourChart(prices));
         VerticalLayout verticalLayout = new VerticalLayout(soChart);
         verticalLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         verticalLayout.setJustifyContentMode(JustifyContentMode.CENTER);

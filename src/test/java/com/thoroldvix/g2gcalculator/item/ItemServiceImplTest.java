@@ -1,5 +1,6 @@
 package com.thoroldvix.g2gcalculator.item;
 
+import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -85,5 +86,4 @@ class ItemServiceImplTest {
         assertThatThrownBy(() -> itemServiceImpl.getItemById(serverName, itemId))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
-}
+    }

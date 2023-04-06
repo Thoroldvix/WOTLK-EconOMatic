@@ -34,7 +34,7 @@ public class LineChartFactory {
                 .toList();
 
         filteredPrices.forEach(price -> {
-            xValues.add(price.updatedAt().atZone(ZoneOffset.systemDefault()).toInstant().getEpochSecond());
+            xValues.add(price.updatedAt().atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli());
             yValues.add(price.value());
         });
 
@@ -52,13 +52,13 @@ public class LineChartFactory {
     private static boolean filterOneHourPrices(PriceResponse p) {
         LocalDateTime priceTime = (p.updatedAt());
         LocalDateTime currentHour = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS);
-        return priceTime.isAfter(currentHour) && priceTime.isBefore(currentHour.plusHours(1));
+        return priceTime.isBefore(currentHour) && priceTime.isAfter(currentHour.minusHours(1));
     }
 
     private static boolean filterThreeHourPrices(PriceResponse p) {
         LocalDateTime priceTime = (p.updatedAt());
         LocalDateTime currentHour = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS);
-        return priceTime.isAfter(currentHour) && priceTime.isBefore(currentHour.plusHours(3));
+        return priceTime.isBefore(currentHour) && priceTime.isBefore(currentHour.minusHours(3));
     }
 
     private static boolean filterOneDayPrices(PriceResponse p) {

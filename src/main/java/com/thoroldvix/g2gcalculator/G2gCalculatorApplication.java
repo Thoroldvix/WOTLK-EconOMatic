@@ -26,34 +26,11 @@ import java.util.stream.IntStream;
 @Theme(value = "g2gcalculator")
 public class G2gCalculatorApplication implements AppShellConfigurator {
 
-    @Autowired
-    private PriceRepository priceRepository;
 
-    @Autowired
-    private ServerService serverServiceImpl;
 
     public static void main(String[] args) {
         SpringApplication.run(G2gCalculatorApplication.class, args);
     }
 
-//    @Bean
-//    public CommandLineRunner init() {
-//        List<ServerResponse> servers = serverServiceImpl.getAllServers();
-//
-//        for (ServerResponse server : servers) {
-//            for (int i = 0; i < 20; i++) {
-//            LocalDateTime updatedAt = LocalDateTime.now().minusHours(i);
-//
-//                Price price = Price.builder()
-//                        .value(BigDecimal.valueOf(Math.random() + i * 0.001))
-//                        .server(serverServiceImpl.getServerById(server.id()))
-//                        .updatedAt(updatedAt)
-//                        .currency("USD")
-//                        .build();
-//                priceRepository.save(price);
-//            }
-//        }
-//        return args -> {
-//        };
-//    }
+
 }

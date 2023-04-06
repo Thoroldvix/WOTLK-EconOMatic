@@ -172,13 +172,15 @@ class ServerServiceImplTest {
         assertThatThrownBy(() -> serverServiceImpl.getServerResponse(realmName))
                 .isInstanceOf(NotFoundException.class);
     }
+
     @Test
     void getServerResponse_whenFactionIsNotPresent_throwsIllegalArgumentException() {
         String realmName = "everlook-";
         assertThatThrownBy(() -> serverServiceImpl.getServerResponse(realmName))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-     @Test
+
+    @Test
     void getServer_whenFactionIsNotPresent_throwsNotFoundException() {
         String realmName = "everlook-";
         assertThatThrownBy(() -> serverServiceImpl.getServer(realmName))
@@ -198,6 +200,14 @@ class ServerServiceImplTest {
 
         assertThat(actualServer).isEqualTo(expectedServer);
     }
+    @Test
+    void getServerById_whenInvalidServerId_throwsNotFoundException() {
+        when(serverRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> serverServiceImpl.getServerById(1))
+                .isInstanceOf(NotFoundException.class);
+    }
+
     @Test
     void getAllForRegion_whenListOfRegionsGiven_returnsListOfCorrectServerResponse() {
         ServerResponse firstServer = ServerResponse.builder()
@@ -232,7 +242,8 @@ class ServerServiceImplTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
-  @Test
+
+    @Test
     void getAllForRegion_whenSingleRegionGiven_returnsListOfCorrectServerResponse() {
         ServerResponse firstServer = ServerResponse.builder()
                 .name("everlook")
@@ -298,6 +309,7 @@ class ServerServiceImplTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
+
     @Test
     void getAllServersByName_whenValidServerName_returnsListOfServerResponse() {
         ServerResponse firstServer = ServerResponse.builder()
@@ -330,6 +342,7 @@ class ServerServiceImplTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
+
     @Test
     void getAllServersByName_whenServerNameEmptyOrNull_returnsListOfAllServers() {
         ServerResponse firstServer = ServerResponse.builder()
@@ -361,5 +374,33 @@ class ServerServiceImplTest {
         List<ServerResponse> actualResponse = serverServiceImpl.getAllServersByName("");
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    void getServerResponseById_whenValidServerId_returnsCorrectServer() {
+        ServerResponse expectedServer = ServerResponse.builder()
+                .id(1)
+                .name("everlook")
+                .faction(Faction.HORDE)
+                .build();
+        Server server = Server.builder()
+                .id(1)
+                .name("everlook")
+                .faction(Faction.HORDE)
+                .build();
+        when(serverRepository.findById(1)).thenReturn(Optional.of(server));
+        when(serverMapper.toServerResponse(server)).thenReturn(expectedServer);
+
+        ServerResponse actualServer = serverServiceImpl.getServerResponseById(1);
+
+        assertThat(actualServer).isEqualTo(expectedServer);
+    }
+
+    @Test
+    void getServerResponseById_whenInvalidServerId_throwsNotFoundException() {
+        when(serverRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> serverServiceImpl.getServerResponseById(1))
+                .isInstanceOf(NotFoundException.class);
     }
 }

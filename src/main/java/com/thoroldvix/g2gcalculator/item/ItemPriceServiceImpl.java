@@ -45,7 +45,7 @@ public class ItemPriceServiceImpl implements ItemPriceService {
                 .build();
     }
 
-    private ItemStats getItemStats(final String serverName, final String itemIdentifier) {
+    private ItemStats getItemStats(String serverName, String itemIdentifier) {
     if (NumberUtils.isCreatable(itemIdentifier)) {
         return itemServiceImpl.getItemById(serverName, Integer.parseInt(itemIdentifier));
     } else {

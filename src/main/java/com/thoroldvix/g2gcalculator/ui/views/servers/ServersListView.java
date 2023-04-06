@@ -1,10 +1,9 @@
-package com.thoroldvix.g2gcalculator.ui.views.list;
+package com.thoroldvix.g2gcalculator.ui.views.servers;
 
 import com.thoroldvix.g2gcalculator.price.PriceService;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.thoroldvix.g2gcalculator.ui.views.MainLayout;
-import com.thoroldvix.g2gcalculator.ui.views.ServerView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -58,8 +57,6 @@ public class ServersListView extends VerticalLayout {
     }
 
     private void configureColumns() {
-        grid.addColumn(ServerResponse::id).setHeader("Id")
-                .setSortable(true);
         grid.addColumn(ServerResponse::name).setHeader("Name")
                 .setSortable(true);
         grid.addColumn(ServerResponse::faction).setHeader("Faction")

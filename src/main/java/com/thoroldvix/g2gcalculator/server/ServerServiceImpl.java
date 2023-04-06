@@ -89,6 +89,10 @@ public class ServerServiceImpl implements ServerService {
         if (!StringUtils.hasText(serverName)) {
             throw new IllegalArgumentException("Server name cannot be null or empty");
         }
+        String[] split = serverName.split("-");
+        if (split.length == 3) {
+            return split[0] + " " + split[1];
+        }
         return serverName.split("-")[0];
     }
 

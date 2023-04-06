@@ -1,0 +1,6 @@
+.bordered-layout {
+     border: 2px solid #0070C0;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #F0F8FF;
+}
