@@ -4,7 +4,7 @@ import com.thoroldvix.g2gcalculator.price.PriceResponse;
 import lombok.Builder;
 
 @Builder
-public record ServerResponse(
+public record ServerResponse (
         int id,
         String name,
         Faction faction,

@@ -10,7 +10,8 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import lombok.Getter;
 
-import java.util.HashSet;
+import java.util.*;
+import java.util.Comparator;
 
 @Getter
 @SpringComponent
@@ -51,12 +52,13 @@ public class ServerSelectionBox extends VerticalLayout {
 
     private void configureServerSelect() {
         serverSelect = new ComboBox<>();
-        serverSelect.setPlaceholder("Select server");
+        Set<ServerResponse> servers = new TreeSet<>(Comparator.comparing(ServerResponse::name));
+        servers.addAll(serverServiceImpl.getAllServers());
         serverSelect.setAllowCustomValue(false);
         serverSelect.setRequired(true);
         serverSelect.setRequiredIndicatorVisible(true);
         serverSelect.setErrorMessage("Please select a server");
-        serverSelect.setItems(new HashSet<>(this.serverServiceImpl.getAllServers()));
+        serverSelect.setItems(servers);
         serverSelect.setItemLabelGenerator(ServerResponse::name);
     }
 
