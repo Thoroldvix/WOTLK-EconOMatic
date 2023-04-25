@@ -4,6 +4,7 @@ import com.thoroldvix.g2gcalculator.ui.views.items.ItemsView;
 import com.thoroldvix.g2gcalculator.ui.views.servers.ServersListView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -13,6 +14,7 @@ import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.*;
 
 @Route("wow-classic")
+@CssImport("./styles/shared-styles.css")
 public class MainLayout extends AppLayout implements AfterNavigationObserver {
 
     private Tabs tabs;
@@ -36,7 +38,7 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
         centeredLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         centeredLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         centeredLayout.add(tabs);
-
+        centeredLayout.addClassName("navbar");
         addToNavbar(logo, centeredLayout);
     }
 
@@ -45,9 +47,9 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
 
         Tab servers = new Tab(new RouterLink("Servers", ServersListView.class));
         Tab items = new Tab(new RouterLink("Items", ItemsView.class));
-        Tab prices = new Tab("Prices");
+        Tab calculator = new Tab("Calculator");
 
-        tabs.add(servers, items, prices);
+        tabs.add(servers, items, calculator);
         tabs.addThemeVariants(TabsVariant.LUMO_CENTERED);
         return tabs;
     }

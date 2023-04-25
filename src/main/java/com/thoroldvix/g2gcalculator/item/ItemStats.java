@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 @JsonDeserialize(using = ItemDeserializer.class)
 public record ItemStats(
         String server,
+        ItemType type,
+        ItemRarity rarity,
+        String icon,
         BigDecimal price,
         String currency,
         String name,

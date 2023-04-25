@@ -22,6 +22,11 @@ class ItemDeserializerTest {
                     "server": "everlook-alliance",
                     "itemId": 13444,
                     "name": "Major Mana Potion",
+                    "icon": "https://wow.zamimg.com/images/wow/icons/large/inv_potion_76.jpg",
+                    "tags": [
+                            "Common",
+                            "Consumable"
+                        ],
                     "stats": {
                         "lastUpdated": "2023-04-01T13:27:24.000Z",
                         "current": {
@@ -44,20 +49,26 @@ class ItemDeserializerTest {
 
         JsonParser jp = new ObjectMapper().getFactory().createParser(json);
         DeserializationContext ctxt = new ObjectMapper().getDeserializationContext();
-        ItemStats result = new ItemDeserializer().deserialize(jp, ctxt);
         LocalDateTime lastUpdated = Instant.parse("2023-04-01T13:27:24.000Z")
-                                           .atZone(ZoneOffset.UTC)
-                                           .toLocalDateTime();
+                .atZone(ZoneOffset.UTC)
+                .toLocalDateTime();
 
-        assertThat(result.server()).isEqualTo("everlook-alliance");
-        assertThat(result.itemId()).isEqualTo(13444);
-        assertThat(result.name()).isEqualTo("Major Mana Potion");
-        assertThat(result.marketValue()).isEqualTo(7054L);
-        assertThat(result.minBuyout()).isEqualTo(2894L);
-        assertThat(result.quantity()).isEqualTo(54);
-        assertThat(result.lastUpdated()).isEqualTo(lastUpdated);
+        ItemStats expectedResult = ItemStats.builder()
+                .server("everlook-alliance")
+                .itemId(13444)
+                .name("Major Mana Potion")
+                .marketValue(7054L)
+                .minBuyout(2894L)
+                .quantity(54)
+                .lastUpdated(lastUpdated)
+                .icon("https://wow.zamimg.com/images/wow/icons/large/inv_potion_76.jpg")
+                .rarity(ItemRarity.COMMON)
+                .type(ItemType.CONSUMABLE)
+                .build();
 
+        ItemStats actualResult = new ItemDeserializer().deserialize(jp, ctxt);
+
+
+        assertThat(actualResult).isEqualTo(expectedResult);
     }
-
-
 }

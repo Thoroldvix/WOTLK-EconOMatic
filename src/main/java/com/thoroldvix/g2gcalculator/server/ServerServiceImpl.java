@@ -1,6 +1,7 @@
 package com.thoroldvix.g2gcalculator.server;
 
 import com.thoroldvix.g2gcalculator.common.NotFoundException;
+import com.thoroldvix.g2gcalculator.common.StringEnumConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -102,10 +103,8 @@ public class ServerServiceImpl implements ServerService {
             throw new IllegalArgumentException("Server name must contain a faction");
         }
         String faction = split[split.length - 1];
-        if (!Faction.contains(faction)) {
-            throw new NotFoundException("No faction found for name: " + faction);
-        }
-        return faction.equalsIgnoreCase("horde") ? Faction.HORDE : Faction.ALLIANCE;
+        StringEnumConverter<Faction> converter = new StringEnumConverter<>(Faction.class);
+        return converter.fromString(faction);
     }
 
 }

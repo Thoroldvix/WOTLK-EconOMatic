@@ -1,6 +1,5 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
-import com.thoroldvix.g2gcalculator.price.PriceService;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.thoroldvix.g2gcalculator.ui.views.MainLayout;
@@ -16,14 +15,12 @@ import com.vaadin.flow.router.Route;
 public class ServersListView extends VerticalLayout {
     private final ServerService serverServiceImpl;
 
-    private final PriceService priceServiceImpl;
     private final Grid<ServerResponse> grid = new Grid<>(ServerResponse.class);
 
 
     private final TextField filterText = new TextField();
 
-    public ServersListView(ServerService serverServiceImpl, PriceService priceServiceImpl) {
-        this.priceServiceImpl = priceServiceImpl;
+    public ServersListView(ServerService serverServiceImpl) {
         this.serverServiceImpl = serverServiceImpl;
         addClassName("list-view");
         setSizeFull();
