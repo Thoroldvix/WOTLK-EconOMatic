@@ -1,8 +1,8 @@
 package com.thoroldvix.g2gcalculator.price;
 
 import com.thoroldvix.g2gcalculator.common.ApiError;
-import com.thoroldvix.g2gcalculator.item.ItemPriceResponse;
-import com.thoroldvix.g2gcalculator.item.ItemPriceService;
+import com.thoroldvix.g2gcalculator.item.dto.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.item.price.ItemPriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,18 +16,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PriceController {
 
-    private final PriceService classicPriceService;
-    private final ItemPriceService classicItemPriceService;
+    private final PriceService priceServiceImpl;
+    private final ItemPriceService itemPriceServiceImpl;
 
     @GetMapping("/{serverName}")
     public ResponseEntity<PriceResponse> getPriceForRealm(@PathVariable String serverName) {
-        return ResponseEntity.ok(classicPriceService.getPriceForServer(serverName));
+        return ResponseEntity.ok(priceServiceImpl.getPriceForServer(serverName));
     }
 
     @GetMapping("/{serverName}/all")
     public ResponseEntity<List<PriceResponse>> getAllPricesForRealm(@PathVariable String serverName,
                                                                     Pageable pageable) {
-        return ResponseEntity.ok(classicPriceService.getAllPricesForServer(serverName, pageable));
+        return ResponseEntity.ok(priceServiceImpl.getAllPricesForServer(serverName, pageable));
     }
 
     @GetMapping("/{serverName}/{itemName}")
@@ -36,7 +36,7 @@ public class PriceController {
                                                              @RequestParam(required = false, defaultValue = "1") Integer amount,
                                                              @RequestParam(required = false, defaultValue = "false") Boolean minBuyout) {
 
-        return ResponseEntity.ok(classicItemPriceService.getPriceForItem(serverName, itemName, amount, minBuyout));
+        return ResponseEntity.ok(itemPriceServiceImpl.getPriceForItem(serverName, itemName, amount, minBuyout));
     }
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ApiError> handleNullPointerException(NullPointerException e) {

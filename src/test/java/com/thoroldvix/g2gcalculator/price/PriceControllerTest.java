@@ -1,9 +1,9 @@
 package com.thoroldvix.g2gcalculator.price;
 
 
-import com.thoroldvix.g2gcalculator.item.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.item.dto.ItemPriceResponse;
 import com.thoroldvix.g2gcalculator.common.NotFoundException;
-import com.thoroldvix.g2gcalculator.item.ItemPriceService;
+import com.thoroldvix.g2gcalculator.item.price.ItemPriceService;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

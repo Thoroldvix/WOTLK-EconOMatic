@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.price;
 
-import com.thoroldvix.g2gcalculator.item.ItemPriceCalculatorImpl;
+import com.thoroldvix.g2gcalculator.item.price.ItemPriceCalculatorImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

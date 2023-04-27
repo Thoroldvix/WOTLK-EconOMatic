@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.item;
+package com.thoroldvix.g2gcalculator.item.dto;
 
 import lombok.Builder;
 
@@ -9,7 +9,6 @@ public record ItemPriceResponse(
         BigDecimal value,
 
         String currency
-
 ) {
 
 }

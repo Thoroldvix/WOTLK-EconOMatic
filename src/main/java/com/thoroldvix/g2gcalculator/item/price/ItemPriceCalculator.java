@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.item;
+package com.thoroldvix.g2gcalculator.item.price;
 
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
 

@@ -1,5 +1,8 @@
-package com.thoroldvix.g2gcalculator.item;
+package com.thoroldvix.g2gcalculator.item.price;
 
+import com.thoroldvix.g2gcalculator.item.ItemService;
+import com.thoroldvix.g2gcalculator.item.dto.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
 import com.thoroldvix.g2gcalculator.price.PriceService;
 import com.thoroldvix.g2gcalculator.server.Server;
@@ -32,11 +35,11 @@ public class ItemPriceServiceImpl implements ItemPriceService {
         }
 
         Server server = serverServiceImpl.getServer(serverName);
-        ItemStats itemStats = getItemStats(serverName, itemIdentifier);
+        ItemInfo itemInfo = getItemStats(serverName, itemIdentifier);
 
 
         PriceResponse serverPrice = priceServiceImpl.getPriceForServer(server);
-        long targetPrice = getTargetPrice(minBuyout, itemStats);
+        long targetPrice = getTargetPrice(minBuyout, itemInfo);
         BigDecimal itemPrice = itemPriceCalculatorImpl.calculatePrice(targetPrice, serverPrice, amount);
 
         return ItemPriceResponse.builder()
@@ -45,7 +48,7 @@ public class ItemPriceServiceImpl implements ItemPriceService {
                 .build();
     }
 
-    private ItemStats getItemStats(String serverName, String itemIdentifier) {
+    private ItemInfo getItemStats(String serverName, String itemIdentifier) {
     if (NumberUtils.isCreatable(itemIdentifier)) {
         return itemServiceImpl.getItemById(serverName, Integer.parseInt(itemIdentifier));
     } else {
@@ -53,7 +56,7 @@ public class ItemPriceServiceImpl implements ItemPriceService {
     }
 }
 
-    private long getTargetPrice(boolean minBuyout, ItemStats item) {
+    private long getTargetPrice(boolean minBuyout, ItemInfo item) {
         return minBuyout ? item.minBuyout() : item.marketValue();
     }
 }

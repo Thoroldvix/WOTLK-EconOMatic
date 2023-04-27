@@ -1,6 +1,10 @@
 package com.thoroldvix.g2gcalculator.price;
 
 import com.thoroldvix.g2gcalculator.item.*;
+import com.thoroldvix.g2gcalculator.item.dto.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
+import com.thoroldvix.g2gcalculator.item.price.ItemPriceCalculator;
+import com.thoroldvix.g2gcalculator.item.price.ItemPriceServiceImpl;
 import com.thoroldvix.g2gcalculator.server.Server;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import org.junit.jupiter.api.Test;
@@ -37,7 +41,7 @@ class ItemPriceServiceImplTest {
                 .name(serverName)
                 .prices(new ArrayList<>())
                 .build();
-        ItemStats itemStats = ItemStats.builder()
+        ItemInfo itemInfo = ItemInfo.builder()
                 .itemId(1)
                 .minBuyout(10000L)
                 .marketValue(100000L)
@@ -54,10 +58,10 @@ class ItemPriceServiceImplTest {
         int amount = 1;
         boolean minBuyout = false;
 
-        when(itemServiceImpl.getItemByName(serverName, itemName)).thenReturn(itemStats);
+        when(itemServiceImpl.getItemByName(serverName, itemName)).thenReturn(itemInfo);
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceServiceImpl.getPriceForServer(server)).thenReturn(priceResponse);
-        when(itemPriceCalculatorImpl.calculatePrice(itemStats.marketValue(), priceResponse, amount)).thenReturn(expectedResponse.value());
+        when(itemPriceCalculatorImpl.calculatePrice(itemInfo.marketValue(), priceResponse, amount)).thenReturn(expectedResponse.value());
 
 
         ItemPriceResponse actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemName, amount, minBuyout);
@@ -73,7 +77,7 @@ class ItemPriceServiceImplTest {
                 .name(serverName)
                 .prices(new ArrayList<>())
                 .build();
-        ItemStats itemStats = ItemStats.builder()
+        ItemInfo itemInfo = ItemInfo.builder()
                 .itemId(1)
                 .minBuyout(10000L)
                 .marketValue(100000L)
@@ -90,10 +94,10 @@ class ItemPriceServiceImplTest {
         int amount = 1;
         boolean minBuyout = false;
 
-        when(itemServiceImpl.getItemById(serverName, Integer.parseInt(itemId))).thenReturn(itemStats);
+        when(itemServiceImpl.getItemById(serverName, Integer.parseInt(itemId))).thenReturn(itemInfo);
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceServiceImpl.getPriceForServer(server)).thenReturn(priceResponse);
-        when(itemPriceCalculatorImpl.calculatePrice(itemStats.marketValue(), priceResponse, amount)).thenReturn(expectedResponse.value());
+        when(itemPriceCalculatorImpl.calculatePrice(itemInfo.marketValue(), priceResponse, amount)).thenReturn(expectedResponse.value());
 
 
         ItemPriceResponse actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemId, amount, minBuyout);
@@ -109,7 +113,7 @@ class ItemPriceServiceImplTest {
                 .name(serverName)
                 .prices(new ArrayList<>())
                 .build();
-        ItemStats itemStats = ItemStats.builder()
+        ItemInfo itemInfo = ItemInfo.builder()
                 .itemId(1)
                 .minBuyout(10000L)
                 .marketValue(100000L)
@@ -126,7 +130,7 @@ class ItemPriceServiceImplTest {
         int amount = 1;
         boolean minBuyout = true;
 
-        when(itemServiceImpl.getItemById(serverName, Integer.parseInt(itemId))).thenReturn(itemStats);
+        when(itemServiceImpl.getItemById(serverName, Integer.parseInt(itemId))).thenReturn(itemInfo);
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceServiceImpl.getPriceForServer(server)).thenReturn(priceResponse);
         when(itemPriceCalculatorImpl.calculatePrice(anyLong(), any(PriceResponse.class), anyInt())).thenReturn(expectedResponse.value());
@@ -146,7 +150,7 @@ class ItemPriceServiceImplTest {
                 .name(serverName)
                 .prices(new ArrayList<>())
                 .build();
-        ItemStats itemStats = ItemStats.builder()
+        ItemInfo itemInfo = ItemInfo.builder()
                 .itemId(1)
                 .minBuyout(10000L)
                 .marketValue(100000L)
@@ -163,7 +167,7 @@ class ItemPriceServiceImplTest {
         int amount = 1;
         boolean minBuyout = true;
 
-        when(itemServiceImpl.getItemByName(serverName, itemName)).thenReturn(itemStats);
+        when(itemServiceImpl.getItemByName(serverName, itemName)).thenReturn(itemInfo);
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceServiceImpl.getPriceForServer(server)).thenReturn(priceResponse);
         when(itemPriceCalculatorImpl.calculatePrice(anyLong(), any(PriceResponse.class), anyInt())).thenReturn(expectedResponse.value());

@@ -10,26 +10,29 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 
 @Route(value = "wow-classic/servers", layout = MainLayout.class)
-public class ServersListView extends VerticalLayout {
+@SpringComponent
+@UIScope
+public class ServerGridView extends VerticalLayout {
     private final ServerService serverServiceImpl;
 
     private final Grid<ServerResponse> grid = new Grid<>(ServerResponse.class);
 
-
     private final TextField filterText = new TextField();
 
-    public ServersListView(ServerService serverServiceImpl) {
+    public ServerGridView(ServerService serverServiceImpl) {
         this.serverServiceImpl = serverServiceImpl;
         addClassName("list-view");
         setSizeFull();
         configureGrid();
         add(getToolbar(), getContent());
-        updateList();
+        updateGrid();
     }
 
-    private void updateList() {
+    private void updateGrid() {
         grid.setItems(serverServiceImpl.getAllServersByName(filterText.getValue()));
     }
 
@@ -37,7 +40,7 @@ public class ServersListView extends VerticalLayout {
         filterText.setPlaceholder("Filter by name...");
         filterText.setClearButtonVisible(true);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> updateList());
+        filterText.addValueChangeListener(e -> updateGrid());
         HorizontalLayout toolbar = new HorizontalLayout(filterText);
         toolbar.addClassName("toolbar");
         return toolbar;
@@ -64,7 +67,6 @@ public class ServersListView extends VerticalLayout {
                 .setSortable(true);
         grid.addColumn(serverResponse -> serverResponse.price().currency()).setHeader("Currency")
                 .setSortable(true);
-
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
     }
 
