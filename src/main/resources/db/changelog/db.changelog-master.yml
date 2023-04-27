@@ -1,5 +1,7 @@
 databaseChangeLog:
   - include:
-        file: db/changelog/1-database-ddl.sql
+      file: db/changelog/1-database-ddl.sql
   - include:
       file: db/changelog/2-add-classic-server-data.sql
+  - include:
+      file: db/changelog/3-add-classic-item-data.sql

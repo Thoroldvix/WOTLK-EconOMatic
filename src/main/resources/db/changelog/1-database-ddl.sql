@@ -16,3 +16,11 @@ CREATE TABLE price
     currency   VARCHAR(4)    NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
+
+create table item (
+    id int primary key,
+    quality varchar(32) not null,
+    type varchar(32) not null,
+    name varchar(255) not null,
+    icon varchar(255) not null
+)
