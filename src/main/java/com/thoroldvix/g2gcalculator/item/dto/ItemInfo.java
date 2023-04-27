@@ -1,17 +1,19 @@
-package com.thoroldvix.g2gcalculator.item;
+package com.thoroldvix.g2gcalculator.item.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.thoroldvix.g2gcalculator.item.ItemQuality;
+import com.thoroldvix.g2gcalculator.item.ItemType;
 import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
-@JsonDeserialize(using = ItemDeserializer.class)
-public record ItemStats(
+@JsonDeserialize(using = ItemInfoDeserializer.class)
+public record ItemInfo(
         String server,
         ItemType type,
-        ItemRarity rarity,
+        ItemQuality quality,
         String icon,
         BigDecimal price,
         String currency,
@@ -19,8 +21,10 @@ public record ItemStats(
         int itemId,
         long minBuyout,
         int quantity,
+        int numAuctions,
         LocalDateTime lastUpdated,
         long marketValue
 
 ) {
+
 }
