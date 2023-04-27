@@ -1,5 +1,7 @@
 package com.thoroldvix.g2gcalculator.item;
 
+import com.thoroldvix.g2gcalculator.item.dto.ItemInfoList;
+import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,8 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface ItemsClient {
 
     @GetMapping("/{serverName}/{itemId}")
-    ItemStats getItemById(@PathVariable String serverName, @PathVariable int itemId);
+    ItemInfo getItemById(@PathVariable String serverName, @PathVariable int itemId);
 
     @GetMapping("/{serverName}/{itemName}")
-    ItemStats getItemByName(@PathVariable String serverName, @PathVariable String itemName);
+    ItemInfo getItemByName(@PathVariable String serverName, @PathVariable String itemName);
+
+    @GetMapping("/{serverName}")
+    ItemInfoList getAllItems(@PathVariable String serverName);
 }

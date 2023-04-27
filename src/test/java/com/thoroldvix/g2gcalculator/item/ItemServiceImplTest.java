@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.item;
 
-import com.thoroldvix.g2gcalculator.server.ServerResponse;
+import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,25 +13,28 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
-    @InjectMocks
-    ItemServiceImpl itemServiceImpl;
     @Mock
     private ItemsClient itemsClient;
 
+    @Mock
+    private ItemRepository itemRepository;
+    @InjectMocks
+    ItemServiceImpl itemServiceImpl;
+
     @Test
-    void getItemByName_whenValidServerNameAndItemName_returnsItemStats() {
-        ItemStats expectedItemStats = ItemStats.builder()
+    void getItemByName_whenValidServerNameAndItemName_returnsItemInfo() {
+        ItemInfo expectedItemInfo = ItemInfo.builder()
                 .itemId(1)
                 .name("test")
                 .build();
         String serverName = "test";
         String itemName = "test";
 
-        when(itemsClient.getItemByName(serverName, itemName)).thenReturn(expectedItemStats);
+        when(itemsClient.getItemByName(serverName, itemName)).thenReturn(expectedItemInfo);
 
-        ItemStats actualItemStats = itemServiceImpl.getItemByName(serverName, itemName);
+        ItemInfo actualItemInfo = itemServiceImpl.getItemByName(serverName, itemName);
 
-        assertThat(actualItemStats).isEqualTo(expectedItemStats);
+        assertThat(actualItemInfo).isEqualTo(expectedItemInfo);
     }
 
     @Test
@@ -53,19 +56,19 @@ class ItemServiceImplTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
     @Test
-    void getItemById_whenValidServerNameAndItemId_returnsItemStats() {
-        ItemStats expectedItemStats = ItemStats.builder()
+    void getItemById_whenValidServerNameAndItemId_returnsItemInfo() {
+        ItemInfo expectedItemInfo = ItemInfo.builder()
                 .itemId(1)
                 .name("test")
                 .build();
         String serverName = "test";
         int itemId = 13;
 
-        when(itemsClient.getItemById(serverName, itemId)).thenReturn(expectedItemStats);
+        when(itemsClient.getItemById(serverName, itemId)).thenReturn(expectedItemInfo);
 
-        ItemStats actualItemStats = itemServiceImpl.getItemById(serverName, itemId);
+        ItemInfo actualItemInfo = itemServiceImpl.getItemById(serverName, itemId);
 
-        assertThat(actualItemStats).isEqualTo(expectedItemStats);
+        assertThat(actualItemInfo).isEqualTo(expectedItemInfo);
     }
 
     @Test
