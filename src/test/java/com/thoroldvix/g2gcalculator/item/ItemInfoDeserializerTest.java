@@ -3,6 +3,8 @@ package com.thoroldvix.g2gcalculator.item;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
+import com.thoroldvix.g2gcalculator.item.dto.ItemInfoDeserializer;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +15,7 @@ import java.time.ZoneOffset;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-class ItemDeserializerTest {
+class ItemInfoDeserializerTest {
 
     @Test
     public void testDeserialize() throws IOException {
@@ -53,8 +55,9 @@ class ItemDeserializerTest {
                 .atZone(ZoneOffset.UTC)
                 .toLocalDateTime();
 
-        ItemStats expectedResult = ItemStats.builder()
+        ItemInfo expectedResult = ItemInfo.builder()
                 .server("everlook-alliance")
+                .numAuctions(19)
                 .itemId(13444)
                 .name("Major Mana Potion")
                 .marketValue(7054L)
@@ -62,11 +65,11 @@ class ItemDeserializerTest {
                 .quantity(54)
                 .lastUpdated(lastUpdated)
                 .icon("https://wow.zamimg.com/images/wow/icons/large/inv_potion_76.jpg")
-                .rarity(ItemRarity.COMMON)
+                .quality(ItemQuality.COMMON)
                 .type(ItemType.CONSUMABLE)
                 .build();
 
-        ItemStats actualResult = new ItemDeserializer().deserialize(jp, ctxt);
+        ItemInfo actualResult = new ItemInfoDeserializer().deserialize(jp, ctxt);
 
 
         assertThat(actualResult).isEqualTo(expectedResult);
