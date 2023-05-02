@@ -1,25 +1,26 @@
 package com.thoroldvix.g2gcalculator.item;
 
-import com.thoroldvix.g2gcalculator.common.NotFoundException;
 import com.thoroldvix.g2gcalculator.common.StringFormatter;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
 
     private final ItemsClient itemsClient;
     private final ItemRepository itemRepository;
+    private final ItemMapper mapper;
+
     private final Map<Integer, Item> itemCache = new HashMap<>();
 
 
@@ -40,37 +41,52 @@ public class ItemServiceImpl implements ItemService {
         String formattedServerName = formatServerName(server);
         return itemsClient.getItemById(formattedServerName, itemId);
     }
-
     @Override
     public List<ItemInfo> getAllItemsInfo(String server) {
-        if (!StringUtils.hasText(server))
-            throw new IllegalArgumentException("Server name must be valid");
-
+        validateServerName(server);
         String formattedServerName = formatServerName(server);
-
-        List<ItemInfo> basicItemInfos = itemsClient.getAllItems(formattedServerName).items();
-        List<ItemInfo> itemInfos = new ArrayList<>();
-
-        for (ItemInfo basicItemInfo : basicItemInfos) {
-            Item item = itemCache.get(basicItemInfo.itemId());
-            if (item == null) {
-                item = itemRepository.findById(basicItemInfo.itemId()).orElseThrow(() ->
-                        new NotFoundException("Item with id " + basicItemInfo.itemId() + " not found"));
-                itemCache.put(basicItemInfo.itemId(), item);
-            }
-            ItemInfo fullItemInfo = createFullItemInfo(item, basicItemInfo);
-            itemInfos.add(fullItemInfo);
-        }
-
-        return itemInfos;
+        List<ItemInfo> basicItemInfos = fetchBasicItemInfo(formattedServerName);
+        Map<Integer, Item> cachedItems = getCachedItems(basicItemInfos);
+        return buildFullItemInfo(basicItemInfos, cachedItems);
     }
 
+    private void validateServerName(String server) {
+        if (!StringUtils.hasText(server)) {
+            throw new IllegalArgumentException("Server name must be valid");
+        }
+    }
 
-    private ItemInfo createFullItemInfo(Item item, ItemInfo basicItemInfo) {
+    private List<ItemInfo> fetchBasicItemInfo(String server) {
+        return itemsClient.getAllItems(server).items();
+    }
+
+    private Map<Integer, Item> getCachedItems(List<ItemInfo> itemInfos) {
+        Set<Integer> itemIds = itemInfos.stream()
+                .map(ItemInfo::itemId)
+                .filter(itemId -> !itemCache.containsKey(itemId))
+                .collect(Collectors.toSet());
+        List<Item> items = itemRepository.findAllById(itemIds);
+        items.forEach(item -> itemCache.putIfAbsent(item.id, item));
+        return itemCache;
+    }
+
+    private List<ItemInfo> buildFullItemInfo(List<ItemInfo> basicItemInfos, Map<Integer, Item> cachedItems) {
+        return basicItemInfos.stream()
+                .filter(itemInfo -> cachedItems.containsKey(itemInfo.itemId()))
+                .filter(itemInfo -> itemInfo.quantity() > 0)
+                .map(itemInfo -> createFullItemInfo(itemInfo, cachedItems.get(itemInfo.itemId())))
+                .collect(Collectors.toList());
+    }
+
+    
+
+
+    private ItemInfo createFullItemInfo(ItemInfo basicItemInfo, Item item) {
+
         return ItemInfo.builder()
-                .itemId(item.id)
+                .itemId(basicItemInfo.itemId())
                 .name(item.name)
-                .icon(item.icon)
+                .icon(createItemIcon(item.icon))
                 .quality(item.quality)
                 .type(item.type)
                 .marketValue(basicItemInfo.marketValue())
@@ -78,6 +94,12 @@ public class ItemServiceImpl implements ItemService {
                 .quantity(basicItemInfo.quantity())
                 .numAuctions(basicItemInfo.numAuctions())
                 .build();
+
+    }
+
+    private String createItemIcon(String icon) {
+        String wowheadImgLink = "https://wow.zamimg.com/images/wow/icons/large/%s.jpg";
+        return String.format(wowheadImgLink, icon);
     }
 
 
