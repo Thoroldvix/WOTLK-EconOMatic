@@ -8,7 +8,7 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 @Service
-public  class ItemPriceCalculatorImpl implements ItemPriceCalculator {
+public  class RMItemPriceCalculatorImpl implements RMItemPriceCalculator {
     private static final BigDecimal ONE_GOLD_IN_COPPER = BigDecimal.valueOf(10000);
 
     private BigDecimal convertPriceToGold(long priceInCopper) {

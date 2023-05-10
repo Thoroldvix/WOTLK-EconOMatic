@@ -1,9 +1,9 @@
 package com.thoroldvix.g2gcalculator.price;
 
 
-import com.thoroldvix.g2gcalculator.item.dto.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.item.dto.RealMoneyItemPrice;
 import com.thoroldvix.g2gcalculator.common.NotFoundException;
-import com.thoroldvix.g2gcalculator.item.price.ItemPriceService;
+import com.thoroldvix.g2gcalculator.item.price.RMItemPriceService;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ public class PriceControllerTest {
     private PriceService classicPriceService;
 
     @MockBean
-    private ItemPriceService classicItemPriceService;
+    private RMItemPriceService classicRMItemPriceService;
 
     @MockBean
     private ServerService classicServerService;
@@ -107,10 +107,10 @@ public class PriceControllerTest {
         String serverName = "test-server";
         int itemId = 123;
         BigDecimal price = BigDecimal.valueOf(50.0);
-        ItemPriceResponse itemPrice = ItemPriceResponse.builder()
+        RealMoneyItemPrice itemPrice = RealMoneyItemPrice.builder()
                 .value(price)
                 .build();
-        when(classicItemPriceService.getPriceForItem(anyString(), anyString() ,anyInt(), anyBoolean()))
+        when(classicRMItemPriceService.getPriceForItem(anyString(), anyString() ,anyInt(), anyBoolean()))
                 .thenReturn(itemPrice);
 
         mockMvc.perform(get(API_REALMS + "/{serverName}/{itemId}", serverName, itemId))
@@ -126,7 +126,7 @@ public class PriceControllerTest {
         int amount = 1;
         boolean minBuyout = false;
 
-        when(classicItemPriceService.getPriceForItem(serverName, itemId, amount, minBuyout)).thenThrow(NotFoundException.class);
+        when(classicRMItemPriceService.getPriceForItem(serverName, itemId, amount, minBuyout)).thenThrow(NotFoundException.class);
 
         mockMvc.perform(get(API_REALMS + "/{serverName}/items/{itemId}", serverName, itemId))
                 .andExpect(status().isNotFound());

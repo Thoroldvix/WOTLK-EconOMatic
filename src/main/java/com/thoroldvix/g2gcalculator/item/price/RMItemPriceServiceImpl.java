@@ -1,7 +1,7 @@
 package com.thoroldvix.g2gcalculator.item.price;
 
 import com.thoroldvix.g2gcalculator.item.ItemService;
-import com.thoroldvix.g2gcalculator.item.dto.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.item.dto.RealMoneyItemPrice;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
 import com.thoroldvix.g2gcalculator.price.PriceService;
@@ -18,37 +18,37 @@ import java.math.BigDecimal;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ItemPriceServiceImpl implements ItemPriceService {
+public class RMItemPriceServiceImpl implements RMItemPriceService {
     private final PriceService priceServiceImpl;
 
     private final ServerService serverServiceImpl;
     private final ItemService itemServiceImpl;
 
-    private final ItemPriceCalculator itemPriceCalculatorImpl;
+    private final RMItemPriceCalculator RMItemPriceCalculatorImpl;
 
 
     @Override
     @Transactional
-    public ItemPriceResponse getPriceForItem(String serverName, String itemIdentifier, int amount, boolean minBuyout) {
+    public RealMoneyItemPrice getPriceForItem(String serverName, String itemIdentifier, int amount, boolean minBuyout) {
         if (amount < 1 || !StringUtils.hasText(itemIdentifier)) {
             throw new IllegalArgumentException("Amount and item identifier must be valid");
         }
 
         Server server = serverServiceImpl.getServer(serverName);
-        ItemInfo itemInfo = getItemStats(serverName, itemIdentifier);
+        ItemInfo itemInfo = getItemInfo(serverName, itemIdentifier);
 
 
         PriceResponse serverPrice = priceServiceImpl.getPriceForServer(server);
         long targetPrice = getTargetPrice(minBuyout, itemInfo);
-        BigDecimal itemPrice = itemPriceCalculatorImpl.calculatePrice(targetPrice, serverPrice, amount);
+        BigDecimal itemPrice = RMItemPriceCalculatorImpl.calculatePrice(targetPrice, serverPrice, amount);
 
-        return ItemPriceResponse.builder()
+        return RealMoneyItemPrice.builder()
                 .currency(serverPrice.currency())
                 .value(itemPrice)
                 .build();
     }
 
-    private ItemInfo getItemStats(String serverName, String itemIdentifier) {
+    private ItemInfo getItemInfo(String serverName, String itemIdentifier) {
     if (NumberUtils.isCreatable(itemIdentifier)) {
         return itemServiceImpl.getItemById(serverName, Integer.parseInt(itemIdentifier));
     } else {
@@ -57,6 +57,6 @@ public class ItemPriceServiceImpl implements ItemPriceService {
 }
 
     private long getTargetPrice(boolean minBuyout, ItemInfo item) {
-        return minBuyout ? item.minBuyout() : item.marketValue();
+        return minBuyout ? item.auctionHouseInfo().minBuyout() : item.auctionHouseInfo().marketValue();
     }
 }

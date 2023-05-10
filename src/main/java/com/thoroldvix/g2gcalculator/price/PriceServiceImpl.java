@@ -52,6 +52,9 @@ public class PriceServiceImpl implements PriceService {
 
     @Override
     public List<PriceResponse> getAllPricesForServer(String serverName, Pageable pageable) {
+        if (!StringUtils.hasText(serverName)) {
+            throw new IllegalArgumentException("Server name must not be null or empty");
+        }
         Server server = serverServiceImpl.getServer(serverName);
         return priceRepository.findAllByServer(server, pageable).getContent().stream()
                 .map(priceMapper::toPriceResponse)
@@ -60,6 +63,9 @@ public class PriceServiceImpl implements PriceService {
 
     @Override
     public List<PriceResponse> getAllPricesForServer(String serverName) {
+        if (!StringUtils.hasText(serverName)) {
+            throw new IllegalArgumentException("Server name must not be null or empty");
+        }
         Server server = serverServiceImpl.getServer(serverName);
         return priceRepository.findAllByServer(server).stream()
                 .map(priceMapper::toPriceResponse)
@@ -68,6 +74,9 @@ public class PriceServiceImpl implements PriceService {
 
     @Override
     public List<PriceResponse> getAllPricesForServer(int serverId) {
+        if (serverId <= 0) {
+            throw new IllegalArgumentException("Server id must be positive");
+        }
         Server server = serverServiceImpl.getServerById(serverId);
         return priceRepository.findAllByServer(server).stream()
                 .map(priceMapper::toPriceResponse)

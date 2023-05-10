@@ -1,10 +1,11 @@
 package com.thoroldvix.g2gcalculator.price;
 
 import com.thoroldvix.g2gcalculator.item.*;
-import com.thoroldvix.g2gcalculator.item.dto.ItemPriceResponse;
+import com.thoroldvix.g2gcalculator.item.dto.AuctionHouseInfo;
+import com.thoroldvix.g2gcalculator.item.dto.RealMoneyItemPrice;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
-import com.thoroldvix.g2gcalculator.item.price.ItemPriceCalculator;
-import com.thoroldvix.g2gcalculator.item.price.ItemPriceServiceImpl;
+import com.thoroldvix.g2gcalculator.item.price.RMItemPriceCalculator;
+import com.thoroldvix.g2gcalculator.item.price.RMItemPriceServiceImpl;
 import com.thoroldvix.g2gcalculator.server.Server;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import org.junit.jupiter.api.Test;
@@ -22,9 +23,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ItemPriceServiceImplTest {
+class RMItemPriceServiceImplTest {
     @InjectMocks
-    ItemPriceServiceImpl itemPriceServiceImpl;
+    RMItemPriceServiceImpl itemPriceServiceImpl;
     @Mock
     private PriceService priceServiceImpl;
     @Mock
@@ -32,7 +33,7 @@ class ItemPriceServiceImplTest {
     @Mock
     ItemService itemServiceImpl;
     @Mock
-    private ItemPriceCalculator itemPriceCalculatorImpl;
+    private RMItemPriceCalculator RMItemPriceCalculatorImpl;
 
     @Test
     void getPriceForItem_whenMinBuyOutFalseAndItemNameProvided_returnsCorrectItemPriceResponse() {
@@ -41,12 +42,15 @@ class ItemPriceServiceImplTest {
                 .name(serverName)
                 .prices(new ArrayList<>())
                 .build();
-        ItemInfo itemInfo = ItemInfo.builder()
+        AuctionHouseInfo auctionHouseInfo = AuctionHouseInfo.builder()
                 .itemId(1)
                 .minBuyout(10000L)
                 .marketValue(100000L)
                 .build();
-        ItemPriceResponse expectedResponse = ItemPriceResponse.builder()
+        ItemInfo itemInfo = ItemInfo.builder()
+                .auctionHouseInfo(auctionHouseInfo)
+                .build();
+        RealMoneyItemPrice expectedResponse = RealMoneyItemPrice.builder()
                 .value(BigDecimal.valueOf(10000))
                 .currency("USD")
                 .build();
@@ -61,10 +65,10 @@ class ItemPriceServiceImplTest {
         when(itemServiceImpl.getItemByName(serverName, itemName)).thenReturn(itemInfo);
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceServiceImpl.getPriceForServer(server)).thenReturn(priceResponse);
-        when(itemPriceCalculatorImpl.calculatePrice(itemInfo.marketValue(), priceResponse, amount)).thenReturn(expectedResponse.value());
+        when(RMItemPriceCalculatorImpl.calculatePrice(itemInfo.auctionHouseInfo().marketValue(), priceResponse, amount)).thenReturn(expectedResponse.value());
 
 
-        ItemPriceResponse actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemName, amount, minBuyout);
+        RealMoneyItemPrice actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemName, amount, minBuyout);
 
 
         assertThat(actualResponse.value()).isEqualTo(expectedResponse.value());
@@ -77,12 +81,15 @@ class ItemPriceServiceImplTest {
                 .name(serverName)
                 .prices(new ArrayList<>())
                 .build();
-        ItemInfo itemInfo = ItemInfo.builder()
+        AuctionHouseInfo auctionHouseInfo = AuctionHouseInfo.builder()
                 .itemId(1)
                 .minBuyout(10000L)
                 .marketValue(100000L)
                 .build();
-        ItemPriceResponse expectedResponse = ItemPriceResponse.builder()
+        ItemInfo itemInfo = ItemInfo.builder()
+                .auctionHouseInfo(auctionHouseInfo)
+                .build();
+        RealMoneyItemPrice expectedResponse = RealMoneyItemPrice.builder()
                 .value(BigDecimal.valueOf(10000))
                 .currency("USD")
                 .build();
@@ -97,10 +104,10 @@ class ItemPriceServiceImplTest {
         when(itemServiceImpl.getItemById(serverName, Integer.parseInt(itemId))).thenReturn(itemInfo);
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceServiceImpl.getPriceForServer(server)).thenReturn(priceResponse);
-        when(itemPriceCalculatorImpl.calculatePrice(itemInfo.marketValue(), priceResponse, amount)).thenReturn(expectedResponse.value());
+        when(RMItemPriceCalculatorImpl.calculatePrice(itemInfo.auctionHouseInfo().marketValue(), priceResponse, amount)).thenReturn(expectedResponse.value());
 
 
-        ItemPriceResponse actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemId, amount, minBuyout);
+        RealMoneyItemPrice actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemId, amount, minBuyout);
 
 
         assertThat(actualResponse.value()).isEqualTo(expectedResponse.value());
@@ -113,12 +120,15 @@ class ItemPriceServiceImplTest {
                 .name(serverName)
                 .prices(new ArrayList<>())
                 .build();
-        ItemInfo itemInfo = ItemInfo.builder()
+        AuctionHouseInfo auctionHouseInfo = AuctionHouseInfo.builder()
                 .itemId(1)
                 .minBuyout(10000L)
                 .marketValue(100000L)
                 .build();
-        ItemPriceResponse expectedResponse = ItemPriceResponse.builder()
+        ItemInfo itemInfo = ItemInfo.builder()
+                .auctionHouseInfo(auctionHouseInfo)
+                .build();
+        RealMoneyItemPrice expectedResponse = RealMoneyItemPrice.builder()
                 .value(BigDecimal.valueOf(1))
                 .currency("USD")
                 .build();
@@ -133,10 +143,10 @@ class ItemPriceServiceImplTest {
         when(itemServiceImpl.getItemById(serverName, Integer.parseInt(itemId))).thenReturn(itemInfo);
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceServiceImpl.getPriceForServer(server)).thenReturn(priceResponse);
-        when(itemPriceCalculatorImpl.calculatePrice(anyLong(), any(PriceResponse.class), anyInt())).thenReturn(expectedResponse.value());
+        when(RMItemPriceCalculatorImpl.calculatePrice(anyLong(), any(PriceResponse.class), anyInt())).thenReturn(expectedResponse.value());
 
 
-        ItemPriceResponse actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemId, amount, minBuyout);
+        RealMoneyItemPrice actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemId, amount, minBuyout);
 
 
         assertThat(actualResponse.value()).isEqualTo(expectedResponse.value());
@@ -150,12 +160,15 @@ class ItemPriceServiceImplTest {
                 .name(serverName)
                 .prices(new ArrayList<>())
                 .build();
-        ItemInfo itemInfo = ItemInfo.builder()
+        AuctionHouseInfo auctionHouseInfo = AuctionHouseInfo.builder()
                 .itemId(1)
                 .minBuyout(10000L)
                 .marketValue(100000L)
                 .build();
-        ItemPriceResponse expectedResponse = ItemPriceResponse.builder()
+        ItemInfo itemInfo = ItemInfo.builder()
+                .auctionHouseInfo(auctionHouseInfo)
+                .build();
+        RealMoneyItemPrice expectedResponse = RealMoneyItemPrice.builder()
                 .value(BigDecimal.valueOf(1))
                 .currency("USD")
                 .build();
@@ -170,10 +183,10 @@ class ItemPriceServiceImplTest {
         when(itemServiceImpl.getItemByName(serverName, itemName)).thenReturn(itemInfo);
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceServiceImpl.getPriceForServer(server)).thenReturn(priceResponse);
-        when(itemPriceCalculatorImpl.calculatePrice(anyLong(), any(PriceResponse.class), anyInt())).thenReturn(expectedResponse.value());
+        when(RMItemPriceCalculatorImpl.calculatePrice(anyLong(), any(PriceResponse.class), anyInt())).thenReturn(expectedResponse.value());
 
 
-        ItemPriceResponse actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemName, amount, minBuyout);
+        RealMoneyItemPrice actualResponse = itemPriceServiceImpl.getPriceForItem(serverName, itemName, amount, minBuyout);
 
 
         assertThat(actualResponse.value()).isEqualTo(expectedResponse.value());

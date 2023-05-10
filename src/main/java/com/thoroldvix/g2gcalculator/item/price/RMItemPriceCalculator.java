@@ -4,6 +4,6 @@ import com.thoroldvix.g2gcalculator.price.PriceResponse;
 
 import java.math.BigDecimal;
 
-public interface ItemPriceCalculator {
+public interface RMItemPriceCalculator {
     BigDecimal calculatePrice(long targetPrice, PriceResponse price, int amount);
 }

@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.price;
 
-import com.thoroldvix.g2gcalculator.item.price.ItemPriceCalculatorImpl;
+import com.thoroldvix.g2gcalculator.item.price.RMItemPriceCalculatorImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,9 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
-class ItemPriceCalculatorImplTest {
+class RMItemPriceCalculatorImplTest {
 
-    private final ItemPriceCalculatorImpl itemPriceCalculatorImpl = new ItemPriceCalculatorImpl();
+    private final RMItemPriceCalculatorImpl itemPriceCalculatorImpl = new RMItemPriceCalculatorImpl();
 
 
     @Test
