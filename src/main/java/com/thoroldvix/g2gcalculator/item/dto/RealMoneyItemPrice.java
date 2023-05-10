@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 @Builder
-public record ItemPriceResponse(
+public record RealMoneyItemPrice(
         BigDecimal value,
 
         String currency
