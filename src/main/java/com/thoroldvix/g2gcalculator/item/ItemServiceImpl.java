@@ -1,27 +1,46 @@
 package com.thoroldvix.g2gcalculator.item;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.thoroldvix.g2gcalculator.common.StringFormatter;
+import com.thoroldvix.g2gcalculator.item.dto.AuctionHouseInfo;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
+import com.thoroldvix.g2gcalculator.item.price.AuctionHouseService;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class ItemServiceImpl implements ItemService {
 
+public class ItemServiceImpl implements ItemService {
 
     private final ItemsClient itemsClient;
     private final ItemRepository itemRepository;
-    private final ItemMapper mapper;
+    private final AuctionHouseService auctionHouseServiceImpl;
+    private final Map<Integer, Item> boeItemsCache = new HashMap<>();
 
-    private final Map<Integer, Item> itemCache = new HashMap<>();
+    private final Cache<String, Set<ItemInfo>> cache;
+
+    @Autowired
+    public ItemServiceImpl(ItemsClient itemsClient, ItemRepository itemRepository, AuctionHouseService auctionHouseServiceImpl) {
+        this.itemsClient = itemsClient;
+        this.itemRepository = itemRepository;
+        this.auctionHouseServiceImpl = auctionHouseServiceImpl;
+        this.cache = Caffeine.newBuilder()
+                .expireAfterWrite(15, TimeUnit.MINUTES)
+                .maximumSize(96)
+                .build();
+    }
 
 
     @Override
@@ -41,60 +60,59 @@ public class ItemServiceImpl implements ItemService {
         String formattedServerName = formatServerName(server);
         return itemsClient.getItemById(formattedServerName, itemId);
     }
-    @Override
-    public List<ItemInfo> getAllItemsInfo(String server) {
-        validateServerName(server);
-        String formattedServerName = formatServerName(server);
-        List<ItemInfo> basicItemInfos = fetchBasicItemInfo(formattedServerName);
-        Map<Integer, Item> cachedItems = getCachedItems(basicItemInfos);
-        return buildFullItemInfo(basicItemInfos, cachedItems);
-    }
 
-    private void validateServerName(String server) {
+
+
+    @Override
+    public Set<ItemInfo> getAllItemsInfo(String server) {
         if (!StringUtils.hasText(server)) {
             throw new IllegalArgumentException("Server name must be valid");
         }
+        String formattedServerName = formatServerName(server);
+        log.info("Getting all items info for server {}", formattedServerName);
+        String cacheKey = "all-items-info-" + server;
+
+        Set<ItemInfo> cachedItems = cache.getIfPresent(cacheKey);
+        if (cachedItems != null) {
+            log.debug("Returning cached all items info for server {}", formattedServerName);
+            return cachedItems;
+        }
+
+        List<AuctionHouseInfo> itemPrices = auctionHouseServiceImpl.getAuctionHouseItemsForServer(server);
+        Map<Integer, Item> boeItemsCache = getBoeItemsCache(itemPrices);
+        log.info("Finished getting all items info for server {}", formattedServerName);
+        Set<ItemInfo> itemsInfo = buildFullItemInfo(itemPrices, boeItemsCache);
+        cache.put(cacheKey, itemsInfo);
+        return itemsInfo;
     }
 
-    private List<ItemInfo> fetchBasicItemInfo(String server) {
-        return itemsClient.getAllItems(server).items();
-    }
 
-    private Map<Integer, Item> getCachedItems(List<ItemInfo> itemInfos) {
-        Set<Integer> itemIds = itemInfos.stream()
-                .map(ItemInfo::itemId)
-                .filter(itemId -> !itemCache.containsKey(itemId))
+    private Map<Integer, Item> getBoeItemsCache(List<AuctionHouseInfo> itemPrices) {
+        Set<Integer> itemIds = itemPrices.stream()
+                .map(AuctionHouseInfo::itemId)
+                .filter(itemId -> !boeItemsCache.containsKey(itemId))
                 .collect(Collectors.toSet());
         List<Item> items = itemRepository.findAllById(itemIds);
-        items.forEach(item -> itemCache.putIfAbsent(item.id, item));
-        return itemCache;
+        items.forEach(item -> boeItemsCache.putIfAbsent(item.id, item));
+        return boeItemsCache;
     }
 
-    private List<ItemInfo> buildFullItemInfo(List<ItemInfo> basicItemInfos, Map<Integer, Item> cachedItems) {
-        return basicItemInfos.stream()
+    private Set<ItemInfo> buildFullItemInfo(List<AuctionHouseInfo> itemPrices, Map<Integer, Item> cachedItems) {
+        return itemPrices.stream()
                 .filter(itemInfo -> cachedItems.containsKey(itemInfo.itemId()))
                 .filter(itemInfo -> itemInfo.quantity() > 0)
                 .map(itemInfo -> createFullItemInfo(itemInfo, cachedItems.get(itemInfo.itemId())))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
-    
-
-
-    private ItemInfo createFullItemInfo(ItemInfo basicItemInfo, Item item) {
-
+    private ItemInfo createFullItemInfo(AuctionHouseInfo itemPrice, Item item) {
         return ItemInfo.builder()
-                .itemId(basicItemInfo.itemId())
                 .name(item.name)
                 .icon(createItemIcon(item.icon))
                 .quality(item.quality)
                 .type(item.type)
-                .marketValue(basicItemInfo.marketValue())
-                .minBuyout(basicItemInfo.minBuyout())
-                .quantity(basicItemInfo.quantity())
-                .numAuctions(basicItemInfo.numAuctions())
+                .auctionHouseInfo(itemPrice)
                 .build();
-
     }
 
     private String createItemIcon(String icon) {
