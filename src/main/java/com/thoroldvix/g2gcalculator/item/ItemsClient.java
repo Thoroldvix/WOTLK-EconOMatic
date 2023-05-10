@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.item;
 
-import com.thoroldvix.g2gcalculator.item.dto.ItemInfoList;
+import com.thoroldvix.g2gcalculator.item.dto.AuctionHouseInfoList;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,5 +16,5 @@ public interface ItemsClient {
     ItemInfo getItemByName(@PathVariable String serverName, @PathVariable String itemName);
 
     @GetMapping("/{serverName}")
-    ItemInfoList getAllItems(@PathVariable String serverName);
+    AuctionHouseInfoList getAllItemPricesForServer(@PathVariable String serverName);
 }
