@@ -6,11 +6,10 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-@JsonDeserialize(using = ItemInfoListDeserializer.class)
-public record ItemInfoList(
+@JsonDeserialize(using = AuctionHouseInfoListDeserializer.class)
+public record AuctionHouseInfoList(
         String slug,
-
-        List<ItemInfo> items
+        List<AuctionHouseInfo> items
 ) {
 
 }

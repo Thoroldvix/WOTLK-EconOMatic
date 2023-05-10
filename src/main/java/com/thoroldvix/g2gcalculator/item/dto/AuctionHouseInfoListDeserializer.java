@@ -12,38 +12,38 @@ import java.util.List;
 
 import static com.thoroldvix.g2gcalculator.common.JsonUtility.*;
 
-public class ItemInfoListDeserializer extends StdDeserializer<ItemInfoList> {
+public class AuctionHouseInfoListDeserializer extends StdDeserializer<AuctionHouseInfoList> {
 
-    public ItemInfoListDeserializer() {
+    public AuctionHouseInfoListDeserializer() {
         this(null);
     }
-    public ItemInfoListDeserializer(Class<?> vc) {
+    public AuctionHouseInfoListDeserializer(Class<?> vc) {
         super(vc);
     }
     @Override
-    public ItemInfoList deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JacksonException {
+    public AuctionHouseInfoList deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JacksonException {
         JsonNode node = jp.getCodec().readTree(jp);
-        List<ItemInfo> itemStats = new ArrayList<>();
+        List<AuctionHouseInfo> items = new ArrayList<>();
         String slug = getTextValue(node, "slug");
         JsonNode resultNode = node.get("data");
         if (resultNode.isArray()) {
             for (JsonNode item : resultNode) {
-                ItemInfo itemInfo = getItemInfo(item);
-                itemStats.add(itemInfo);
+                AuctionHouseInfo itemInfo = getAuctionHouseInfo(item);
+                items.add(itemInfo);
             }
         }
 
-        return new ItemInfoList(slug, itemStats);
+        return new AuctionHouseInfoList(slug, items);
     }
 
-    private  ItemInfo getItemInfo(JsonNode item) {
+    private  AuctionHouseInfo getAuctionHouseInfo(JsonNode item) {
         int itemId = getIntValue(item, "itemId");
         long marketValue = getLongValue(item, "marketValue");
         long minBuyout = getLongValue(item, "minBuyout");
         int numAuctions = getIntValue(item, "numAuctions");
         int quantity = getIntValue(item, "quantity");
 
-        return ItemInfo.builder()
+        return AuctionHouseInfo.builder()
                 .itemId(itemId)
                 .marketValue(marketValue)
                 .minBuyout(minBuyout)
