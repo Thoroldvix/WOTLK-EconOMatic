@@ -462,3 +462,23 @@ VALUES (41303,
         'Whitemane',
         'US',
         'HORDE');
+INSERT INTO wow.server (id, name, region, faction)
+VALUES (41322,
+        'Flamegor',
+        'RU',
+        'ALLIANCE');
+INSERT INTO wow.server (id, name, region, faction)
+VALUES (41323,
+        'Flamegor',
+        'RU',
+        'HORDE');
+INSERT INTO wow.server (id, name, region, faction)
+VALUES (41320,
+        'Chromie',
+        'RU',
+        'ALLIANCE');
+INSERT INTO wow.server (id, name, region, faction)
+VALUES (41321,
+        'Chromie',
+        'RU',
+        'HORDE');
