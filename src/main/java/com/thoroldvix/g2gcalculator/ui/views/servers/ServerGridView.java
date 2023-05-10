@@ -1,19 +1,26 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
+import com.thoroldvix.g2gcalculator.server.Faction;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
+import com.thoroldvix.g2gcalculator.ui.views.FactionRenderer;
+import com.thoroldvix.g2gcalculator.ui.views.FactionSelect;
 import com.thoroldvix.g2gcalculator.ui.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
 @Route(value = "wow-classic/servers", layout = MainLayout.class)
+@PageTitle("G2G Prices")
 @SpringComponent
 @UIScope
 public class ServerGridView extends VerticalLayout {
@@ -21,29 +28,69 @@ public class ServerGridView extends VerticalLayout {
 
     private final Grid<ServerResponse> grid = new Grid<>(ServerResponse.class);
 
-    private final TextField filterText = new TextField();
+    private TextField serverNameFilter;
+    private FactionSelect factionFilter;
 
     public ServerGridView(ServerService serverServiceImpl) {
         this.serverServiceImpl = serverServiceImpl;
         addClassName("list-view");
         setSizeFull();
         configureGrid();
-        add(getToolbar(), getContent());
         updateGrid();
+        prepareFilterFields();
+        add(getFilterLayout(), getContent());
     }
 
     private void updateGrid() {
-        grid.setItems(serverServiceImpl.getAllServersByName(filterText.getValue()));
+        grid.setItems(serverServiceImpl.getAllServers());
     }
 
-    private Component getToolbar() {
-        filterText.setPlaceholder("Filter by name...");
-        filterText.setClearButtonVisible(true);
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> updateGrid());
-        HorizontalLayout toolbar = new HorizontalLayout(filterText);
-        toolbar.addClassName("toolbar");
-        return toolbar;
+    private Component getFilterLayout() {
+        HorizontalLayout filterLayout = new HorizontalLayout(serverNameFilter);
+        filterLayout.addClassName("filter-layout");
+        filterLayout.setAlignItems(Alignment.CENTER);
+        filterLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        filterLayout.add(serverNameFilter, factionFilter);
+        return filterLayout;
+    }
+
+    private void prepareFilterFields() {
+        serverNameFilter = getServerNameFilter();
+        factionFilter = getFactionFilter();
+    }
+
+    private FactionSelect getFactionFilter() {
+        FactionSelect filter = new FactionSelect();
+        filter.setPlaceholder("Filter by faction...");
+        filter.setItems(Faction.values());
+        filter.setItemLabelGenerator(Faction::toString);
+        filter.addValueChangeListener(e -> onFilterChange());
+        return filter;
+    }
+
+    private TextField getServerNameFilter() {
+        TextField filter = new TextField();
+        filter.setPlaceholder("Filter by server name...");
+        filter.setClearButtonVisible(true);
+        filter.setValueChangeMode(ValueChangeMode.LAZY);
+        filter.addValueChangeListener(e -> onFilterChange());
+        return filter;
+    }
+
+    private void onFilterChange() {
+        GridListDataView<ServerResponse> listDataProvider =  grid.getListDataView();
+        listDataProvider.setFilter(serverResponse -> {
+                    boolean serverNameMatch = true;
+                    boolean factionMatch = true;
+                    if (!serverNameFilter.isEmpty()) {
+                        serverNameMatch = serverResponse.name().toLowerCase().contains(serverNameFilter.getValue().toLowerCase());
+                    }
+                    if (factionFilter.getValue() != null) {
+                        factionMatch = serverResponse.faction().equals(factionFilter.getValue());
+                    }
+                    return serverNameMatch && factionMatch;
+                }
+        );
     }
 
     private void configureGrid() {
@@ -51,23 +98,19 @@ public class ServerGridView extends VerticalLayout {
         grid.setSizeFull();
         configureColumns();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
-        grid.addItemClickListener(event -> {
-            navigateToServer(event.getItem());
-        });
+        grid.addItemClickListener(event -> navigateToServer(event.getItem()));
     }
 
     private void configureColumns() {
-        grid.addColumn(ServerResponse::name).setHeader("Name")
-                .setSortable(true);
-        grid.addColumn(ServerResponse::faction).setHeader("Faction")
-                .setSortable(true);
-        grid.addColumn(ServerResponse::region).setHeader("Region")
-                .setSortable(true);
-        grid.addColumn(serverResponse -> serverResponse.price().value()).setHeader("Price")
-                .setSortable(true);
-        grid.addColumn(serverResponse -> serverResponse.price().currency()).setHeader("Currency")
-                .setSortable(true);
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        grid.addColumn(ServerResponse::name).setHeader("Name");
+        grid.addColumn(new ComponentRenderer<>(server -> new FactionRenderer(server.faction()))).setHeader("Faction");
+        grid.addColumn(ServerResponse::region).setHeader("Region");
+        grid.addColumn(serverResponse -> serverResponse.price().value()).setHeader("Price (USD)");
+
+        grid.getColumns().forEach(col -> {
+            col.setAutoWidth(true);
+            col.setSortable(true);
+        });
     }
 
     private void navigateToServer(ServerResponse server) {
