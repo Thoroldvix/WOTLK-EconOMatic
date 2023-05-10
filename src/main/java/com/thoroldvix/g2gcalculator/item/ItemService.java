@@ -2,7 +2,7 @@ package com.thoroldvix.g2gcalculator.item;
 
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 
-import java.util.List;
+import java.util.Set;
 
 public interface ItemService {
 
@@ -10,7 +10,9 @@ public interface ItemService {
 
     ItemInfo getItemById(String serverName, int itemId);
 
-    List<ItemInfo> getAllItemsInfo(String serverName);
+    Set<ItemInfo> getAllItemsInfo(String serverName);
+
+
 
     void saveItem(Item item);
 
