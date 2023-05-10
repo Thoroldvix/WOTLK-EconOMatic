@@ -18,12 +18,8 @@ public record ItemInfo(
         BigDecimal price,
         String currency,
         String name,
-        int itemId,
-        long minBuyout,
-        int quantity,
-        int numAuctions,
-        LocalDateTime lastUpdated,
-        long marketValue
+        AuctionHouseInfo auctionHouseInfo,
+        LocalDateTime lastUpdated
 
 ) {
 

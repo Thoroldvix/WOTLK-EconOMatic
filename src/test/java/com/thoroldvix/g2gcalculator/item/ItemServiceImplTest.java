@@ -1,21 +1,18 @@
 package com.thoroldvix.g2gcalculator.item;
 
+import com.thoroldvix.g2gcalculator.item.dto.AuctionHouseInfo;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
-import com.thoroldvix.g2gcalculator.item.dto.ItemInfoList;
+import com.thoroldvix.g2gcalculator.item.price.AuctionHouseServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,13 +25,19 @@ class ItemServiceImplTest {
     private ItemRepository itemRepository;
     @Mock
     private Map<Integer, Item> itemCache;
+
+    @Mock
+    private AuctionHouseServiceImpl auctionHouseService;
     @InjectMocks
     ItemServiceImpl itemServiceImpl;
 
     @Test
     void getItemByName_whenValidServerNameAndItemName_returnsItemInfo() {
-        ItemInfo expectedItemInfo = ItemInfo.builder()
+        AuctionHouseInfo auctionHouseInfo = AuctionHouseInfo.builder()
                 .itemId(1)
+                .build();
+        ItemInfo expectedItemInfo = ItemInfo.builder()
+                .auctionHouseInfo(auctionHouseInfo)
                 .name("test")
                 .build();
         String serverName = "test";
@@ -69,8 +72,11 @@ class ItemServiceImplTest {
 
     @Test
     void getItemById_whenValidServerNameAndItemId_returnsItemInfo() {
-        ItemInfo expectedItemInfo = ItemInfo.builder()
+        AuctionHouseInfo auctionHouseInfo = AuctionHouseInfo.builder()
                 .itemId(1)
+                .build();
+        ItemInfo expectedItemInfo = ItemInfo.builder()
+                .auctionHouseInfo(auctionHouseInfo)
                 .name("test")
                 .build();
         String serverName = "test";
@@ -130,14 +136,14 @@ class ItemServiceImplTest {
         itemCache = new HashMap<>();
         String wowheadIcon = "https://wow.zamimg.com/images/wow/icons/large/%s.jpg";
         String serverName = "everlook-alliance";
-        ItemInfo basicItemInfo1 = ItemInfo.builder()
+        AuctionHouseInfo auctionHouseInfo1 = AuctionHouseInfo.builder()
                 .itemId(1)
                 .marketValue(1)
                 .minBuyout(2)
                 .quantity(3)
                 .numAuctions(4)
                 .build();
-        ItemInfo basicItemInfo2 = ItemInfo.builder()
+         AuctionHouseInfo auctionHouseInfo2 = AuctionHouseInfo.builder()
                 .itemId(2)
                 .marketValue(5)
                 .minBuyout(6)
@@ -159,37 +165,29 @@ class ItemServiceImplTest {
                 .type(ItemType.ARMOR)
                 .build();
         ItemInfo itemInfo1 = ItemInfo.builder()
-                .itemId(item1.id)
-                .marketValue(basicItemInfo1.marketValue())
-                .minBuyout(basicItemInfo1.minBuyout())
-                .quantity(basicItemInfo1.quantity())
-                .numAuctions(basicItemInfo1.numAuctions())
+                .auctionHouseInfo(auctionHouseInfo1)
                 .name(item1.name)
                 .icon(String.format(wowheadIcon, item1.icon))
                 .quality(item1.quality)
                 .type(item1.type)
                 .build();
         ItemInfo itemInfo2 = ItemInfo.builder()
-                .itemId(item2.id)
-                .marketValue(basicItemInfo2.marketValue())
-                .minBuyout(basicItemInfo2.minBuyout())
-                .quantity(basicItemInfo2.quantity())
-                .numAuctions(basicItemInfo2.numAuctions())
+                .auctionHouseInfo(auctionHouseInfo2)
                 .name(item2.name)
                 .icon(String.format(wowheadIcon, item2.icon))
                 .quality(item2.quality)
                 .type(item2.type)
                 .build();
 
-        List<ItemInfo> expectedResponse = List.of(itemInfo1, itemInfo2);
+        Set<ItemInfo> expectedResponse = new HashSet<>(Set.of(itemInfo1, itemInfo2));
         List<Item> items = List.of(item1, item2);
-        List<ItemInfo> basicItemInfos = List.of(basicItemInfo1, basicItemInfo2);
-        Set<Integer> itemIds = Set.of(basicItemInfo1.itemId(), basicItemInfo2.itemId());
+        List<AuctionHouseInfo> itemPrices = List.of(auctionHouseInfo1, auctionHouseInfo2);
+        Set<Integer> itemIds = Set.of(auctionHouseInfo1.itemId(), auctionHouseInfo2.itemId());
 
         when(itemRepository.findAllById(itemIds)).thenReturn(items);
-        when(itemsClient.getAllItems(anyString())).thenReturn(new ItemInfoList(serverName, basicItemInfos));
+        when(auctionHouseService.getAuctionHouseItemsForServer(serverName)).thenReturn(itemPrices);
 
-        List<ItemInfo> actualResponse = itemServiceImpl.getAllItemsInfo(serverName);
+        Set<ItemInfo> actualResponse = itemServiceImpl.getAllItemsInfo(serverName);
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }

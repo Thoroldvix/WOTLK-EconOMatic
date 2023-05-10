@@ -31,43 +31,51 @@ public class ItemInfoDeserializer extends StdDeserializer<ItemInfo> {
     }
 
     private ItemInfo getItemInfo(JsonNode node) {
-    String server = getTextValue(node, "server");
-    int itemId = getIntValue(node, "itemId");
-    String name = getTextValue(node, "name");
-    String icon = getTextValue(node, "icon");
-    long marketValue = getLongValue(node, "stats", "current", "marketValue");
-    long minBuyout = getLongValue(node, "stats", "current", "minBuyout");
-    int quantity = getIntValue(node, "stats", "current", "quantity");
-    int numAuctions = getIntValue(node, "stats", "current", "numAuctions");
-    LocalDateTime lastUpdated = getLocalDateTimeValue(node, "stats", "lastUpdated");
-    ItemType itemType = getItemType(node);
-    ItemQuality itemQuality = getItemQuality(node);
+        String server = getTextValue(node, "server");
 
-    return ItemInfo.builder()
-            .server(server)
-            .itemId(itemId)
-            .name(name)
-            .icon(icon)
-            .marketValue(marketValue)
-            .minBuyout(minBuyout)
-            .quantity(quantity)
-            .numAuctions(numAuctions)
-            .lastUpdated(lastUpdated)
-            .type(itemType)
-            .quality(itemQuality)
-            .build();
-}
+        String name = getTextValue(node, "name");
+        String icon = getTextValue(node, "icon");
+
+        LocalDateTime lastUpdated = getLocalDateTimeValue(node, "stats", "lastUpdated");
+        ItemType itemType = getItemType(node);
+        ItemQuality itemQuality = getItemQuality(node);
+        AuctionHouseInfo auctionHouseInfo = getAuctionHouseInfo(node);
+        return ItemInfo.builder()
+                .server(server)
+                .auctionHouseInfo(auctionHouseInfo)
+                .name(name)
+                .icon(icon)
+                .lastUpdated(lastUpdated)
+                .type(itemType)
+                .quality(itemQuality)
+                .build();
+    }
+
+    private AuctionHouseInfo getAuctionHouseInfo(JsonNode node) {
+        int itemId = getIntValue(node, "itemId");
+        long marketValue = getLongValue(node, "stats", "current", "marketValue");
+        long minBuyout = getLongValue(node, "stats", "current", "minBuyout");
+        int quantity = getIntValue(node, "stats", "current", "quantity");
+        int numAuctions = getIntValue(node, "stats", "current", "numAuctions");
+
+        return AuctionHouseInfo.builder()
+                .itemId(itemId)
+                .marketValue(marketValue)
+                .minBuyout(minBuyout)
+                .quantity(quantity)
+                .numAuctions(numAuctions)
+                .build();
+    }
 
 
-
-private LocalDateTime getLocalDateTimeValue(JsonNode node, String... keys) {
-    String value = getTextValue(node, keys);
-    return Instant.parse(value)
+    private LocalDateTime getLocalDateTimeValue(JsonNode node, String... keys) {
+        String value = getTextValue(node, keys);
+        return Instant.parse(value)
                 .atZone(ZoneOffset.UTC)
                 .toLocalDateTime();
-}
+    }
 
-private ItemQuality getItemQuality(JsonNode node) {
+    private ItemQuality getItemQuality(JsonNode node) {
         String rarity = node.get("tags").get(0).asText();
         StringEnumConverter<ItemQuality> rarityConverter = new StringEnumConverter<>(ItemQuality.class);
         return rarityConverter.fromString(rarity);

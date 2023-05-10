@@ -3,6 +3,7 @@ package com.thoroldvix.g2gcalculator.item;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoroldvix.g2gcalculator.item.dto.AuctionHouseInfo;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfoDeserializer;
 import org.junit.jupiter.api.Test;
@@ -54,15 +55,17 @@ class ItemInfoDeserializerTest {
         LocalDateTime lastUpdated = Instant.parse("2023-04-01T13:27:24.000Z")
                 .atZone(ZoneOffset.UTC)
                 .toLocalDateTime();
-
-        ItemInfo expectedResult = ItemInfo.builder()
-                .server("everlook-alliance")
+        AuctionHouseInfo auctionHouseInfo = AuctionHouseInfo.builder()
                 .numAuctions(19)
                 .itemId(13444)
-                .name("Major Mana Potion")
                 .marketValue(7054L)
                 .minBuyout(2894L)
                 .quantity(54)
+                .build();
+        ItemInfo expectedResult = ItemInfo.builder()
+                .server("everlook-alliance")
+                .name("Major Mana Potion")
+                .auctionHouseInfo(auctionHouseInfo)
                 .lastUpdated(lastUpdated)
                 .icon("https://wow.zamimg.com/images/wow/icons/large/inv_potion_76.jpg")
                 .quality(ItemQuality.COMMON)
