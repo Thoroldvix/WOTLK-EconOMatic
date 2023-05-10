@@ -2,125 +2,90 @@ package com.thoroldvix.g2gcalculator.ui.views.items;
 
 import com.thoroldvix.g2gcalculator.item.ItemService;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import org.vaadin.klaudeta.PaginatedGrid;
 
+import java.util.Comparator;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 @SpringComponent
 @UIScope
 public class ItemGridView extends VerticalLayout {
     private final ItemService itemServiceImpl;
-    private final PaginatedGrid<ItemInfo, String> itemGrid = new PaginatedGrid<>();
+
+    private final ItemFilteringLayout itemFilteringLayout;
+
+    private final PaginatedGrid<ItemInfo, ?> itemGrid = new PaginatedGrid<>();
+
+    private String serverName;
 
     public ItemGridView(ItemService itemServiceImpl) {
         this.itemServiceImpl = itemServiceImpl;
+        itemFilteringLayout = new ItemFilteringLayout(this);
 
         addClassName("item-grid-view");
         setSizeFull();
-        setAlignItems(Alignment.CENTER);
+        setAlignItems(Alignment.START);
         configureGrid();
-        add(itemGrid);
+        configureColumns();
+        add(itemFilteringLayout, itemGrid);
     }
 
     private void configureGrid() {
         itemGrid.setVisible(false);
+        itemGrid.setSelectionMode(Grid.SelectionMode.NONE);
         itemGrid.setPaginationVisibility(false);
         itemGrid.addClassName("item-grid");
-        itemGrid.setSizeFull();
+        itemGrid.setWidthFull();
+        itemGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        itemGrid.setHeight("auto");
         itemGrid.setPageSize(20);
         itemGrid.setPaginatorSize(5);
         itemGrid.setPage(1);
-        configureColumns();
     }
 
-    public void updateGrid(String serverName) {
+    public void populateGrid(String serverName) {
+        this.serverName = serverName;
         itemGrid.setItems(itemServiceImpl.getAllItemsInfo(serverName));
         itemGrid.setVisible(true);
+        itemFilteringLayout.setVisible(true);
         itemGrid.setPaginationVisibility(true);
     }
 
+    public void onFilterChange(Predicate<ItemInfo> filter) {
+        Set<ItemInfo> items = itemServiceImpl.getAllItemsInfo(serverName).stream()
+                .filter(filter).collect(Collectors.toSet());
+        itemGrid.setItems(items);
+    }
+
     private void configureColumns() {
-        itemGrid.addColumn(new ComponentRenderer<>(ItemGridView::getItemNameComponent))
+        itemGrid.addColumn(new ComponentRenderer<>(ItemNameRenderer::new))
                 .setHeader("Name")
+                .setComparator(Comparator.comparing(ItemInfo::name))
+                .setWidth("270px");
+        itemGrid.addColumn(new ComponentRenderer<>(itemInfo -> new ItemPriceRenderer(itemInfo.auctionHouseInfo().minBuyout())))
+                .setHeader("Min Buyout")
+                .setComparator(Comparator.comparingLong(itemInfo -> itemInfo.auctionHouseInfo().minBuyout()))
+                .setWidth("150px");
+        itemGrid.addColumn(new ComponentRenderer<>(itemInfo -> new ItemPriceRenderer(itemInfo.auctionHouseInfo().marketValue())))
+                .setHeader("Market Value")
                 .setSortable(true)
-                .setWidth("250px");
-        itemGrid.addColumn(new ComponentRenderer<>(itemInfo -> getPriceComponent(itemInfo.minBuyout()))).setHeader("Min Buyout")
-                .setSortable(true)
+                .setComparator(Comparator.comparingLong(itemInfo -> itemInfo.auctionHouseInfo().marketValue()))
+                .setWidth("150px");
+        itemGrid.addColumn(itemInfo -> itemInfo.auctionHouseInfo().quantity()).setHeader("Market Quantity")
                 .setAutoWidth(true);
-        itemGrid.addColumn(new ComponentRenderer<>(itemInfo -> getPriceComponent(itemInfo.marketValue()))).setHeader("Market Value")
-                .setSortable(true)
-                .setAutoWidth(true);
-        itemGrid.addColumn(ItemInfo::quantity).setHeader("Market Quantity")
-                .setSortable(true)
-                .setAutoWidth(true);
-        itemGrid.addColumn(ItemInfo::numAuctions).setHeader("Number of Auctions")
-                .setSortable(true)
-                .setAutoWidth(true);
-        itemGrid.addColumn(ItemInfo::type).setHeader("Type")
-                .setSortable(true)
-                .setAutoWidth(true);
-        itemGrid.addColumn(ItemInfo::quality).setHeader("Quality")
-                .setSortable(true)
+        itemGrid.addColumn(itemInfo -> itemInfo.auctionHouseInfo().numAuctions()).setHeader("Number of Auctions")
                 .setAutoWidth(true);
 
-    }
-
-    private static HorizontalLayout getItemNameComponent(ItemInfo itemInfo) {
-        Image itemIcon = new Image(itemInfo.icon(), "icon");
-        itemIcon.setWidth("20px");
-        Span name = new Span(itemInfo.name());
-        HorizontalLayout layout = new HorizontalLayout(itemIcon, name);
-        layout.setAlignItems(Alignment.CENTER);
-        layout.setWidthFull();
-        return layout;
-    }
-
-
-    private Component getPriceComponent(long value) {
-        Image goldImage = new Image("images/gold_coin.png", "gold");
-        goldImage.setWidth("20px");
-        Image silverImage = new Image("images/silver_coin.png", "silver");
-        silverImage.setWidth("20px");
-        Image copperImage = new Image("images/copper_coin.png", "copper");
-        copperImage.setWidth("20px");
-
-        long gold = value / 10000;
-        long silver = (value - gold * 10000) / 100;
-        long copper = value - gold * 10000 - silver * 100;
-
-
-
-        HorizontalLayout goldLayout = new HorizontalLayout(new Text(String.valueOf(gold)), goldImage);
-        goldLayout.setAlignItems(Alignment.CENTER);
-        goldLayout.setSpacing(false);
-        goldLayout.getThemeList().add("spacing-xs");
-        HorizontalLayout  silverLayout = new HorizontalLayout(new Text(String.valueOf(silver)), silverImage);
-        silverLayout.setAlignItems(Alignment.CENTER);
-        silverLayout.setSpacing(false);
-        silverLayout.getThemeList().add("spacing-xs");
-        HorizontalLayout copperLayout = new HorizontalLayout(new Text(String.valueOf(copper)), copperImage);
-        copperLayout.setAlignItems(Alignment.CENTER);
-        copperLayout.setSpacing(false);
-        copperLayout.getThemeList().add("spacing-xs");
-
-        if (gold == 0) {
-            goldLayout.setVisible(false);
-        }
-        if (silver == 0) {
-            silverLayout.setVisible(false);
-        }
-        if (copper == 0) {
-            copperLayout.setVisible(false);
-        }
-        HorizontalLayout layout = new HorizontalLayout(goldLayout, silverLayout, copperLayout);
-        layout.setAlignItems(Alignment.CENTER);
-        return layout;
+        itemGrid.getColumns().forEach(col -> {
+            col.setSortable(true);
+        });
     }
 }
