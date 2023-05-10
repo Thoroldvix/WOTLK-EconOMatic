@@ -1,2 +1,24 @@
+.legendary {
+  color: orange;
+}
 
+.epic {
+  color: #A335EE;
+}
+
+.rare {
+  color: #0170D0;
+}
+
+.uncommon {
+  color: #15FF06;
+}
+
+.common {
+  color: white;
+}
+
+.poor {
+  color: gray;
+}
 
