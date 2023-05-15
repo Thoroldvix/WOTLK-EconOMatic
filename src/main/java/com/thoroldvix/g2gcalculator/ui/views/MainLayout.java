@@ -1,7 +1,7 @@
 package com.thoroldvix.g2gcalculator.ui.views;
 
 import com.thoroldvix.g2gcalculator.ui.views.items.AuctionHouseView;
-import com.thoroldvix.g2gcalculator.ui.views.items.ServerSelectionView;
+import com.thoroldvix.g2gcalculator.ui.views.items.ServerSelectionField;
 import com.thoroldvix.g2gcalculator.ui.views.servers.ServerGridView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -24,13 +24,15 @@ import java.util.Optional;
 @PageTitle("PricePal")
 public class MainLayout extends AppLayout {
     private final Tabs menu;
-    private final ServerSelectionView serverSelectionView;
+    private final ServerSelectionField serverSelectionField;
+
     private HorizontalLayout headerLayout;
     private H1 viewTitle;
 
 
-    public MainLayout(ServerSelectionView serverSelectionView) {
-        this.serverSelectionView = serverSelectionView;
+    public MainLayout(ServerSelectionField serverSelectionField) {
+        this.serverSelectionField = serverSelectionField;
+
         menu = createMenu();
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
@@ -42,7 +44,7 @@ public class MainLayout extends AppLayout {
     private Component createHeaderContent() {
         headerLayout = new HorizontalLayout();
 
-        // Configure styling for the header
+
         headerLayout.setId("header");
         headerLayout.getThemeList().set("dark", true);
         headerLayout.setWidthFull();
@@ -53,8 +55,6 @@ public class MainLayout extends AppLayout {
         headerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
 
-        // Placeholder for the title of the current view.
-        // The title will be set after navigation.
         viewTitle = new H1();
         viewTitle.getStyle().set("font-size", "var(--lumo-font-size-l)")
                 .set("margin", "0");
@@ -90,7 +90,7 @@ public class MainLayout extends AppLayout {
 
         logoLayout.add(appTitle);
 
-        // Display the logo and the menu in the drawer
+
         layout.add(logoLayout, menu);
         return layout;
     }
@@ -99,16 +99,16 @@ public class MainLayout extends AppLayout {
     protected void afterNavigation() {
         super.afterNavigation();
 
-        // Select the tab corresponding to currently shown view
+
         getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
 
-        // Set the view title in the header
+
         viewTitle.setText(getCurrentPageTitle());
 
         if (getContent().getClass().equals(AuctionHouseView.class)) {
-            headerLayout.add(serverSelectionView);
+            headerLayout.add(serverSelectionField);
         } else {
-            headerLayout.remove(serverSelectionView);
+            headerLayout.remove(serverSelectionField);
         }
     }
 
