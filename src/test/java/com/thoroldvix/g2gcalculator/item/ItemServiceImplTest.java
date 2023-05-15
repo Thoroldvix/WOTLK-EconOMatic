@@ -185,7 +185,7 @@ class ItemServiceImplTest {
         Set<Integer> itemIds = Set.of(auctionHouseInfo1.itemId(), auctionHouseInfo2.itemId());
 
         when(itemRepository.findAllById(itemIds)).thenReturn(items);
-        when(auctionHouseService.getAuctionHouseItemsForServer(serverName)).thenReturn(itemPrices);
+        when(auctionHouseService.getAuctionHouseInfoForServer(serverName)).thenReturn(itemPrices);
 
         Set<ItemInfo> actualResponse = itemServiceImpl.getAllItemsInfo(serverName);
 

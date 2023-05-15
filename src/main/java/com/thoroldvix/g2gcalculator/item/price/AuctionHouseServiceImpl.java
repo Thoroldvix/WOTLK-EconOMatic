@@ -17,7 +17,7 @@ public class AuctionHouseServiceImpl implements AuctionHouseService {
 
     private final ItemsClient itemsClient;
     @Override
-    public List<AuctionHouseInfo> getAuctionHouseItemsForServer(String server) {
+    public List<AuctionHouseInfo> getAuctionHouseInfoForServer(String server) {
          if (!StringUtils.hasText(server)) {
             throw new IllegalArgumentException("Server name must be valid");
         }

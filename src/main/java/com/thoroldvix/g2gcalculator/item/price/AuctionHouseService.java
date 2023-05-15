@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface AuctionHouseService {
 
-    List<AuctionHouseInfo> getAuctionHouseItemsForServer(String server);
+    List<AuctionHouseInfo> getAuctionHouseInfoForServer(String server);
 }

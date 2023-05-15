@@ -69,18 +69,15 @@ public class ItemServiceImpl implements ItemService {
             throw new IllegalArgumentException("Server name must be valid");
         }
         String formattedServerName = formatServerName(server);
-        log.info("Getting all items info for server {}", formattedServerName);
-        String cacheKey = "all-items-info-" + server;
+        String cacheKey = "all-items-info-" + formattedServerName;
 
         Set<ItemInfo> cachedItems = cache.getIfPresent(cacheKey);
         if (cachedItems != null) {
-            log.debug("Returning cached all items info for server {}", formattedServerName);
             return cachedItems;
         }
 
-        List<AuctionHouseInfo> itemPrices = auctionHouseServiceImpl.getAuctionHouseItemsForServer(server);
+        List<AuctionHouseInfo> itemPrices = auctionHouseServiceImpl.getAuctionHouseInfoForServer(formattedServerName);
         Map<Integer, Item> boeItemsCache = getBoeItemsCache(itemPrices);
-        log.info("Finished getting all items info for server {}", formattedServerName);
         Set<ItemInfo> itemsInfo = buildFullItemInfo(itemPrices, boeItemsCache);
         cache.put(cacheKey, itemsInfo);
         return itemsInfo;
