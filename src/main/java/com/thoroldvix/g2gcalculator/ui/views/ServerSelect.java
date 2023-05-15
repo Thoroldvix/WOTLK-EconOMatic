@@ -17,6 +17,7 @@ public class ServerSelect extends ComboBox<ServerResponse> {
         Set<ServerResponse> servers = new TreeSet<>(Comparator.comparing(ServerResponse::name));
         servers.addAll(serverServiceImpl.getAllServers());
         setItems(servers);
+        setWidth("215px");
         addClassName("server-select");
         setAllowCustomValue(false);
         setPlaceholder("Select Server");
