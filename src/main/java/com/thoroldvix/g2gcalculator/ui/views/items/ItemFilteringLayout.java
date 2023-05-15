@@ -23,19 +23,17 @@ public class ItemFilteringLayout extends HorizontalLayout {
 
     private MultiSelectComboBox<ItemType> itemTypeFilter;
 
-    private PriceRangeField priceRangeField = new PriceRangeField();
+
     private final ItemGridLayout itemGrid;
 
 
     public ItemFilteringLayout(ItemGridLayout itemGrid) {
         this.itemGrid = itemGrid;
         setVisible(false);
-        setAlignItems(Alignment.CENTER);
-        setVerticalComponentAlignment(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.START);
+
         setWidthFull();
         prepareFilterFields();
-        add(itemNameFilter, itemQualityFilter, itemTypeFilter, priceRangeField);
+        add(itemNameFilter, itemQualityFilter, itemTypeFilter);
     }
 
     private void prepareFilterFields() {
