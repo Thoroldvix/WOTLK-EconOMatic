@@ -6,19 +6,26 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class FactionRenderer extends HorizontalLayout {
-
-    private final Faction faction;
+    private final Image hordeIcon = new Image("images/horde.svg", "horde-icon");
+    private final Image allianceIcon = new Image("images/alliance.svg", "alliance-icon");
 
     public FactionRenderer(Faction faction) {
-        this.faction = faction;
+        configureIcons();
         setAlignItems(Alignment.CENTER);
         setSpacing(false);
         getThemeList().set("spacing-s", true);
-        String imagePath = faction.name().equals("HORDE") ? "images/horde.svg"
-                : "images/alliance.svg";
-        Image image = new Image(imagePath, "faction-icon");
-        image.setWidth("20px");
-        image.setHeight("20px");
-        add(image, new Text(faction.toString()));
+        Image factionIcon = faction.name().equals("HORDE") ? hordeIcon
+                : allianceIcon;
+        add(factionIcon, new Text(faction.toString()));
+    }
+
+
+
+    private void configureIcons() {
+        allianceIcon.setWidth("20px");
+        allianceIcon.setHeight("20px");
+
+        hordeIcon.setWidth("20px");
+        hordeIcon.setHeight("20px");
     }
 }
