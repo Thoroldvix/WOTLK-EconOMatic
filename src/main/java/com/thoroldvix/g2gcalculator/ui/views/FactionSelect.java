@@ -6,11 +6,18 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 
 public class FactionSelect extends Select<Faction> {
 
+
+
     public FactionSelect() {
         addClassName("faction-select");
         setPlaceholder("Select Faction");
+        setEmptySelectionAllowed(true);
+        setEmptySelectionCaption("Any");
         setRenderer(new ComponentRenderer<>(FactionRenderer::new));
-        setRequiredIndicatorVisible(true);
         setItems(Faction.values());
     }
+
+
+
+
 }
