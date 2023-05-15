@@ -6,7 +6,6 @@ public enum ItemQuality {
     UNCOMMON,
     RARE,
     EPIC,
-    HEIRLOOM,
     LEGENDARY;
 
     @Override
