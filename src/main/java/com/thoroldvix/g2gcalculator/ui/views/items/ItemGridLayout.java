@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @SpringComponent
 @UIScope
-public class ItemGridView extends VerticalLayout {
+public class ItemGridLayout extends VerticalLayout {
     private final ItemService itemServiceImpl;
 
     private final ItemFilteringLayout itemFilteringLayout;
@@ -26,7 +26,7 @@ public class ItemGridView extends VerticalLayout {
 
     private String serverName;
 
-    public ItemGridView(ItemService itemServiceImpl) {
+    public ItemGridLayout(ItemService itemServiceImpl) {
         this.itemServiceImpl = itemServiceImpl;
         itemFilteringLayout = new ItemFilteringLayout(this);
 

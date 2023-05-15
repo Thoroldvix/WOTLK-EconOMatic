@@ -15,14 +15,14 @@ public class AuctionHouseView extends VerticalLayout {
 
 
     public AuctionHouseView(
-            ItemGridView itemGridView) {
+            ItemGridLayout itemGridLayout) {
 
         addClassName("items-view");
         setSizeFull();
         setSpacing(true);
         setAlignItems(Alignment.CENTER);
 
-        add(itemGridView);
+        add(itemGridLayout);
     }
 
 
