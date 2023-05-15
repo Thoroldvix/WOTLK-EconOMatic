@@ -1,6 +1,5 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
-import com.thoroldvix.g2gcalculator.server.Faction;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.thoroldvix.g2gcalculator.ui.views.FactionRenderer;
@@ -8,16 +7,20 @@ import com.thoroldvix.g2gcalculator.ui.views.FactionSelect;
 import com.thoroldvix.g2gcalculator.ui.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.SelectVariant;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+
 
 @Route(value = "wow-classic/servers", layout = MainLayout.class)
 @PageTitle("G2G Prices")
@@ -60,17 +63,18 @@ public class ServerGridView extends VerticalLayout {
     }
 
     private FactionSelect getFactionFilter() {
-        FactionSelect filter = new FactionSelect();
-        filter.setPlaceholder("Filter by faction...");
-        filter.setItems(Faction.values());
-        filter.setItemLabelGenerator(Faction::toString);
-        filter.addValueChangeListener(e -> onFilterChange());
-        return filter;
+        FactionSelect factionSelect = new FactionSelect();
+        factionSelect.setHelperText("Select faction");
+        factionSelect.addThemeVariants(SelectVariant.LUMO_HELPER_ABOVE_FIELD);
+        factionSelect.addValueChangeListener(e -> onFilterChange());
+        return factionSelect;
     }
 
     private TextField getServerNameFilter() {
         TextField filter = new TextField();
-        filter.setPlaceholder("Filter by server name...");
+        filter.addThemeVariants(TextFieldVariant.LUMO_HELPER_ABOVE_FIELD);
+        filter.setPlaceholder("Search...");
+        filter.setHelperText("Search for server");
         filter.setClearButtonVisible(true);
         filter.setValueChangeMode(ValueChangeMode.LAZY);
         filter.addValueChangeListener(e -> onFilterChange());
@@ -95,6 +99,7 @@ public class ServerGridView extends VerticalLayout {
 
     private void configureGrid() {
         grid.addClassName("server-grid");
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.setSizeFull();
         configureColumns();
         grid.setSelectionMode(Grid.SelectionMode.NONE);
