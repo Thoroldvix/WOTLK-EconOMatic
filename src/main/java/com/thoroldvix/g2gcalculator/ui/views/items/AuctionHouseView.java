@@ -7,7 +7,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
-@Route(value = "wow-classic/items", layout = MainLayout.class)
+@Route(value = "wow-classic/auction-house", layout = MainLayout.class)
 @PageTitle("Auction House")
 @SpringComponent
 @UIScope
