@@ -24,6 +24,8 @@ public class ItemGridLayout extends VerticalLayout {
 
     private final PaginatedGrid<ItemInfo, ?> itemGrid = new PaginatedGrid<>();
 
+
+    private ItemContextMenu contextMenu;
     private String serverName;
 
     public ItemGridLayout(ItemService itemServiceImpl) {
@@ -40,6 +42,7 @@ public class ItemGridLayout extends VerticalLayout {
 
     private void configureGrid() {
         itemGrid.setVisible(false);
+        contextMenu = new ItemContextMenu(itemGrid.addContextMenu());
         itemGrid.setSelectionMode(Grid.SelectionMode.NONE);
         itemGrid.setPaginationVisibility(false);
         itemGrid.addClassName("item-grid");
