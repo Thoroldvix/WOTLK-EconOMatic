@@ -23,4 +23,7 @@ public record ItemInfo(
 
 ) {
 
+    public String getWowheadUrl() {
+        return String.format("https://www.wowhead.com/wotlk/item=%d", auctionHouseInfo.itemId());
+    }
 }
