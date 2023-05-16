@@ -5,14 +5,14 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 
 @Route(value = "wow-classic/items", layout = MainLayout.class)
-@PageTitle("Item Overview")
-public class ItemOverview extends VerticalLayout implements HasUrlParameter<String> {
+@PageTitle("Items")
+public class ItemsLayout extends VerticalLayout implements HasUrlParameter<String> {
 
     private final ServerSelectionField serverSelectionField;
 
     private  ItemPriceHistoryLayout itemPriceHistoryLayout;
 
-    public ItemOverview(ServerSelectionField serverSelectionField) {
+    public ItemsLayout(ServerSelectionField serverSelectionField) {
         this.serverSelectionField = serverSelectionField;
     }
 

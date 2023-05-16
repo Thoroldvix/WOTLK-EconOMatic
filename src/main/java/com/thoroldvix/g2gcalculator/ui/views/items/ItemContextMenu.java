@@ -20,6 +20,6 @@ public class ItemContextMenu {
                 .ifPresent(ui -> ui.getPage().open(item.getWowheadUrl()));
     }
     private void navigateToItemOverview(ItemInfo item) {
-        contextMenu.getUI().flatMap(ui -> ui.navigate(ItemOverview.class, item.getFormatterItemName()));
+        contextMenu.getUI().flatMap(ui -> ui.navigate(ItemsLayout.class, item.getFormatterItemName()));
     }
 }
