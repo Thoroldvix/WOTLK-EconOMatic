@@ -1,6 +1,7 @@
 package com.thoroldvix.g2gcalculator.ui.views;
 
 import com.thoroldvix.g2gcalculator.ui.views.items.AuctionHouseView;
+import com.thoroldvix.g2gcalculator.ui.views.items.ItemOverview;
 import com.thoroldvix.g2gcalculator.ui.views.items.ServerSelectionField;
 import com.thoroldvix.g2gcalculator.ui.views.servers.ServerGridView;
 import com.vaadin.flow.component.Component;
@@ -105,9 +106,10 @@ public class MainLayout extends AppLayout {
 
         viewTitle.setText(getCurrentPageTitle());
 
-        if (getContent().getClass().equals(AuctionHouseView.class)) {
+        if (getContent().getClass().equals(AuctionHouseView.class) || getContent().getClass().equals(ItemOverview.class)) {
             headerLayout.add(serverSelectionField);
-        } else {
+        }
+         else {
             headerLayout.remove(serverSelectionField);
         }
     }
@@ -135,6 +137,7 @@ public class MainLayout extends AppLayout {
     private Tab[] createMenuItems() {
         return new Tab[]{createTab("G2G Prices", ServerGridView.class),
                 createTab("Auction House", AuctionHouseView.class),
+                createTab("Item Overview", ItemOverview.class)
         };
     }
 
