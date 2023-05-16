@@ -16,7 +16,7 @@ import java.util.List;
 
 import static com.thoroldvix.g2gcalculator.ui.views.util.LineChartFactory.*;
 
-@Route(value = "server")
+@Route(value = "wow-classic/servers")
 public class ServerView extends VerticalLayout implements HasUrlParameter<Integer> {
     private final PriceService priceServiceImpl;
     private final ServerService serverServiceImpl;
