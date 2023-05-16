@@ -12,10 +12,14 @@ public class ItemContextMenu {
         contextMenu.setOpenOnClick(true);
         contextMenu.addItem("VIEW ON WOWHEAD", event -> event.getItem()
                 .ifPresent(this::navigateToWowhead));
-
+        contextMenu.addItem("Overview", event -> event.getItem()
+                .ifPresent(this::navigateToItemOverview));
     }
     private void navigateToWowhead(ItemInfo item) {
         contextMenu.getUI()
                 .ifPresent(ui -> ui.getPage().open(item.getWowheadUrl()));
+    }
+    private void navigateToItemOverview(ItemInfo item) {
+        contextMenu.getUI().flatMap(ui -> ui.navigate(ItemOverview.class, item.getFormatterItemName()));
     }
 }
