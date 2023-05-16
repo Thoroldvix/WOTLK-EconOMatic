@@ -8,6 +8,7 @@ import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBoxVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -77,7 +78,8 @@ public class ItemFilteringLayout extends HorizontalLayout {
         TextField itemNameFilter = new TextField();
         itemNameFilter.addThemeVariants(TextFieldVariant.LUMO_HELPER_ABOVE_FIELD);
         itemNameFilter.setPlaceholder("Search...");
-        itemNameFilter.setHelperText("Search for item");
+        itemNameFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
+        itemNameFilter.setHelperText("Search items...");
         itemNameFilter.setValueChangeMode(ValueChangeMode.LAZY);
         itemNameFilter.setClearButtonVisible(true);
         itemNameFilter.addValueChangeListener(event -> itemGrid.onFilterChange(getFilter()));
