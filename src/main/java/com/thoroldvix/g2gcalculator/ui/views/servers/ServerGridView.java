@@ -22,7 +22,7 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
 
-@Route(value = "wow-classic/servers", layout = MainLayout.class)
+@Route(value = "wow-classic/g2g-prices", layout = MainLayout.class)
 @PageTitle("G2G Prices")
 @SpringComponent
 @UIScope
