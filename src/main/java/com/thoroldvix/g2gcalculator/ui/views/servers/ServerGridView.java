@@ -9,6 +9,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.SelectVariant;
@@ -74,7 +75,8 @@ public class ServerGridView extends VerticalLayout {
         TextField filter = new TextField();
         filter.addThemeVariants(TextFieldVariant.LUMO_HELPER_ABOVE_FIELD);
         filter.setPlaceholder("Search...");
-        filter.setHelperText("Search for server");
+        filter.setHelperText("Search server");
+        filter.setPrefixComponent(VaadinIcon.SEARCH.create());
         filter.setClearButtonVisible(true);
         filter.setValueChangeMode(ValueChangeMode.LAZY);
         filter.addValueChangeListener(e -> onFilterChange());
