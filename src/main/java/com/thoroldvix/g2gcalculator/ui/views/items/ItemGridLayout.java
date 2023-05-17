@@ -2,6 +2,7 @@ package com.thoroldvix.g2gcalculator.ui.views.items;
 
 import com.thoroldvix.g2gcalculator.item.ItemService;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
+import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -30,17 +31,20 @@ public class ItemGridLayout extends VerticalLayout {
 
     public ItemGridLayout(ItemService itemServiceImpl) {
         this.itemServiceImpl = itemServiceImpl;
-        itemFilteringLayout = new ItemFilteringLayout(this);
 
+        itemFilteringLayout = new ItemFilteringLayout(this);
+        configureColumnsForServer();
+        configureGrid();
         addClassName("item-grid-view");
         setSizeFull();
         setAlignItems(Alignment.START);
-        configureGrid();
-        configureColumns();
         add(itemFilteringLayout, itemGrid);
     }
 
+
+
     private void configureGrid() {
+
         itemGrid.setVisible(false);
         contextMenu = new ItemContextMenu(itemGrid.addContextMenu());
         itemGrid.setSelectionMode(Grid.SelectionMode.NONE);
@@ -52,23 +56,28 @@ public class ItemGridLayout extends VerticalLayout {
         itemGrid.setPageSize(20);
         itemGrid.setPaginatorSize(5);
         itemGrid.setPage(1);
+
     }
 
-    public void populateGrid(String serverName) {
-        this.serverName = serverName;
-        itemGrid.setItems(itemServiceImpl.getAllItemsInfo(serverName));
+    public void populateGridForServer(ServerResponse server) {
+        serverName = getFormattedServerName(server);
+
+        Set<ItemInfo> allItemsInfo = itemServiceImpl.getAllItemsInfoForServer(serverName);
+        itemGrid.setItems(allItemsInfo);
         itemGrid.setVisible(true);
         itemFilteringLayout.setVisible(true);
         itemGrid.setPaginationVisibility(true);
     }
 
+
     public void onFilterChange(Predicate<ItemInfo> filter) {
-        Set<ItemInfo> items = itemServiceImpl.getAllItemsInfo(serverName).stream()
+
+        Set<ItemInfo> items = itemServiceImpl.getAllItemsInfoForServer(serverName).stream()
                 .filter(filter).collect(Collectors.toSet());
         itemGrid.setItems(items);
     }
 
-    private void configureColumns() {
+    private void configureColumnsForServer() {
         itemGrid.addColumn(new ComponentRenderer<>(ItemNameRenderer::new))
                 .setHeader("Name")
                 .setComparator(Comparator.comparing(ItemInfo::name))
@@ -87,8 +96,11 @@ public class ItemGridLayout extends VerticalLayout {
         itemGrid.addColumn(itemInfo -> itemInfo.auctionHouseInfo().numAuctions()).setHeader("Number of Auctions")
                 .setAutoWidth(true);
 
-        itemGrid.getColumns().forEach(col -> {
-            col.setSortable(true);
-        });
+        itemGrid.getColumns().forEach(col ->
+                col.setSortable(true));
+    }
+     private String getFormattedServerName(ServerResponse value) {
+        return value.name().toLowerCase().replace(" ", "-") + "-"
+               + value.faction().toString().toLowerCase();
     }
 }
