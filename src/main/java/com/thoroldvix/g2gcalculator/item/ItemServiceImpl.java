@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-
 public class ItemServiceImpl implements ItemService {
 
     private final ItemsClient itemsClient;
@@ -64,7 +63,7 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public Set<ItemInfo> getAllItemsInfo(String server) {
+    public Set<ItemInfo> getAllItemsInfoForServer(String server) {
         if (!StringUtils.hasText(server)) {
             throw new IllegalArgumentException("Server name must be valid");
         }
@@ -81,6 +80,18 @@ public class ItemServiceImpl implements ItemService {
         Set<ItemInfo> itemsInfo = buildFullItemInfo(itemPrices, boeItemsCache);
         cache.put(cacheKey, itemsInfo);
         return itemsInfo;
+    }
+
+    @Override
+    public Set<ItemInfo> getAllItemsInfo() {
+        return itemRepository.findAll().stream()
+                .map(item -> ItemInfo.builder()
+                        .name(item.name)
+                        .icon(createItemIcon(item.icon))
+                        .quality(item.quality)
+                        .type(item.type)
+                        .build())
+                .collect(Collectors.toSet());
     }
 
 

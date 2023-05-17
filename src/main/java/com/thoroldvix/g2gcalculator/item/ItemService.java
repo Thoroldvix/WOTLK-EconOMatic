@@ -10,10 +10,10 @@ public interface ItemService {
 
     ItemInfo getItemById(String serverName, int itemId);
 
-    Set<ItemInfo> getAllItemsInfo(String serverName);
+    Set<ItemInfo> getAllItemsInfoForServer(String serverName);
 
 
-
+    Set<ItemInfo> getAllItemsInfo();
     void saveItem(Item item);
 
     long getItemCount();
