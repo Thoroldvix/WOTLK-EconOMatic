@@ -1,7 +1,6 @@
 package com.thoroldvix.g2gcalculator.ui.views;
 
 import com.thoroldvix.g2gcalculator.ui.views.items.AuctionHouseView;
-import com.thoroldvix.g2gcalculator.ui.views.items.ItemsLayout;
 import com.thoroldvix.g2gcalculator.ui.views.items.ServerSelectionField;
 import com.thoroldvix.g2gcalculator.ui.views.servers.ServerGridView;
 import com.vaadin.flow.component.Component;
@@ -9,48 +8,44 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
-import java.awt.*;
 import java.util.Optional;
 
-@Route("wow-classic")
+
 @PageTitle("PricePal")
 public class MainLayout extends AppLayout {
     private final Tabs menu;
     private final ServerSelectionField serverSelectionField;
 
-    private HorizontalLayout headerLayout = new HorizontalLayout();
-
-    private TextField itemSearchBar = new TextField();
+    private final HorizontalLayout headerLayout = new HorizontalLayout();
 
 
-    public MainLayout(ServerSelectionField serverSelectionField) {
+
+    private final ItemSearchBar itemSearchBar;
+
+
+    public MainLayout(ServerSelectionField serverSelectionField, ItemSearchBar itemSearchBar) {
         this.serverSelectionField = serverSelectionField;
+        this.itemSearchBar = itemSearchBar;
 
         menu = createMenu();
         setPrimarySection(Section.NAVBAR);
-        configureItemSearchBar();
+
         addToNavbar(true, createLogoLayout(), createHeaderContent());
+
 
         addToDrawer(createDrawerContent(menu));
     }
 
-    private void configureItemSearchBar() {
-        itemSearchBar.setWidthFull();
-        itemSearchBar.setPlaceholder("Search items...");
-        itemSearchBar.setPrefixComponent(VaadinIcon.SEARCH.create());
-    }
+
 
     private Component createHeaderContent() {
         configureHeaderLayout();
@@ -110,11 +105,9 @@ public class MainLayout extends AppLayout {
         super.afterNavigation();
         getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
 
-        if (getContent().getClass().equals(ServerGridView.class)) {
-            headerLayout.remove(serverSelectionField);
-        } else {
+
             headerLayout.add(serverSelectionField);
-        }
+
     }
 
     private Optional<Tab> getTabForComponent(Component component) {
@@ -124,9 +117,6 @@ public class MainLayout extends AppLayout {
                 .findFirst().map(Tab.class::cast);
     }
 
-    private String getCurrentPageTitle() {
-        return getContent().getClass().getAnnotation(PageTitle.class).value();
-    }
 
     private Tabs createMenu() {
         final Tabs tabs = new Tabs();
@@ -139,8 +129,7 @@ public class MainLayout extends AppLayout {
 
     private Tab[] createMenuItems() {
         return new Tab[]{createTab("G2G Prices", ServerGridView.class),
-                createTab("Auction House", AuctionHouseView.class),
-                createTab("Items", ItemsLayout.class)
+                createTab("Auction House", AuctionHouseView.class)
         };
     }
 
