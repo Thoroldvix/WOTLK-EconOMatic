@@ -187,7 +187,7 @@ class ItemServiceImplTest {
         when(itemRepository.findAllById(itemIds)).thenReturn(items);
         when(auctionHouseService.getAuctionHouseInfoForServer(serverName)).thenReturn(itemPrices);
 
-        Set<ItemInfo> actualResponse = itemServiceImpl.getAllItemsInfo(serverName);
+        Set<ItemInfo> actualResponse = itemServiceImpl.getAllItemsInfoForServer(serverName);
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
@@ -196,7 +196,7 @@ class ItemServiceImplTest {
     void getAllItemsInfo_whenServerIsInvalid_throwsIllegalArgumentException() {
         String serverName = "";
 
-        assertThatThrownBy(() -> itemServiceImpl.getAllItemsInfo(serverName))
+        assertThatThrownBy(() -> itemServiceImpl.getAllItemsInfoForServer(serverName))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
