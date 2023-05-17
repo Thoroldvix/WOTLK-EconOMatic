@@ -21,7 +21,7 @@ public class AuctionHouseInfoListDeserializer extends StdDeserializer<AuctionHou
         super(vc);
     }
     @Override
-    public AuctionHouseInfoList deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JacksonException {
+    public AuctionHouseInfoList deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         List<AuctionHouseInfo> items = new ArrayList<>();
         String slug = getTextValue(node, "slug");
