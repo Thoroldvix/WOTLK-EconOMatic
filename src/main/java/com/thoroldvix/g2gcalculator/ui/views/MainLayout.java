@@ -8,6 +8,8 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -128,15 +130,15 @@ public class MainLayout extends AppLayout {
     }
 
     private Tab[] createMenuItems() {
-        return new Tab[]{createTab("G2G Prices", ServerGridView.class),
-                createTab("Auction House", AuctionHouseView.class)
+        return new Tab[]{createTab("Auction House", AuctionHouseView.class, VaadinIcon.COIN_PILES.create()),
+                createTab("G2G Prices", ServerGridView.class, VaadinIcon.BOOK_DOLLAR.create())
         };
     }
 
     private static Tab createTab(String text,
-                                 Class<? extends Component> navigationTarget) {
+                                 Class<? extends Component> navigationTarget, Icon icon) {
         Tab tab = new Tab();
-        tab.add(new RouterLink(text, navigationTarget));
+        tab.add(icon, new RouterLink(text, navigationTarget));
         ComponentUtil.setData(tab, Class.class, navigationTarget);
         return tab;
     }
