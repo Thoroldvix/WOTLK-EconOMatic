@@ -22,9 +22,8 @@ public record ItemInfo(
         LocalDateTime lastUpdated
 
 ) {
-    public String getFormatterItemName() {
-        return String.join("-", name.toLowerCase()
-                .split("\\s+"));
+    public String getFormattedItemName() {
+        return name.replaceAll("\\s+|(:\\s+)", "-").toLowerCase();
     }
     public String getWowheadUrl() {
         return String.format("https://www.wowhead.com/wotlk/item=%d", auctionHouseInfo.itemId());

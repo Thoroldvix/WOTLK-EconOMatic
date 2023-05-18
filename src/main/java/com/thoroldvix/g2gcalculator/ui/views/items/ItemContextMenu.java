@@ -10,6 +10,7 @@ public class ItemContextMenu {
     public ItemContextMenu(GridContextMenu<ItemInfo> contextMenu) {
         this.contextMenu = contextMenu;
         contextMenu.setOpenOnClick(true);
+
         contextMenu.addItem("VIEW ON WOWHEAD", event -> event.getItem()
                 .ifPresent(this::navigateToWowhead));
         contextMenu.addItem("Overview", event -> event.getItem()
@@ -20,6 +21,6 @@ public class ItemContextMenu {
                 .ifPresent(ui -> ui.getPage().open(item.getWowheadUrl()));
     }
     private void navigateToItemOverview(ItemInfo item) {
-        contextMenu.getUI().flatMap(ui -> ui.navigate(ItemsLayout.class, item.getFormatterItemName()));
+        contextMenu.getUI().flatMap(ui -> ui.navigate(ItemsLayout.class, item.getFormattedItemName()));
     }
 }
