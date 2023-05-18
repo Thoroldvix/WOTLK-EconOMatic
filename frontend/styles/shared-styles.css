@@ -22,3 +22,14 @@
   color: gray;
 }
 
+.server-stat {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.35);
+  margin-left: 10px;
+  width: 100%;
+}
+.server-overview-box {
+  padding: 20px;
+  height: 300px;
+  width: 400px;
+  background: #383633;
+}
