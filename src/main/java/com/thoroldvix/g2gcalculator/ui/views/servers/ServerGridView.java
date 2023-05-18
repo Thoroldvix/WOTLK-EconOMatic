@@ -1,6 +1,5 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
-import com.thoroldvix.g2gcalculator.server.Faction;
 import com.thoroldvix.g2gcalculator.server.Region;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
@@ -20,7 +19,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -117,7 +115,8 @@ public class ServerGridView extends VerticalLayout {
         grid.addColumn(ServerResponse::name).setHeader("Name");
         grid.addColumn(new ComponentRenderer<>(server -> new FactionRenderer(server.faction()))).setHeader("Faction");
         grid.addColumn(server -> getRegion(server.region())).setHeader("Region");
-        grid.addColumn(serverResponse -> serverResponse.price().value()).setHeader("Price (USD)");
+        grid.addColumn(server -> server.price().value()).setHeader("Price (USD)");
+
 
         grid.getColumns().forEach(col -> {
             col.setAutoWidth(true);
@@ -125,11 +124,12 @@ public class ServerGridView extends VerticalLayout {
         });
     }
 
+
     private String getRegion(Region region) {
         return switch (region) {
             case EU -> Region.EU.name();
             case US -> Region.US.name();
-            default -> String.format("%s (%s)", Region.getParentregion(region).name(), region.name());
+            default -> String.format("%s (%s)", region.getParentRegion().name(), region.name());
         };
 
     }

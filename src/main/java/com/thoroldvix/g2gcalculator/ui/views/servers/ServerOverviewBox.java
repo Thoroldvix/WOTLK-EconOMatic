@@ -7,21 +7,23 @@ import com.thoroldvix.g2gcalculator.ui.views.FactionRenderer;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 @CssImport("./styles/shared-styles.css")
 public class ServerOverviewBox extends VerticalLayout {
 
-    private final HorizontalLayout serverInfo = new HorizontalLayout();
-    private final HorizontalLayout factionInfo = new HorizontalLayout();
-    private final HorizontalLayout populationInfo = new HorizontalLayout();
+    private final HorizontalLayout serverInfoLayout = new HorizontalLayout();
+    private final HorizontalLayout factionInfoLayout = new HorizontalLayout();
+    private final HorizontalLayout populationInfoLayout = new HorizontalLayout();
 
-    private final HorizontalLayout regionInfo = new HorizontalLayout();
+    private final HorizontalLayout regionInfoLayout = new HorizontalLayout();
 
     private final ServerResponse server;
 
-    private final H1 header = new H1("Overview");
+    private final H1 header = new H1();
 
 
     public ServerOverviewBox(ServerResponse server) {
@@ -31,65 +33,76 @@ public class ServerOverviewBox extends VerticalLayout {
 
 
         configureHeader();
-        configureServerInfo();
+        configureServerInfoLayout();
         configureFactionInfo();
-        configurePopulationInfo();
-        configureRegionInfo();
+        configurePopulationInfoLayout();
+        configureRegionInfoLayout();
 
 
-        add(header, serverInfo,
-                factionInfo, populationInfo, regionInfo);
+        add(header, serverInfoLayout,
+                factionInfoLayout, populationInfoLayout, regionInfoLayout);
     }
 
     private void configureFactionInfo() {
-        factionInfo.setAlignItems(Alignment.START);
-        factionInfo.addClassName("server-stat");
+        factionInfoLayout.setAlignItems(Alignment.START);
+        factionInfoLayout.addClassName("server-stat");
 
 
-        factionInfo.add(new Span("Faction"), getFactionDisplay(server.faction()));
+        factionInfoLayout.add(new Span("Faction"), getFactionDisplay(server.faction()));
     }
 
-    private void configureRegionInfo() {
-        regionInfo.setAlignItems(Alignment.START);
+    private void configureRegionInfoLayout() {
+        regionInfoLayout.setAlignItems(Alignment.START);
 
-        regionInfo.addClassName("server-stat");
+        regionInfoLayout.addClassName("server-stat");
 
         Span region = new Span(getRegion(server.region()));
         region.getStyle().set("margin-left", "55px");
 
-        regionInfo.add(new Span("Region"), region);
+        regionInfoLayout.add(new Span("Region"), region);
     }
 
     private String getRegion(Region region) {
         return switch (region) {
             case EU -> Region.EU.name();
             case US -> Region.US.name();
-            default -> String.format("%s (%s)", Region.getParentregion(region).name(), region.name());
+            default -> String.format("%s (%s)", region.getParentRegion().name(), region.name());
         };
 
     }
 
+    private int getServerPopulation(ServerResponse server) {
+        return server.faction() == Faction.ALLIANCE ? server.population().popAlliance() : server.population().popHorde();
+    }
+
     private void configureHeader() {
+        Icon icon = VaadinIcon.INFO_CIRCLE_O.create();
+        icon.setSize("20px");
+        icon.getStyle().set("padding-right", "5px");
+        icon.getStyle().set("padding-bottom", "3px");
         header.getStyle().set("margin-bottom", "10px");
         header.getStyle().set("font-size", "var(--lumo-font-size-m)");
+        Span headerText = new Span("Overview");
+
+        header.add(icon, headerText);
     }
 
-    private void configurePopulationInfo() {
-        populationInfo.addClassName("server-stat");
+    private void configurePopulationInfoLayout() {
+        populationInfoLayout.addClassName("server-stat");
 
-        populationInfo.setAlignItems(Alignment.START);
+        populationInfoLayout.setAlignItems(Alignment.START);
 
 
-        populationInfo.add(new Span("Population"));
+        populationInfoLayout.add(new Span("Population"));
     }
 
-    private void configureServerInfo() {
+    private void configureServerInfoLayout() {
         Span serverName = new Span(server.name());
         serverName.getStyle().set("margin-left", "55px");
 
-        serverInfo.setAlignItems(Alignment.START);
-        serverInfo.addClassName("server-stat");
-        serverInfo.add(new Span("Server"), serverName);
+        serverInfoLayout.setAlignItems(Alignment.START);
+        serverInfoLayout.addClassName("server-stat");
+        serverInfoLayout.add(new Span("Server"), serverName);
     }
 
     private FactionRenderer getFactionDisplay(Faction faction) {

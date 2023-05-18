@@ -22,8 +22,8 @@ public enum Region {
         return List.of(US, OCE);
     }
 
-    public static Region getParentregion(Region region) {
-        return switch (region) {
+    public Region getParentRegion() {
+        return switch (this) {
             case EU, FR, ES, RU, DE -> EU;
             case US, OCE -> US;
         };
