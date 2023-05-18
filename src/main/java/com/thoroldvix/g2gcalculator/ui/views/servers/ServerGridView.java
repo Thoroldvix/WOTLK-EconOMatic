@@ -1,11 +1,14 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
+import com.thoroldvix.g2gcalculator.server.Faction;
+import com.thoroldvix.g2gcalculator.server.Region;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.thoroldvix.g2gcalculator.ui.views.FactionRenderer;
 import com.thoroldvix.g2gcalculator.ui.views.FactionSelect;
 import com.thoroldvix.g2gcalculator.ui.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
@@ -17,6 +20,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -25,12 +29,13 @@ import com.vaadin.flow.spring.annotation.UIScope;
 
 @Route(value = "wow-classic/g2g-prices", layout = MainLayout.class)
 @PageTitle("G2G Prices")
+@CssImport("./styles/shared-styles.css")
 @SpringComponent
 @UIScope
 public class ServerGridView extends VerticalLayout {
     private final ServerService serverServiceImpl;
 
-    private final Grid<ServerResponse> grid = new Grid<>(ServerResponse.class);
+    private final Grid<ServerResponse> grid = new Grid<>();
 
     private TextField serverNameFilter;
     private FactionSelect factionFilter;
@@ -84,7 +89,7 @@ public class ServerGridView extends VerticalLayout {
     }
 
     private void onFilterChange() {
-        GridListDataView<ServerResponse> listDataProvider =  grid.getListDataView();
+        GridListDataView<ServerResponse> listDataProvider = grid.getListDataView();
         listDataProvider.setFilter(serverResponse -> {
                     boolean serverNameMatch = true;
                     boolean factionMatch = true;
@@ -111,7 +116,7 @@ public class ServerGridView extends VerticalLayout {
     private void configureColumns() {
         grid.addColumn(ServerResponse::name).setHeader("Name");
         grid.addColumn(new ComponentRenderer<>(server -> new FactionRenderer(server.faction()))).setHeader("Faction");
-        grid.addColumn(ServerResponse::region).setHeader("Region");
+        grid.addColumn(server -> getRegion(server.region())).setHeader("Region");
         grid.addColumn(serverResponse -> serverResponse.price().value()).setHeader("Price (USD)");
 
         grid.getColumns().forEach(col -> {
@@ -120,8 +125,19 @@ public class ServerGridView extends VerticalLayout {
         });
     }
 
+    private String getRegion(Region region) {
+        return switch (region) {
+            case EU -> Region.EU.name();
+            case US -> Region.US.name();
+            default -> String.format("%s (%s)", Region.getParentregion(region).name(), region.name());
+        };
+
+    }
+
+
+
     private void navigateToServer(ServerResponse server) {
-        getUI().ifPresent(ui -> ui.navigate(ServerView.class, server.id()));
+        getUI().ifPresent(ui -> ui.navigate(ServerView.class, server.getFormattedServername()));
     }
 
 
