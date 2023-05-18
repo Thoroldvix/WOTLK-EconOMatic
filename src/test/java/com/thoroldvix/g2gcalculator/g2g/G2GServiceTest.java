@@ -43,13 +43,13 @@ class G2GServiceTest {
         ServerResponse server1 = ServerResponse.builder()
                 .id(1)
                 .name("Server1")
-                .region(Region.US.name())
+                .region(Region.US)
                 .faction(Faction.ALLIANCE)
                 .build();
         ServerResponse server2 = ServerResponse.builder()
                 .id(2)
                 .name("Server2")
-                .region(Region.OCE.name())
+                .region(Region.OCE)
                 .faction(Faction.HORDE)
                 .build();
         PriceResponse price1 = PriceResponse.builder()
@@ -92,13 +92,13 @@ class G2GServiceTest {
         ServerResponse server1 = ServerResponse.builder()
                 .id(1)
                 .name("Pyrewood Village")
-                .region(Region.EU.name())
+                .region(Region.EU)
                 .faction(Faction.ALLIANCE)
                 .build();
         ServerResponse server2 = ServerResponse.builder()
                 .id(2)
                 .name("Everlook")
-                .region(Region.DE.name())
+                .region(Region.DE)
                 .faction(Faction.HORDE)
                 .build();
         PriceResponse price1 = PriceResponse.builder()
@@ -115,13 +115,13 @@ class G2GServiceTest {
  ServerResponse server3 = ServerResponse.builder()
                 .id(1)
                 .name("Flamegor")
-                .region(Region.RU.name())
+                .region(Region.RU)
                 .faction(Faction.HORDE)
                 .build();
         ServerResponse server4 = ServerResponse.builder()
                 .id(2)
                 .name("Chromie")
-                .region(Region.RU.name())
+                .region(Region.RU)
                 .faction(Faction.ALLIANCE)
                 .build();
         PriceResponse price3 = PriceResponse.builder()

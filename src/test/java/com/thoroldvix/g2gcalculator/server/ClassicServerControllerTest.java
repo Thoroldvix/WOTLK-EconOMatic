@@ -77,12 +77,12 @@ class ClassicServerControllerTest {
     void getAllServersForRegion_whenCalledWithOneRegion_returnsListOfServerResponse() throws Exception {
         ServerResponse firstServerResponse = ServerResponse.builder()
                 .id(1)
-                .region("EU")
+                .region(Region.EU)
                 .name("test-server")
                 .build();
         ServerResponse secondServerResponse = ServerResponse.builder()
                 .id(2)
-                .region("EU")
+                .region(Region.EU)
                 .name("test-server")
                 .build();
         List<ServerResponse> expectedServers = List.of(firstServerResponse, secondServerResponse);
@@ -99,17 +99,17 @@ class ClassicServerControllerTest {
     void getAllServersForRegion_whenCalledWithMultipleRegions_returnsListOfServerResponse() throws Exception {
         ServerResponse firstServerResponse = ServerResponse.builder()
                 .id(1)
-                .region("EU")
+                .region(Region.EU)
                 .name("test-server")
                 .build();
         ServerResponse secondServerResponse = ServerResponse.builder()
                 .id(2)
-                .region("EU")
+                .region(Region.EU)
                 .name("test-server")
                 .build();
         ServerResponse thirdServerResponse = ServerResponse.builder()
                 .id(3)
-                .region("US")
+                .region(Region.EU)
                 .name("test-server")
                 .build();
         List<ServerResponse> expectedServers = List.of(firstServerResponse, secondServerResponse, thirdServerResponse);
@@ -127,17 +127,17 @@ class ClassicServerControllerTest {
 
         ServerResponse firstServerResponse = ServerResponse.builder()
                 .id(1)
-                .region("EU")
+                .region(Region.EU)
                 .name("test-server")
                 .build();
         ServerResponse secondServerResponse = ServerResponse.builder()
                 .id(2)
-                .region("EU")
+                .region(Region.EU)
                 .name("test-server")
                 .build();
         ServerResponse thirdServerResponse = ServerResponse.builder()
                 .id(3)
-                .region("US")
+                .region(Region.US)
                 .name("test-server")
                 .build();
         List<ServerResponse> expectedServers = List.of(firstServerResponse, secondServerResponse, thirdServerResponse);
