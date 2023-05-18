@@ -94,7 +94,7 @@ public class ServerOverviewBox extends VerticalLayout {
 
     private FactionRenderer getFactionDisplay(Faction faction) {
         FactionRenderer factionRenderer = new FactionRenderer(faction);
-        ;
+
         factionRenderer.getStyle().set("margin-left", "45px");
         return factionRenderer;
     }
