@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.common;
 
-import com.thoroldvix.g2gcalculator.g2g.G2GPriceNotFoundException;
+import com.thoroldvix.g2gcalculator.server.g2g.G2GPriceNotFoundException;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

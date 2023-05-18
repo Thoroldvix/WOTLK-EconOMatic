@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.g2g;
+package com.thoroldvix.g2gcalculator.server.g2g;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;

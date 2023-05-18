@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
+import com.thoroldvix.g2gcalculator.server.g2g.G2GPriceListDeserializer;
+import com.thoroldvix.g2gcalculator.server.g2g.G2GPriceListResponse;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
