@@ -28,7 +28,7 @@ public class ItemSearchBar extends ComboBox<ItemInfo> {
     }
 
     private void navigateToItemsLayout(ItemInfo value) {
-        getUI().ifPresent(ui -> ui.navigate(ItemsLayout.class, value.getFormatterItemName()));
+        getUI().ifPresent(ui -> ui.navigate(ItemsLayout.class, value.getFormattedItemName()));
     }
 
 

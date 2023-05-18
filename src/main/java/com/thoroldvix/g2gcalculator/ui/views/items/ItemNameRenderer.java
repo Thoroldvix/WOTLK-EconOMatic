@@ -41,7 +41,7 @@ public class ItemNameRenderer extends HorizontalLayout {
         Span type = new Span(itemInfo.type().toString());
 
         name.getClassNames().add(itemInfo.quality().name().toLowerCase());
-        type.getStyle().set("font-size", "--lumo-font-size-xs");
+        type.getStyle().set("font-size", "13px");
         type.getStyle().set("color", "--lumo-secondary-text-color");
 
 
