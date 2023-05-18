@@ -1,12 +1,15 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
+import ch.qos.logback.core.Layout;
 import com.storedobject.chart.SOChart;
 import com.sun.jna.platform.win32.COM.IShellFolder;
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
 import com.thoroldvix.g2gcalculator.price.PriceService;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
+import com.thoroldvix.g2gcalculator.ui.views.MainLayout;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -16,10 +19,14 @@ import java.util.List;
 
 import static com.thoroldvix.g2gcalculator.ui.views.util.LineChartFactory.*;
 
-@Route(value = "wow-classic/servers")
-public class ServerView extends VerticalLayout implements HasUrlParameter<Integer> {
+@Route(value = "wow-classic/servers", layout = MainLayout.class)
+public class ServerView extends VerticalLayout implements HasUrlParameter<String> {
     private final PriceService priceServiceImpl;
     private final ServerService serverServiceImpl;
+
+    private ServerOverviewBox  serverOverviewBox;
+
+    private final HorizontalLayout serverDetailsLayout = new HorizontalLayout();
 
     private List<PriceResponse> prices;
 
@@ -29,45 +36,36 @@ public class ServerView extends VerticalLayout implements HasUrlParameter<Intege
         this.priceServiceImpl = priceServiceImpl;
         this.serverServiceImpl = serverServiceImpl;
         addClassName("server-view");
-        setSizeFull();
+        getStyle().set("margin-top", "300px");
+
+        serverDetailsLayout.setWidthFull();
+
+
+        add(serverDetailsLayout);
 
     }
 
-    private List<PriceResponse> getPrices(int id) {
-        return priceServiceImpl.getAllPricesForServer(id);
+    private List<PriceResponse> getPrices(String serverName) {
+        return priceServiceImpl.getAllPricesForServer(serverName);
     }
 
-    public void setup(int id) {
-        prices = getPrices(id);
-        ServerResponse server = serverServiceImpl.getServerResponseById(id);
+    public void setup(String serverName) {
+        prices = getPrices(serverName);
+        ServerResponse server = serverServiceImpl.getServerResponse(serverName);
         configureServerInfo(server);
-        configureCharts();
+
     }
 
     private void configureServerInfo(ServerResponse server) {
-        Span serverNameSpan = new Span("Server: " + server.name());
-        Span factionSpan = new Span("Faction: " + server.faction());
-        serverNameSpan.addClassNames("text-xl", "mt-m");
-        factionSpan.addClassNames("text-xl", "mt-m");
-
-        VerticalLayout verticalLayout = new VerticalLayout(serverNameSpan, factionSpan);
-
-        add(verticalLayout);
+        serverOverviewBox = new ServerOverviewBox(server);
+        serverDetailsLayout.add(serverOverviewBox);
     }
 
-    private void configureCharts() {
-        SOChart soChart = new SOChart();
-        soChart.setSize("1000px", "500px");
-        soChart.add(getOneHourChart(prices));
-        VerticalLayout verticalLayout = new VerticalLayout(soChart);
-        verticalLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-        verticalLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        add(verticalLayout);
-    }
+
 
 
     @Override
-    public void setParameter(BeforeEvent event, Integer parameter) {
+    public void setParameter(BeforeEvent event, String parameter) {
         setup(parameter);
     }
 }
