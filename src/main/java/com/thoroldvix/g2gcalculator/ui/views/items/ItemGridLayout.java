@@ -3,7 +3,6 @@ package com.thoroldvix.g2gcalculator.ui.views.items;
 import com.thoroldvix.g2gcalculator.item.ItemService;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -41,7 +40,7 @@ public class ItemGridLayout extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
 
-        add(new Text("Select server"));
+
     }
 
 
