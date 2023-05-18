@@ -27,7 +27,15 @@
   margin-left: 10px;
   width: 100%;
 }
+
 .server-overview-box {
+  padding: 20px;
+  height: 300px;
+  width: 400px;
+  background: #383633;
+}
+
+.server-stat-box {
   padding: 20px;
   height: 300px;
   width: 400px;

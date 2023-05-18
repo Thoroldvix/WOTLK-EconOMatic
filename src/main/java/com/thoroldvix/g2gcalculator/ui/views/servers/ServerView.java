@@ -28,9 +28,12 @@ public class ServerView extends VerticalLayout implements HasUrlParameter<String
         this.priceServiceImpl = priceServiceImpl;
         this.serverServiceImpl = serverServiceImpl;
         addClassName("server-view");
-        getStyle().set("margin-top", "300px");
+        setDefaultHorizontalComponentAlignment(Alignment.START);
+        getStyle().set("padding", "20px");
 
-        serverDetailsLayout.setWidthFull();
+        serverDetailsLayout.setAlignItems(Alignment.CENTER);
+        serverDetailsLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+        serverDetailsLayout.setWidth("800px");
 
 
         add(serverDetailsLayout);
@@ -50,7 +53,8 @@ public class ServerView extends VerticalLayout implements HasUrlParameter<String
 
     private void configureServerInfo(ServerResponse server) {
         ServerOverviewBox serverOverviewBox = new ServerOverviewBox(server);
-        serverDetailsLayout.add(serverOverviewBox);
+        ServerStatBox serverStatBox = new ServerStatBox(server);
+        serverDetailsLayout.add(serverOverviewBox, serverStatBox);
     }
 
 
