@@ -79,7 +79,7 @@ public class ItemFilteringLayout extends HorizontalLayout {
         itemNameFilter.addThemeVariants(TextFieldVariant.LUMO_HELPER_ABOVE_FIELD);
         itemNameFilter.setPlaceholder("Search...");
         itemNameFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
-        itemNameFilter.setHelperText("Search items...");
+        itemNameFilter.setHelperText("Name");
         itemNameFilter.setValueChangeMode(ValueChangeMode.LAZY);
         itemNameFilter.setClearButtonVisible(true);
         itemNameFilter.addValueChangeListener(event -> itemGrid.onFilterChange(getFilter()));
