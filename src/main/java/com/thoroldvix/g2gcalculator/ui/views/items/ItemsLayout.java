@@ -10,7 +10,7 @@ public class ItemsLayout extends VerticalLayout implements HasUrlParameter<Strin
 
     private final ServerSelectionField serverSelectionField;
 
-    private  ItemPriceHistoryLayout itemPriceHistoryLayout;
+
 
     public ItemsLayout(ServerSelectionField serverSelectionField) {
         this.serverSelectionField = serverSelectionField;
