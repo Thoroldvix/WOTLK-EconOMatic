@@ -1,6 +1,5 @@
 package com.thoroldvix.g2gcalculator.server;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
 import lombok.Builder;
 
@@ -10,7 +9,9 @@ public record ServerResponse (
         String name,
         Faction faction,
         Region region,
-        PriceResponse price
+        PriceResponse price,
+        ServerType type,
+        PopulationResponse population
 ) {
 
     public String getFormattedServername() {

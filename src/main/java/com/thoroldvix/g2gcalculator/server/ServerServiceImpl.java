@@ -2,6 +2,9 @@ package com.thoroldvix.g2gcalculator.server;
 
 import com.thoroldvix.g2gcalculator.common.NotFoundException;
 import com.thoroldvix.g2gcalculator.common.StringEnumConverter;
+import com.thoroldvix.g2gcalculator.price.PriceMapper;
+import com.thoroldvix.g2gcalculator.price.PriceResponse;
+import com.thoroldvix.g2gcalculator.server.warcrafttavern.PopulationClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,8 @@ public class ServerServiceImpl implements ServerService {
 
     private final ServerRepository serverRepository;
     private final ServerMapper serverMapper;
+    private final PriceMapper priceMapper;
+    private final PopulationClient populationClient;
 
     @Override
     public List<ServerResponse> getAllServers(Pageable pageable) {
@@ -74,8 +79,19 @@ public class ServerServiceImpl implements ServerService {
     public ServerResponse getServerResponse(String serverName) {
         String exactServerName = getExactServerName(serverName);
         Faction faction = getFaction(serverName);
-        return serverRepository.findByNameAndFaction(exactServerName, faction).map(serverMapper::toServerResponse)
+        Server server = serverRepository.findByNameAndFaction(exactServerName, faction)
                 .orElseThrow(() -> new NotFoundException("No server found for name: " + exactServerName + " and faction: " + faction));
+        PopulationResponse population = populationClient.getPopulationForServer(server.getRegion().getParentRegion(), server.getName());
+        PriceResponse price = priceMapper.toPriceResponse(serverMapper.mostRecentPrice(server.getPrices()));
+
+        return ServerResponse.builder()
+                .name(server.getName())
+                .type(server.getType())
+                .faction(server.getFaction())
+                .region(server.getRegion())
+                .price(price)
+                .population(population)
+                .build();
     }
 
     @Override
