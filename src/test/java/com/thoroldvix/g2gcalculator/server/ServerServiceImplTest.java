@@ -212,12 +212,12 @@ class ServerServiceImplTest {
     void getAllForRegion_whenListOfRegionsGiven_returnsListOfCorrectServerResponse() {
         ServerResponse firstServer = ServerResponse.builder()
                 .name("everlook")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.HORDE)
                 .build();
         ServerResponse secondServer = ServerResponse.builder()
                 .name("gehennas")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.ALLIANCE)
                 .build();
         Server firstServerEntity = Server.builder()
@@ -247,12 +247,12 @@ class ServerServiceImplTest {
     void getAllForRegion_whenSingleRegionGiven_returnsListOfCorrectServerResponse() {
         ServerResponse firstServer = ServerResponse.builder()
                 .name("everlook")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.HORDE)
                 .build();
         ServerResponse secondServer = ServerResponse.builder()
                 .name("gehennas")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.ALLIANCE)
                 .build();
         Server firstServerEntity = Server.builder()
@@ -281,12 +281,12 @@ class ServerServiceImplTest {
     void getAllServers_returnsListOfServerResponse() {
         ServerResponse firstServer = ServerResponse.builder()
                 .name("everlook")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.HORDE)
                 .build();
         ServerResponse secondServer = ServerResponse.builder()
                 .name("gehennas")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.ALLIANCE)
                 .build();
         Server firstServerEntity = Server.builder()
@@ -314,12 +314,12 @@ class ServerServiceImplTest {
     void getAllServersByName_whenValidServerName_returnsListOfServerResponse() {
         ServerResponse firstServer = ServerResponse.builder()
                 .name("everlook")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.HORDE)
                 .build();
         ServerResponse secondServer = ServerResponse.builder()
                 .name("gehennas")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.ALLIANCE)
                 .build();
         Server firstServerEntity = Server.builder()
@@ -347,12 +347,12 @@ class ServerServiceImplTest {
     void getAllServersByName_whenServerNameEmptyOrNull_returnsListOfAllServers() {
         ServerResponse firstServer = ServerResponse.builder()
                 .name("everlook")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.HORDE)
                 .build();
         ServerResponse secondServer = ServerResponse.builder()
                 .name("gehennas")
-                .region("EU")
+                .region(Region.EU)
                 .faction(Faction.ALLIANCE)
                 .build();
         Server firstServerEntity = Server.builder()
