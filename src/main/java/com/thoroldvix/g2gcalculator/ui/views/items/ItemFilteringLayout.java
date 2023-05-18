@@ -30,7 +30,7 @@ public class ItemFilteringLayout extends HorizontalLayout {
 
     public ItemFilteringLayout(ItemGridLayout itemGrid) {
         this.itemGrid = itemGrid;
-        setVisible(false);
+
 
         setWidthFull();
         prepareFilterFields();

@@ -3,6 +3,7 @@ package com.thoroldvix.g2gcalculator.ui.views.items;
 import com.thoroldvix.g2gcalculator.item.ItemService;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -36,19 +37,18 @@ public class ItemGridLayout extends VerticalLayout {
         configureColumnsForServer();
         configureGrid();
         addClassName("item-grid-view");
-        setSizeFull();
-        setAlignItems(Alignment.START);
-        add(itemFilteringLayout, itemGrid);
+
+        setAlignItems(Alignment.CENTER);
+        setJustifyContentMode(JustifyContentMode.CENTER);
+
+        add(new Text("Select server"));
     }
 
 
 
     private void configureGrid() {
-
-        itemGrid.setVisible(false);
         contextMenu = new ItemContextMenu(itemGrid.addContextMenu());
         itemGrid.setSelectionMode(Grid.SelectionMode.NONE);
-        itemGrid.setPaginationVisibility(false);
         itemGrid.addClassName("item-grid");
         itemGrid.setWidthFull();
         itemGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
@@ -56,17 +56,14 @@ public class ItemGridLayout extends VerticalLayout {
         itemGrid.setPageSize(20);
         itemGrid.setPaginatorSize(5);
         itemGrid.setPage(1);
-
     }
 
     public void populateGridForServer(ServerResponse server) {
         serverName = getFormattedServerName(server);
-
         Set<ItemInfo> allItemsInfo = itemServiceImpl.getAllItemsInfoForServer(serverName);
         itemGrid.setItems(allItemsInfo);
-        itemGrid.setVisible(true);
-        itemFilteringLayout.setVisible(true);
-        itemGrid.setPaginationVisibility(true);
+
+        add(itemFilteringLayout, itemGrid);
     }
 
 
