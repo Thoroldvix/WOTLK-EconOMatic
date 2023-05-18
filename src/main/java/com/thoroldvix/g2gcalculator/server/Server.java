@@ -29,9 +29,14 @@ public class Server {
     @Column(name = "region", nullable = false)
     private Region region;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private ServerType type;
+
     @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Price> prices;
+
 
     public void setPrice(Price price) {
         prices.add(price);
