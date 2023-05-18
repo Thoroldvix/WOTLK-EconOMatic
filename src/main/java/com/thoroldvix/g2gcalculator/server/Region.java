@@ -15,12 +15,21 @@ public enum Region {
     RU("166fbf02-6d9a-45a0-9f74-ac3ba5a002b4");
 
     public static List<Region> getEURegions() {
-        return  List.of(EU, FR, DE, ES, RU);
+        return List.of(EU, FR, DE, ES, RU);
     }
+
     public static List<Region> getUSRegions() {
         return List.of(US, OCE);
     }
- public static boolean contains(String region) {
+
+    public static Region getParentregion(Region region) {
+        return switch (region) {
+            case EU, FR, ES, RU, DE -> EU;
+            case US, OCE -> US;
+        };
+    }
+
+    public static boolean contains(String region) {
         for (Region r : Region.values()) {
             if (r.name().equalsIgnoreCase(region)) {
                 return true;
@@ -28,6 +37,7 @@ public enum Region {
         }
         return false;
     }
+
     public final String g2gId;
 
     Region(String g2gId) {
