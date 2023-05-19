@@ -33,4 +33,4 @@ logging:
    org:
     atmosphere: warn
 vaadin:
-  whitelisted-packages: com.vaadin,org.vaadin,dev.hilla,com.example.application,com.vaadin,org.vaadin,com.storedobject,com.thoroldvix.g2gcalculator.ui
+  whitelisted-packages: com.vaadin,org.vaadin,dev.hilla,com.example.application,com.vaadin,org.vaadin,com.github.appreciated.apexcharts,com.thoroldvix.g2gcalculator.ui
