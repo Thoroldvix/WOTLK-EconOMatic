@@ -1,10 +1,10 @@
 package com.thoroldvix.g2gcalculator.server;
 
-import com.thoroldvix.g2gcalculator.common.NotFoundException;
 import com.thoroldvix.g2gcalculator.common.StringEnumConverter;
 import com.thoroldvix.g2gcalculator.price.PriceMapper;
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
 import com.thoroldvix.g2gcalculator.server.warcrafttavern.PopulationClient;
+import com.vaadin.flow.router.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -77,11 +77,12 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public ServerResponse getServerResponse(String serverName) {
-        String exactServerName = getExactServerName(serverName);
+        String exactServerName = getExactServerName(serverName, " ");
         Faction faction = getFaction(serverName);
+
         Server server = serverRepository.findByNameAndFaction(exactServerName, faction)
-                .orElseThrow(() -> new NotFoundException("No server found for name: " + exactServerName + " and faction: " + faction));
-        PopulationResponse population = populationClient.getPopulationForServer(server.getRegion().getParentRegion(), server.getName());
+                .orElseThrow(() -> new NotFoundException("No server found with name: " + exactServerName));
+        PopulationResponse population = getPopulation(server, serverName);
         PriceResponse price = priceMapper.toPriceResponse(serverMapper.mostRecentPrice(server.getPrices()));
 
         return ServerResponse.builder()
@@ -94,23 +95,28 @@ public class ServerServiceImpl implements ServerService {
                 .build();
     }
 
-    @Override
-    public Server getServer(String serverName) {
-        String exactServerName = getExactServerName(serverName);
-        Faction faction = getFaction(serverName);
-        return serverRepository.findByNameAndFaction(exactServerName, faction)
-                .orElseThrow(() -> new NotFoundException("No server found for name: " + exactServerName + " and faction: " + faction));
+    private PopulationResponse getPopulation(Server server, String serverName) {
+        String exactServerName = getExactServerName(serverName, "-").replaceAll("'", "");
+        return populationClient.getPopulationForServer(server.getRegion().getParentRegion(), exactServerName);
     }
 
-    private String getExactServerName(String serverName) {
+    @Override
+    public Server getServer(String serverName) {
+        String exactServerName = getExactServerName(serverName, " ");
+        Faction faction = getFaction(serverName);
+        return serverRepository.findByNameAndFaction(exactServerName, faction)
+                .orElseThrow(() -> new NotFoundException("No server found with name: " + exactServerName));
+    }
+
+    private String getExactServerName(String serverName, String delimiter) {
         if (!StringUtils.hasText(serverName)) {
             throw new IllegalArgumentException("Server name cannot be null or empty");
         }
         String[] split = serverName.split("-");
         if (split.length == 3) {
-            return split[0] + " " + split[1];
+            return (split[0] + delimiter + split[1]).toLowerCase();
         }
-        return serverName.split("-")[0];
+        return serverName.split("-")[0].toLowerCase();
     }
 
     private Faction getFaction(String serverName) {

@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.server;
 
-import com.thoroldvix.g2gcalculator.common.NotFoundException;
+import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

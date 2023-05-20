@@ -1,9 +1,11 @@
 package com.thoroldvix.g2gcalculator.common;
 
 import com.thoroldvix.g2gcalculator.server.Faction;
+import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StringEnumConverterTest {
 

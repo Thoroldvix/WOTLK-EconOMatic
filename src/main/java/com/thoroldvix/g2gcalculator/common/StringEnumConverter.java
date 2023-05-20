@@ -1,5 +1,7 @@
 package com.thoroldvix.g2gcalculator.common;
 
+import com.vaadin.flow.router.NotFoundException;
+
 public class StringEnumConverter<T extends Enum<T>> {
     private final Class<T> enumClass;
 
@@ -14,6 +16,6 @@ public class StringEnumConverter<T extends Enum<T>> {
                 return value;
             }
         }
-        throw new NotFoundException("Could not find enum for " + str);
+        throw new NotFoundException("Could not find faction with name: " + str);
     }
 }
