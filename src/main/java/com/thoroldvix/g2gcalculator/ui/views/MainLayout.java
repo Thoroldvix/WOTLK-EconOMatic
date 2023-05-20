@@ -1,8 +1,10 @@
 package com.thoroldvix.g2gcalculator.ui.views;
 
 import com.thoroldvix.g2gcalculator.ui.views.items.AuctionHouseView;
-import com.thoroldvix.g2gcalculator.ui.views.items.ServerSelectionField;
-import com.thoroldvix.g2gcalculator.ui.views.servers.ServerGridView;
+import com.thoroldvix.g2gcalculator.ui.views.items.ItemSearchBar;
+import com.thoroldvix.g2gcalculator.ui.views.servers.G2GPricesView;
+import com.thoroldvix.g2gcalculator.ui.views.servers.ServerSelectionField;
+import com.thoroldvix.g2gcalculator.ui.views.servers.ServerView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -30,7 +32,6 @@ public class MainLayout extends AppLayout {
     private final HorizontalLayout headerLayout = new HorizontalLayout();
 
 
-
     private final ItemSearchBar itemSearchBar;
 
 
@@ -46,7 +47,6 @@ public class MainLayout extends AppLayout {
 
         addToDrawer(createDrawerContent(menu));
     }
-
 
 
     private Component createHeaderContent() {
@@ -108,8 +108,7 @@ public class MainLayout extends AppLayout {
         getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
 
 
-            headerLayout.add(serverSelectionField);
-
+        headerLayout.add(serverSelectionField);
     }
 
     private Optional<Tab> getTabForComponent(Component component) {
@@ -131,7 +130,9 @@ public class MainLayout extends AppLayout {
 
     private Tab[] createMenuItems() {
         return new Tab[]{createTab("Auction House", AuctionHouseView.class, VaadinIcon.COIN_PILES.create()),
-                createTab("G2G Prices", ServerGridView.class, VaadinIcon.BOOK_DOLLAR.create())
+                createTab("G2G Prices", G2GPricesView.class, VaadinIcon.BOOK_DOLLAR.create()),
+                createTab("Server", ServerView.class, VaadinIcon.GLOBE_WIRE.create())
+
         };
     }
 
