@@ -1,7 +1,7 @@
 package com.thoroldvix.g2gcalculator.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.g2gcalculator.common.NotFoundException;
+import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
