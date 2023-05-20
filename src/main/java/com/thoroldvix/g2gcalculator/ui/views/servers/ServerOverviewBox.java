@@ -13,12 +13,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class ServerOverviewBox extends VerticalLayout {
 
-    private final HorizontalLayout serverInfoLayout = new HorizontalLayout();
-    private final HorizontalLayout factionInfoLayout = new HorizontalLayout();
-    private final HorizontalLayout populationInfoLayout = new HorizontalLayout();
-
-    private final HorizontalLayout regionInfoLayout = new HorizontalLayout();
-
     private final ServerResponse server;
 
     private final H1 header = new H1();
@@ -28,34 +22,36 @@ public class ServerOverviewBox extends VerticalLayout {
         this.server = server;
         addClassName("server-overview-box");
         getThemeList().set("dark", true);
-
-
+        setJustifyContentMode(JustifyContentMode.START);
         configureHeader();
-        configureServerInfoLayout();
-        configureFactionInfo();
-        configurePopulationInfoLayout();
-        configureRegionInfoLayout();
-        setWidth("30%");
+        setSizeFull();
+        getStyle().set("background", "#383633");
 
-        add(header, serverInfoLayout,
-                factionInfoLayout, regionInfoLayout, populationInfoLayout);
+
+        HorizontalLayout serverInfoLayout = new HorizontalLayout();
+        serverInfoLayout.setAlignItems(Alignment.START);
+        serverInfoLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
+
+        VerticalLayout valueNamesLayout = new VerticalLayout();
+        valueNamesLayout.add(new Span("Server"),
+                new Span("Faction"),
+                new Span("Region"),
+                new Span("Population"));
+
+        valueNamesLayout.setAlignItems(Alignment.START);
+        valueNamesLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
+        serverInfoLayout.add(valueNamesLayout, getServerOverviewValues());
+        add(header, serverInfoLayout);
     }
 
-    private void configureFactionInfo() {
-        factionInfoLayout.setAlignItems(Alignment.START);
-        factionInfoLayout.addClassName("server-stat");
 
-
-        factionInfoLayout.add(new Span("Faction"), getFactionDisplay(server.faction()));
-    }
-
-    private void configureRegionInfoLayout() {
-        regionInfoLayout.setAlignItems(Alignment.START);
-        regionInfoLayout.addClassName("server-stat");
+    private VerticalLayout getServerOverviewValues() {
+        VerticalLayout serverOverviewLayout = new VerticalLayout();
         Span region = new Span(server.region().getParentRegion().name());
-        region.getStyle().set("margin-left", "48px");
-
-        regionInfoLayout.add(new Span("Region"), region);
+        serverOverviewLayout.add(getServerNameValue(), getFactionDisplay(server.faction()), region, getPopulationValue());
+        serverOverviewLayout.setAlignItems(Alignment.START);
+        serverOverviewLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
+        return serverOverviewLayout;
     }
 
 
@@ -64,44 +60,33 @@ public class ServerOverviewBox extends VerticalLayout {
         icon.setSize("20px");
         icon.getStyle().set("padding-right", "5px");
         icon.getStyle().set("padding-bottom", "3px");
-        header.getStyle().set("margin-bottom", "10px");
+
+
         header.getStyle().set("font-size", "var(--lumo-font-size-m)");
         Span headerText = new Span("Overview");
 
         header.add(icon, headerText);
     }
 
-    private void configurePopulationInfoLayout() {
-        populationInfoLayout.addClassName("server-stat");
-        populationInfoLayout.setAlignItems(Alignment.START);
-
-
+    private HorizontalLayout getPopulationValue() {
+        HorizontalLayout populationLayout = new HorizontalLayout();
+        populationLayout.setAlignItems(Alignment.START);
+        populationLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
         if (server.population().popAlliance() == 0 && server.population().popHorde() == 0) {
-            Span zeroPopulation = new Span("0");
-            zeroPopulation.getStyle().set("margin-left", "25px");
-            populationInfoLayout.add(new Span("Population"), zeroPopulation);
-        } else {
-            ApexCharts populationChart = PopulationChart.getChart(server);
-            populationChart.setHeight("100px");
-            populationInfoLayout.setHeight("60px");
-            populationInfoLayout.add(new Span("Population"), populationChart);
+            populationLayout.add(new Span("0"));
+            return populationLayout;
         }
+        ApexCharts populationChart = PopulationChart.getChart(server);
+        populationLayout.add(populationChart);
+        return populationLayout;
     }
 
-    private void configureServerInfoLayout() {
-        Span serverName = new Span(server.name());
-        serverName.getStyle().set("margin-left", "54px");
-
-        serverInfoLayout.setAlignItems(Alignment.START);
-        serverInfoLayout.addClassName("server-stat");
-        serverInfoLayout.add(new Span("Server"), serverName);
+    private Span getServerNameValue() {
+        return new Span(server.name());
     }
 
     private FactionRenderer getFactionDisplay(Faction faction) {
-        FactionRenderer factionRenderer = new FactionRenderer(faction);
-
-        factionRenderer.getStyle().set("margin-left", "42px");
-        return factionRenderer;
+        return new FactionRenderer(faction);
     }
 
 }
