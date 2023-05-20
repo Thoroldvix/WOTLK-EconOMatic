@@ -1,13 +1,8 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
-import com.thoroldvix.g2gcalculator.server.Region;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
-import com.thoroldvix.g2gcalculator.ui.views.FactionRenderer;
-import com.thoroldvix.g2gcalculator.ui.views.FactionSelect;
-import com.thoroldvix.g2gcalculator.ui.views.MainLayout;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
@@ -19,31 +14,31 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
+import java.util.Comparator;
 
-@Route(value = "wow-classic/g2g-prices", layout = MainLayout.class)
-@PageTitle("G2G Prices")
-@CssImport("./styles/shared-styles.css")
+
 @SpringComponent
 @UIScope
-public class ServerGridView extends VerticalLayout {
+public class ServerGridLayout extends VerticalLayout {
     private final ServerService serverServiceImpl;
+
+    private final ServerSelectionField serverSelectionField;
 
     private final Grid<ServerResponse> grid = new Grid<>();
 
     private TextField serverNameFilter;
     private FactionSelect factionFilter;
 
-    public ServerGridView(ServerService serverServiceImpl) {
+    public ServerGridLayout(ServerService serverServiceImpl, ServerSelectionField serverSelectionField) {
         this.serverServiceImpl = serverServiceImpl;
-        addClassName("list-view");
+        this.serverSelectionField = serverSelectionField;
         setSizeFull();
         configureGrid();
         updateGrid();
+        setMargin(false);
         prepareFilterFields();
         add(getFilterLayout(), getContent());
     }
@@ -55,6 +50,7 @@ public class ServerGridView extends VerticalLayout {
     private Component getFilterLayout() {
         HorizontalLayout filterLayout = new HorizontalLayout(serverNameFilter);
         filterLayout.addClassName("filter-layout");
+
         filterLayout.setAlignItems(Alignment.CENTER);
         filterLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
         filterLayout.add(serverNameFilter, factionFilter);
@@ -114,8 +110,10 @@ public class ServerGridView extends VerticalLayout {
     private void configureColumns() {
         grid.addColumn(ServerResponse::name).setHeader("Name");
         grid.addColumn(new ComponentRenderer<>(server -> new FactionRenderer(server.faction()))).setHeader("Faction");
-        grid.addColumn(server -> getRegion(server.region())).setHeader("Region");
-        grid.addColumn(server -> server.price().value()).setHeader("Price (USD)");
+        grid.addColumn(server -> server.region().getParentRegion().name()).setHeader("Region");
+        grid.addColumn(new ComponentRenderer<>(server -> new ServerPriceRenderer(server.price().value())))
+                .setHeader("Price")
+                .setComparator(Comparator.comparing(server -> server.price().value()));
 
 
         grid.getColumns().forEach(col -> {
@@ -123,21 +121,12 @@ public class ServerGridView extends VerticalLayout {
             col.setSortable(true);
         });
     }
-
-
-    private String getRegion(Region region) {
-        return switch (region) {
-            case EU -> Region.EU.name();
-            case US -> Region.US.name();
-            default -> String.format("%s (%s)", region.getParentRegion().name(), region.name());
-        };
-
-    }
-
-
-
     private void navigateToServer(ServerResponse server) {
-        getUI().ifPresent(ui -> ui.navigate(ServerView.class, server.getFormattedServername()));
+        String serverName = server.getFullServerName().replaceAll("'", "");
+        serverSelectionField.setValue(server);
+        getUI().flatMap(ui ->
+                        ui.navigate(ServerView.class))
+                .ifPresent(serverView -> serverView.setup(serverName));
     }
 
 
