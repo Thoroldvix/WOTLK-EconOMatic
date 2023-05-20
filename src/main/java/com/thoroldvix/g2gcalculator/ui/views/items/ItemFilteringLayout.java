@@ -6,7 +6,6 @@ import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBoxVariant;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -17,7 +16,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 
 import java.util.function.Predicate;
 
-@CssImport("./styles/shared-styles.css")
+
 public class ItemFilteringLayout extends HorizontalLayout {
     private TextField itemNameFilter;
     private MultiSelectComboBox<ItemQuality> itemQualityFilter;
@@ -30,9 +29,9 @@ public class ItemFilteringLayout extends HorizontalLayout {
 
     public ItemFilteringLayout(ItemGridLayout itemGrid) {
         this.itemGrid = itemGrid;
-
-
         setWidthFull();
+
+
         prepareFilterFields();
         add(itemNameFilter, itemQualityFilter, itemTypeFilter);
     }
