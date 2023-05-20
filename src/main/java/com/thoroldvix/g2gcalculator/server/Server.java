@@ -29,9 +29,9 @@ public class Server {
     @Column(name = "region", nullable = false)
     private Region region;
 
-    @Enumerated(EnumType.STRING)
+
     @Column(name = "type", nullable = false)
-    private ServerType type;
+    private String type;
 
     @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL)
     @ToString.Exclude

@@ -9,7 +9,7 @@ public record PopulationResponse(
         String popDesc,
         int popHorde,
         Region region,
-        ServerType type,
+        String type,
         String status,
         String slug
 ) {
