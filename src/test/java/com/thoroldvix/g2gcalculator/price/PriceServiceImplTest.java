@@ -1,9 +1,9 @@
 package com.thoroldvix.g2gcalculator.price;
 
+import com.thoroldvix.g2gcalculator.price.g2g.G2GService;
 import com.thoroldvix.g2gcalculator.server.Faction;
 import com.thoroldvix.g2gcalculator.server.Server;
 import com.thoroldvix.g2gcalculator.server.ServerServiceImpl;
-import com.thoroldvix.g2gcalculator.server.g2g.G2GService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

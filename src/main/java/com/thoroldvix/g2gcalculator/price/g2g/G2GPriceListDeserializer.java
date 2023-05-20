@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.server.g2g;
+package com.thoroldvix.g2gcalculator.price.g2g;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

@@ -1,11 +1,11 @@
 package com.thoroldvix.g2gcalculator.price;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.g2gcalculator.item.dto.RealMoneyItemPrice;
-import com.thoroldvix.g2gcalculator.common.NotFoundException;
 import com.thoroldvix.g2gcalculator.item.price.RMItemPriceService;
 import com.thoroldvix.g2gcalculator.server.ServerService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,7 +20,8 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PriceController.class)
 @ActiveProfiles("test")

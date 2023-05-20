@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.server.g2g;
+package com.thoroldvix.g2gcalculator.price.g2g;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

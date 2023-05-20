@@ -2,13 +2,13 @@ package com.thoroldvix.g2gcalculator.g2g;
 
 import com.thoroldvix.g2gcalculator.price.PriceResponse;
 import com.thoroldvix.g2gcalculator.price.PriceService;
+import com.thoroldvix.g2gcalculator.price.g2g.G2GPriceClient;
+import com.thoroldvix.g2gcalculator.price.g2g.G2GPriceListResponse;
+import com.thoroldvix.g2gcalculator.price.g2g.G2GService;
 import com.thoroldvix.g2gcalculator.server.Faction;
 import com.thoroldvix.g2gcalculator.server.Region;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
-import com.thoroldvix.g2gcalculator.server.g2g.G2GPriceClient;
-import com.thoroldvix.g2gcalculator.server.g2g.G2GPriceListResponse;
-import com.thoroldvix.g2gcalculator.server.g2g.G2GService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

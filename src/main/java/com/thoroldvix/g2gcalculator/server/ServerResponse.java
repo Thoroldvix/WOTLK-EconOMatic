@@ -10,11 +10,11 @@ public record ServerResponse (
         Faction faction,
         Region region,
         PriceResponse price,
-        ServerType type,
+        String type,
         PopulationResponse population
 ) {
 
-    public String getFormattedServername() {
+    public String getFullServerName() {
         return name.replaceAll(" ", "-").toLowerCase()
                + "-" + faction.name().toLowerCase();
     }

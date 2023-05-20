@@ -1,9 +1,7 @@
-package com.thoroldvix.g2gcalculator.ui.views;
+package com.thoroldvix.g2gcalculator.ui.views.items;
 
 import com.thoroldvix.g2gcalculator.item.ItemService;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
-import com.thoroldvix.g2gcalculator.ui.views.items.ItemNameRenderer;
-import com.thoroldvix.g2gcalculator.ui.views.items.ItemsLayout;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.renderer.ComponentRenderer;

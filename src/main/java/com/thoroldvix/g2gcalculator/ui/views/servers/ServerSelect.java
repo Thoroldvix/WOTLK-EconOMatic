@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.ui.views;
+package com.thoroldvix.g2gcalculator.ui.views.servers;
 
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
