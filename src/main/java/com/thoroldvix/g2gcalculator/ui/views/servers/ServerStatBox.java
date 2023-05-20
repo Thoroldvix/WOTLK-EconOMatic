@@ -1,5 +1,6 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
+import com.thoroldvix.g2gcalculator.price.PriceService;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
@@ -8,6 +9,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -21,10 +23,14 @@ public class ServerStatBox extends VerticalLayout {
 
     private final HorizontalLayout regionAvgPriceLayout = new HorizontalLayout();
 
+    private final PriceService priceServiceImpl;
+    private final ServerResponse server;
     private final H1 header = new H1();
 
 
-    public ServerStatBox(ServerResponse server) {
+    public ServerStatBox(ServerResponse server, PriceService priceServiceImpl) {
+        this.priceServiceImpl = priceServiceImpl;
+        this.server = server;
         addClassName("server-stat-box");
         getStyle().set("margin-left", "50px");
         configureHeader();
@@ -32,7 +38,7 @@ public class ServerStatBox extends VerticalLayout {
         configureCurrentPriceLayout();
         configureAvgPriceLayout();
         configureRegionAvgPriceLayout();
-
+        setWidth("30%");
         add(header, lastUpdatedLayout, currentPriceLayout, avgPriceLayout, regionAvgPriceLayout);
     }
 
@@ -50,27 +56,36 @@ public class ServerStatBox extends VerticalLayout {
 
     private void configureLastUpdatedLayout() {
         Span lastUpdated = new Span(getLastUpdatedText(LocalDateTime.now().minusHours(1)));
+        lastUpdated.getStyle().set("margin-left", "28px");
         lastUpdatedLayout.addClassName("server-stat");
         lastUpdatedLayout.add(new Span("Last updated"), lastUpdated);
     }
 
     private void configureCurrentPriceLayout() {
-        Span currentPrice = new Span("Current price");
         currentPriceLayout.addClassName("server-stat");
-        currentPriceLayout.add(currentPrice);
+        ServerPriceRenderer serverPriceLayout = new ServerPriceRenderer(server.price().value());
+        serverPriceLayout.getStyle().set("margin-left", "28px");
+        currentPriceLayout.add(new Span("Current price"), serverPriceLayout);
     }
 
     private void configureAvgPriceLayout() {
-        Span avgPrice = new Span("Average price");
         avgPriceLayout.addClassName("server-stat");
-        avgPriceLayout.add(avgPrice);
+        BigDecimal averagePrice = priceServiceImpl.getAvgPriceForServer(server.getFullServerName());
+
+        ServerPriceRenderer serverPriceLayout = new ServerPriceRenderer(averagePrice);
+        serverPriceLayout.getStyle().set("margin-left", "53px");
+        avgPriceLayout.add(new Span("Avg price"), serverPriceLayout);
     }
 
     private void configureRegionAvgPriceLayout() {
-        Span regionAvgPrice = new Span("Region average price");
+        BigDecimal regionAveragePrice = priceServiceImpl.getAvgPriceForRegion(server.region().getParentRegion());
+
         regionAvgPriceLayout.addClassName("server-stat");
-        regionAvgPriceLayout.add(regionAvgPrice);
+        ServerPriceRenderer serverPriceLayout = new ServerPriceRenderer(regionAveragePrice);
+        serverPriceLayout.getStyle().set("margin-left", "1px");
+        regionAvgPriceLayout.add(new Span("Region avg price"), serverPriceLayout);
     }
+
 
     private String getLastUpdatedText(LocalDateTime localDateTime) {
         LocalDateTime now = LocalDateTime.now();
@@ -78,15 +93,13 @@ public class ServerStatBox extends VerticalLayout {
 
         long minutes = duration.toMinutes();
         if (minutes < 60) {
-            return minutes + " minutes ago";
+            return minutes == 1 ? "1 minute ago" : minutes + " minutes ago";
         }
-
         long hours = duration.toHours();
         if (hours < 24) {
-            return hours + " hours ago";
+            return hours == 1 ? "1 hour ago" : hours + " hours ago";
         }
-
         long days = duration.toDays();
-        return days + " days ago";
+        return days == 1 ? "1 day ago" : days + " days ago";
     }
 }
