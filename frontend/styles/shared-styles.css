@@ -1,43 +1,76 @@
 .legendary {
-  color: orange;
+    color: orange;
 }
 
 .epic {
-  color: #A335EE;
+    color: #A335EE;
 }
 
 .rare {
-  color: #0170D0;
+    color: #0170D0;
 }
 
+.apexcharts-title-text {
+    font-weight: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+}
+
+
 .uncommon {
-  color: #15FF06;
+    color: #15FF06;
 }
 
 .common {
-  color: white;
+    color: white;
 }
 
 .poor {
-  color: gray;
+    color: gray;
+}
+
+.custom-error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-title {
+    color: #ff0000;
+    font-size: 2rem;
+}
+
+.error-message {
+    font-size: 1.5rem;
+    margin-top: 1rem;
 }
 
 .server-stat {
-  border-bottom: 1px solid rgba(128, 128, 128, 0.35);
-  margin-left: 10px;
-  width: 100%;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.35);
+    margin-left: 10px;
+    width: 100%;
 }
 
 .server-overview-box {
-  padding: 20px;
-  height: 300px;
-  width: 400px;
-  background: #383633;
+    padding: 20px;
+    height: 290px;
+    margin-bottom: 20px;
+    background: #383633;
 }
 
+.header {
+    background-color: #41403c;
+    opacity: 0.9;
+    background-image: radial-gradient(circle at center center, #A39686, #41403c), repeating-radial-gradient(circle at center center, #A39686, #A39686, 40px, transparent 80px, transparent 40px);
+    background-blend-mode: multiply;
+}
+
+
 .server-stat-box {
-  padding: 20px;
-  height: 300px;
-  width: 400px;
-  background: #383633;
+    padding: 20px;
+    margin-bottom: 20px;
+    height: 260px;
+    background: #383633;
 }
