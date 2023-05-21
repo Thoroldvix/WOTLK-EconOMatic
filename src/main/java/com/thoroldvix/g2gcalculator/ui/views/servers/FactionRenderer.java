@@ -16,11 +16,8 @@ public class FactionRenderer extends HorizontalLayout {
         getThemeList().set("spacing-s", true);
         Image factionIcon = faction.name().equals("HORDE") ? hordeIcon
                 : allianceIcon;
-        add(factionIcon, new Text(faction.toString()));
+        add(new Text(faction.toString()), factionIcon);
     }
-
-
-
     private void configureIcons() {
         allianceIcon.setWidth("20px");
         allianceIcon.setHeight("20px");
