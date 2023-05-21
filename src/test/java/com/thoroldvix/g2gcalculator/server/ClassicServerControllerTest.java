@@ -1,6 +1,10 @@
 package com.thoroldvix.g2gcalculator.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoroldvix.g2gcalculator.server.api.ServerController;
+import com.thoroldvix.g2gcalculator.server.dto.ServerResponse;
+import com.thoroldvix.g2gcalculator.server.entity.Region;
+import com.thoroldvix.g2gcalculator.server.service.ServerService;
 import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ServerController.class)
 @ActiveProfiles("test")
 class ClassicServerControllerTest {
-    public static final String API_SERVERS = "/wow-classic/api/v1/servers";
+    public static final String API_SERVERS = "/wow-classic/api/v1/server";
     @Autowired
     ObjectMapper objectMapper;
     @Autowired

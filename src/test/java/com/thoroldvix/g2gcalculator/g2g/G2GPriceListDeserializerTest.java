@@ -3,9 +3,9 @@ package com.thoroldvix.g2gcalculator.g2g;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.g2gcalculator.price.PriceResponse;
-import com.thoroldvix.g2gcalculator.price.g2g.G2GPriceListDeserializer;
-import com.thoroldvix.g2gcalculator.price.g2g.G2GPriceListResponse;
+import com.thoroldvix.g2gcalculator.server.dto.G2GPriceListDeserializer;
+import com.thoroldvix.g2gcalculator.server.dto.G2GPriceListResponse;
+import com.thoroldvix.g2gcalculator.server.dto.ServerPrice;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ class G2GPriceListDeserializerTest {
         JsonParser jp = new ObjectMapper().getFactory().createParser(json);
         DeserializationContext ctxt = new ObjectMapper().getDeserializationContext();
         G2GPriceListResponse result = new G2GPriceListDeserializer().deserialize(jp, ctxt);
-        List<PriceResponse> prices = result.prices();
+        List<ServerPrice> prices = result.prices();
 
         assertThat(prices).hasSize(2);
         assertThat(prices.get(0).serverName()).isEqualTo("Giantstalker [EU] - Horde");

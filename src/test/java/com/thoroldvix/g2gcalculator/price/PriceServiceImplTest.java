@@ -1,9 +1,14 @@
 package com.thoroldvix.g2gcalculator.price;
 
-import com.thoroldvix.g2gcalculator.price.g2g.G2GService;
-import com.thoroldvix.g2gcalculator.server.Faction;
-import com.thoroldvix.g2gcalculator.server.Server;
-import com.thoroldvix.g2gcalculator.server.ServerServiceImpl;
+import com.thoroldvix.g2gcalculator.server.dto.ServerPrice;
+import com.thoroldvix.g2gcalculator.server.entity.Faction;
+import com.thoroldvix.g2gcalculator.server.entity.Price;
+import com.thoroldvix.g2gcalculator.server.entity.PriceRepository;
+import com.thoroldvix.g2gcalculator.server.entity.Server;
+import com.thoroldvix.g2gcalculator.server.service.G2GService;
+import com.thoroldvix.g2gcalculator.server.service.PriceMapper;
+import com.thoroldvix.g2gcalculator.server.service.PriceServiceImpl;
+import com.thoroldvix.g2gcalculator.server.service.ServerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -58,17 +63,17 @@ class PriceServiceImplTest {
                 .updatedAt(LocalDateTime.now())
                 .currency("USD")
                 .build();
-        PriceResponse priceResponse = PriceResponse.builder()
+        ServerPrice serverPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
                 .build();
 
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         when(priceRepository.findMostRecentPriceByServer(server)).thenReturn(Optional.of(price));
-        when(priceMapper.toPriceResponse(any(Price.class))).thenReturn(priceResponse);
+        when(priceMapper.toPriceResponse(any(Price.class))).thenReturn(serverPrice);
      
-        PriceResponse result = priceServiceImpl.getPriceForServer(serverName);
+        ServerPrice result = priceServiceImpl.getPriceForServer(serverName);
 
-        assertThat(result.value()).isEqualTo(priceResponse.value());
+        assertThat(result.value()).isEqualTo(serverPrice.value());
     }
      @Test
     void getPriceForServer_whenServerProvided_returnsValidPriceResponse() {
@@ -82,16 +87,16 @@ class PriceServiceImplTest {
                 .updatedAt(LocalDateTime.now())
                 .currency("USD")
                 .build();
-        PriceResponse priceResponse = PriceResponse.builder()
+        ServerPrice serverPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
                 .build();
 
         when(priceRepository.findMostRecentPriceByServer(server)).thenReturn(Optional.of(price));
-        when(priceMapper.toPriceResponse(any(Price.class))).thenReturn(priceResponse);
+        when(priceMapper.toPriceResponse(any(Price.class))).thenReturn(serverPrice);
 
-        PriceResponse result = priceServiceImpl.getPriceForServer(server);
+        ServerPrice result = priceServiceImpl.getPriceForServer(server);
 
-        assertThat(result.value()).isEqualTo(priceResponse.value());
+        assertThat(result.value()).isEqualTo(serverPrice.value());
     }
     @Test
     void getPriceForServer_whenServerIsNull_throwsNullPointerException() {
@@ -126,24 +131,24 @@ class PriceServiceImplTest {
                 .server(server)
                 .build();
         Page<Price> prices = new PageImpl<>(List.of(firstPrice, secondPrice));
-        PriceResponse firstPriceResponse = PriceResponse.builder()
+        ServerPrice firstServerPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(100))
                 .build();
-        PriceResponse secondPriceResponse = PriceResponse.builder()
+        ServerPrice secondServerPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
                 .build();
-        List<PriceResponse> expectedPriceResponses = List.of(firstPriceResponse, secondPriceResponse);
+        List<ServerPrice> expectedServerPriceRespons = List.of(firstServerPrice, secondServerPrice);
 
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         Pageable pageable = PageRequest.of(0, 10);
         when(priceRepository.findAllByServer(server, pageable)).thenReturn(prices);
-        when(priceMapper.toPriceResponse(firstPrice)).thenReturn(firstPriceResponse);
-        when(priceMapper.toPriceResponse(secondPrice)).thenReturn(secondPriceResponse);
+        when(priceMapper.toPriceResponse(firstPrice)).thenReturn(firstServerPrice);
+        when(priceMapper.toPriceResponse(secondPrice)).thenReturn(secondServerPrice);
 
-        List<PriceResponse> actualResponse = priceServiceImpl
+        List<ServerPrice> actualResponse = priceServiceImpl
                 .getAllPricesForServer(serverName, pageable);
 
-        assertThat(actualResponse).isEqualTo(expectedPriceResponses);
+        assertThat(actualResponse).isEqualTo(expectedServerPriceRespons);
     }
 
 
@@ -161,14 +166,14 @@ class PriceServiceImplTest {
                 .updatedAt(LocalDateTime.now())
                 .currency("USD")
                 .build();
-        PriceResponse priceResponse = PriceResponse.builder()
+        ServerPrice serverPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
                 .build();
 
         when(serverServiceImpl.getServerById(1)).thenReturn(server);
-        when(priceMapper.toPrice(priceResponse)).thenReturn(price);
+        when(priceMapper.toPrice(serverPrice)).thenReturn(price);
 
-        priceServiceImpl.savePrice(1, priceResponse);
+        priceServiceImpl.savePrice(1, serverPrice);
 
         verify(priceRepository, times(1)).save(price);
     }
