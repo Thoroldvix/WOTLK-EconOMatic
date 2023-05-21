@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
-import com.thoroldvix.g2gcalculator.price.PriceService;
+import com.thoroldvix.g2gcalculator.price.PriceController;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
@@ -12,23 +12,26 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class ServerStatBox extends VerticalLayout {
-    private final PriceService priceServiceImpl;
+    private final PriceController priceController;
     private final ServerResponse server;
     private final H1 header = new H1();
 
 
-    public ServerStatBox(ServerResponse server, PriceService priceServiceImpl) {
-        this.priceServiceImpl = priceServiceImpl;
+    public ServerStatBox(ServerResponse server, PriceController priceController) {
+        this.priceController = priceController;
+
         this.server = server;
         configureHeader();
-        setSizeFull();
+        setWidthFull();
         getStyle().set("background", "#383633");
         setAlignItems(Alignment.START);
 
         HorizontalLayout serverStatLayout = new HorizontalLayout();
-        serverStatLayout.setAlignItems(Alignment.START);
+        serverStatLayout.setAlignItems(Alignment.CENTER);
+        serverStatLayout.setJustifyContentMode(JustifyContentMode.CENTER);
         serverStatLayout.add(getServerStatNames(), getServerStatValues());
 
         add(header, serverStatLayout);
@@ -40,21 +43,23 @@ public class ServerStatBox extends VerticalLayout {
         Span lastUpdated = getLastUpdatedValue();
         ServerPriceRenderer currentPriceValue = getCurrentPriceValue();
         ServerPriceRenderer avgPriceValue = getAvgPriceValue();
-        ServerPriceRenderer avgReginPriceValue = getServerRegionAvgPriceValue();
+        ServerPriceRenderer avgRegionPriceValue = getServerRegionAvgPriceValue();
 
 
-        serverStatValues.add(lastUpdated, currentPriceValue, avgPriceValue, avgReginPriceValue);
+        serverStatValues.add(lastUpdated, currentPriceValue, avgPriceValue, avgRegionPriceValue);
         return serverStatValues;
     }
 
     private VerticalLayout getServerStatNames() {
         VerticalLayout serverStatNames = new VerticalLayout();
+        Span span = new Span("Avg region price");
+        span.getStyle().set("white-space", "nowrap");
         serverStatNames.add(new Span("Server"),
                 new Span("Current price"),
                 new Span("Avg price"),
-                new Span("Avg region price"));
+                span);
+        serverStatNames.setWidthFull();
         serverStatNames.setAlignItems(Alignment.START);
-
 
         return serverStatNames;
     }
@@ -75,12 +80,15 @@ public class ServerStatBox extends VerticalLayout {
     }
 
     private ServerPriceRenderer getAvgPriceValue() {
-        BigDecimal averagePrice = priceServiceImpl.getAvgPriceForServer(server.getFullServerName());
+        BigDecimal averagePrice = Objects.requireNonNull(priceController
+                .getAvgPriceForServer(server.getFullServerName()).getBody()).value();
         return new ServerPriceRenderer(averagePrice);
     }
 
     private ServerPriceRenderer getServerRegionAvgPriceValue() {
-        BigDecimal regionAveragePrice = priceServiceImpl.getAvgPriceForRegion(server.region().getParentRegion());
+        BigDecimal regionAveragePrice = Objects.requireNonNull(priceController
+                .getAvgPriceForRegion(server.region().getParentRegion().name()).getBody()).value();
+
         return new ServerPriceRenderer(regionAveragePrice);
     }
 

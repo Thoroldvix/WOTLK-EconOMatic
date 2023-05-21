@@ -1,5 +1,6 @@
 package com.thoroldvix.g2gcalculator.ui.views.servers;
 
+import com.thoroldvix.g2gcalculator.server.ServerController;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.vaadin.flow.component.Component;
@@ -23,7 +24,7 @@ import java.util.Comparator;
 @SpringComponent
 @UIScope
 public class ServerGridLayout extends VerticalLayout {
-    private final ServerService serverServiceImpl;
+    private final ServerController serverController;
 
     private final ServerSelectionField serverSelectionField;
 
@@ -32,8 +33,9 @@ public class ServerGridLayout extends VerticalLayout {
     private TextField serverNameFilter;
     private FactionSelect factionFilter;
 
-    public ServerGridLayout(ServerService serverServiceImpl, ServerSelectionField serverSelectionField) {
-        this.serverServiceImpl = serverServiceImpl;
+    public ServerGridLayout( ServerController serverController, ServerSelectionField serverSelectionField) {
+        this.serverController = serverController;
+
         this.serverSelectionField = serverSelectionField;
         setSizeFull();
         configureGrid();
@@ -44,7 +46,7 @@ public class ServerGridLayout extends VerticalLayout {
     }
 
     private void updateGrid() {
-        grid.setItems(serverServiceImpl.getAllServers());
+        grid.setItems(serverController.getAllServers().getBody());
     }
 
     private Component getFilterLayout() {
