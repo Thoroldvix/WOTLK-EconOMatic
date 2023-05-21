@@ -1,11 +1,10 @@
 package com.thoroldvix.g2gcalculator.price;
 
 import com.thoroldvix.g2gcalculator.PostgreSqlContainerInitializer;
-import com.thoroldvix.g2gcalculator.server.Faction;
-import com.thoroldvix.g2gcalculator.price.Price;
-import com.thoroldvix.g2gcalculator.server.Region;
-import com.thoroldvix.g2gcalculator.server.Server;
-import com.thoroldvix.g2gcalculator.price.PriceRepository;
+import com.thoroldvix.g2gcalculator.server.entity.Faction;
+import com.thoroldvix.g2gcalculator.server.entity.Price;
+import com.thoroldvix.g2gcalculator.server.entity.Region;
+import com.thoroldvix.g2gcalculator.server.entity.Server;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -28,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PriceRepositoryTest implements PostgreSqlContainerInitializer {
 
     @Autowired
-    private PriceRepository PriceRepository;
+    private com.thoroldvix.g2gcalculator.server.entity.PriceRepository PriceRepository;
 
     @Autowired
     private TestEntityManager entityManager;

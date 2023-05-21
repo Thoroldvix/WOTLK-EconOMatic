@@ -2,7 +2,10 @@ package com.thoroldvix.g2gcalculator.price;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.g2gcalculator.server.ServerService;
+import com.thoroldvix.g2gcalculator.server.api.PriceController;
+import com.thoroldvix.g2gcalculator.server.dto.ServerPrice;
+import com.thoroldvix.g2gcalculator.server.service.PriceService;
+import com.thoroldvix.g2gcalculator.server.service.ServerService;
 import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +46,15 @@ public class PriceControllerTest {
     @Test
     void getPriceForRealm_whenValidRealmData_returnsPriceResponse() throws Exception {
         String serverName = "test-server";
-        PriceResponse priceResponse = PriceResponse.builder()
+        ServerPrice serverPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(100))
                 .build();
 
-        when(classicPriceService.getPriceForServer((serverName))).thenReturn(priceResponse);
+        when(classicPriceService.getPriceForServer((serverName))).thenReturn(serverPrice);
 
         mockMvc.perform(get(API_REALMS + "/{serverName}", serverName))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(priceResponse)));
+                .andExpect(content().json(objectMapper.writeValueAsString(serverPrice)));
 
         verify(classicPriceService).getPriceForServer(serverName);
     }
@@ -84,13 +87,13 @@ public class PriceControllerTest {
     @Test
     void getAllPricesForRealm_returnsListOfPriceResponse() throws Exception {
         String serverName = "test-server";
-        PriceResponse firstPriceResponse = PriceResponse.builder()
+        ServerPrice firstServerPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(100))
                 .build();
-        PriceResponse secondPriceResponse = PriceResponse.builder()
+        ServerPrice secondServerPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
                 .build();
-        List<PriceResponse> expectedResponse = List.of(firstPriceResponse, secondPriceResponse);
+        List<ServerPrice> expectedResponse = List.of(firstServerPrice, secondServerPrice);
 
         when(classicPriceService.getAllPricesForServer(anyString(), any(Pageable.class))).thenReturn(expectedResponse);
 

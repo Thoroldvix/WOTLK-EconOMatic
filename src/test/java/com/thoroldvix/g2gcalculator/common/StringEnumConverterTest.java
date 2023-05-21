@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.common;
 
-import com.thoroldvix.g2gcalculator.server.Faction;
+import com.thoroldvix.g2gcalculator.server.entity.Faction;
 import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
 

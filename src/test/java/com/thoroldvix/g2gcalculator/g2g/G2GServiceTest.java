@@ -1,14 +1,14 @@
 package com.thoroldvix.g2gcalculator.g2g;
 
-import com.thoroldvix.g2gcalculator.price.PriceResponse;
-import com.thoroldvix.g2gcalculator.price.PriceService;
-import com.thoroldvix.g2gcalculator.price.g2g.G2GPriceClient;
-import com.thoroldvix.g2gcalculator.price.g2g.G2GPriceListResponse;
-import com.thoroldvix.g2gcalculator.price.g2g.G2GService;
-import com.thoroldvix.g2gcalculator.server.Faction;
-import com.thoroldvix.g2gcalculator.server.Region;
-import com.thoroldvix.g2gcalculator.server.ServerResponse;
-import com.thoroldvix.g2gcalculator.server.ServerService;
+import com.thoroldvix.g2gcalculator.server.api.G2GPriceClient;
+import com.thoroldvix.g2gcalculator.server.dto.G2GPriceListResponse;
+import com.thoroldvix.g2gcalculator.server.dto.ServerPrice;
+import com.thoroldvix.g2gcalculator.server.dto.ServerResponse;
+import com.thoroldvix.g2gcalculator.server.entity.Faction;
+import com.thoroldvix.g2gcalculator.server.entity.Region;
+import com.thoroldvix.g2gcalculator.server.service.G2GService;
+import com.thoroldvix.g2gcalculator.server.service.PriceService;
+import com.thoroldvix.g2gcalculator.server.service.ServerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,12 +55,12 @@ class G2GServiceTest {
                 .region(Region.OCE)
                 .faction(Faction.HORDE)
                 .build();
-        PriceResponse price1 = PriceResponse.builder()
+        ServerPrice price1 = ServerPrice.builder()
                 .serverName(server1Name)
                 .currency("USD")
                 .value(BigDecimal.valueOf(10))
                 .build();
-        PriceResponse price2 = PriceResponse.builder()
+        ServerPrice price2 = ServerPrice.builder()
                 .serverName(server2Name)
                 .currency("USD")
                 .value(BigDecimal.valueOf(20))
@@ -104,12 +104,12 @@ class G2GServiceTest {
                 .region(Region.DE)
                 .faction(Faction.HORDE)
                 .build();
-        PriceResponse price1 = PriceResponse.builder()
+        ServerPrice price1 = ServerPrice.builder()
                 .serverName(server1Name)
                 .currency(currency)
                 .value(BigDecimal.valueOf(10))
                 .build();
-        PriceResponse price2 = PriceResponse.builder()
+        ServerPrice price2 = ServerPrice.builder()
                 .serverName(server2Name)
                 .currency(currency)
                 .value(BigDecimal.valueOf(20))
@@ -127,12 +127,12 @@ class G2GServiceTest {
                 .region(Region.RU)
                 .faction(Faction.ALLIANCE)
                 .build();
-        PriceResponse price3 = PriceResponse.builder()
+        ServerPrice price3 = ServerPrice.builder()
                 .serverName(server3Name)
                 .currency("USD")
                 .value(BigDecimal.valueOf(10))
                 .build();
-        PriceResponse price4 = PriceResponse.builder()
+        ServerPrice price4 = ServerPrice.builder()
                 .serverName(server4Name)
                 .currency("USD")
                 .value(BigDecimal.valueOf(20))

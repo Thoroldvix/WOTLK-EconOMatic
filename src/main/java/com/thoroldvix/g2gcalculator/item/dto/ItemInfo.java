@@ -1,7 +1,7 @@
 package com.thoroldvix.g2gcalculator.item.dto;
 
-import com.thoroldvix.g2gcalculator.item.ItemQuality;
-import com.thoroldvix.g2gcalculator.item.ItemType;
+import com.thoroldvix.g2gcalculator.item.entity.ItemQuality;
+import com.thoroldvix.g2gcalculator.item.entity.ItemType;
 import lombok.Builder;
 
 @Builder
