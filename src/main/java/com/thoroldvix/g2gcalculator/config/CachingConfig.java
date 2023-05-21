@@ -1,4 +1,4 @@
-package com.thoroldvix.g2gcalculator.configuration;
+package com.thoroldvix.g2gcalculator.config;
 
 
 import com.github.benmanes.caffeine.cache.Caffeine;
