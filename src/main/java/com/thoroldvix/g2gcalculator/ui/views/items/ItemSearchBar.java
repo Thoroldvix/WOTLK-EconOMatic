@@ -1,6 +1,6 @@
 package com.thoroldvix.g2gcalculator.ui.views.items;
 
-import com.thoroldvix.g2gcalculator.item.ItemService;
+import com.thoroldvix.g2gcalculator.item.ItemsController;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -11,18 +11,18 @@ import com.vaadin.flow.spring.annotation.UIScope;
 @SpringComponent
 @UIScope
 public class ItemSearchBar extends ComboBox<ItemInfo> {
-    public ItemSearchBar(ItemService itemServiceImpl) {
+    public ItemSearchBar(ItemsController itemsController) {
 
         addValueChangeListener(event ->
                 navigateToItemsLayout(event.getValue()));
-
-        setItems(itemServiceImpl.getAllItemsInfo());
+        setWidth("20%");
+        setItems(itemsController.getAllItems());
         setItemLabelGenerator(ItemInfo::name);
         setRenderer(new ComponentRenderer<>(ItemNameRenderer::new));
         setPlaceholder("Search items...");
         setPrefixComponent(VaadinIcon.SEARCH.create());
 
-        setWidthFull();
+
     }
 
     private void navigateToItemsLayout(ItemInfo value) {
