@@ -10,9 +10,6 @@ import com.vaadin.flow.router.Route;
 public class AuctionHouseView extends VerticalLayout {
 
     public AuctionHouseView(ItemGridLayout itemGridLayout) {
-        setSizeFull();
-        setPadding(false);
-        setAlignItems(Alignment.CENTER);
         add(itemGridLayout);
     }
 }
