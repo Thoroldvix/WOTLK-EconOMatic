@@ -55,11 +55,15 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public BigDecimal getAvgPriceForRegion(Region region) {
+    public PriceResponse getAvgPriceForRegion(Region region) {
         Objects.requireNonNull(region, "Region must not be null");
         LocalDateTime startDate = LocalDateTime.now().minusDays(14);
-        return priceRepository.findAvgPriceForRegion(region, startDate).map(BigDecimal::new)
+        BigDecimal price = priceRepository.findAvgPriceForRegion(region, startDate).map(BigDecimal::new)
                 .orElseThrow(() -> new NotFoundException("No avg price found for region: " + region.name()));
+        return PriceResponse.builder()
+                .value(price)
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 
 
@@ -97,13 +101,19 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public BigDecimal getAvgPriceForServer(String serverName) {
+    public PriceResponse getAvgPriceForServer(String serverName) {
         if (!StringUtils.hasText(serverName)) {
             throw new IllegalArgumentException("Server name must not be null or empty");
         }
         Server server = serverServiceImpl.getServer(serverName);
         LocalDateTime startDate = LocalDateTime.now().minusDays(14);
-        return priceRepository.findAvgPriceForServer(server, startDate).map(BigDecimal::new)
+        BigDecimal price = priceRepository.findAvgPriceForServer(server, startDate).map(BigDecimal::new)
                 .orElseThrow(() -> new NotFoundException("No avg price found for server: " + server.getName()));
+
+        return PriceResponse.builder()
+                .value(price)
+                .serverName(server.getName())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 }

@@ -4,7 +4,6 @@ import com.thoroldvix.g2gcalculator.server.Region;
 import com.thoroldvix.g2gcalculator.server.Server;
 import org.springframework.data.domain.Pageable;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface PriceService {
@@ -19,9 +18,9 @@ public interface PriceService {
 
     List<PriceResponse> getAllPricesForServer(int serverId);
 
-    BigDecimal getAvgPriceForServer(String serverName);
+    PriceResponse getAvgPriceForServer(String serverName);
 
     void savePrice(int serverId, PriceResponse recentPrice);
 
-    BigDecimal getAvgPriceForRegion(Region region);
+    PriceResponse getAvgPriceForRegion(Region region);
 }
