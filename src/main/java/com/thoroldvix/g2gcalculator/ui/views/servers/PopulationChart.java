@@ -19,53 +19,11 @@ import com.github.appreciated.apexcharts.helper.Series;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
 
 public class PopulationChart {
-
     public static ApexCharts getChart(ServerResponse server) {
-        XAxis xAxis = XAxisBuilder.get()
-                .withLabels(LabelsBuilder.get()
-                        .withShow(false)
-                        .build())
-                .withAxisBorder(AxisBorderBuilder.get()
-                        .withShow(false)
-                        .build())
-                .withAxisTicks(AxisTicksBuilder.get()
-                        .withShow(false)
-                        .build())
-                .build();
-
-        YAxis yAxis = YAxisBuilder.get()
-                .withLabels(com.github.appreciated.apexcharts.config.yaxis.builder.LabelsBuilder.get()
-                        .withShow(false)
-                        .build())
-                .withAxisBorder(com.github.appreciated.apexcharts.config.yaxis.builder.AxisBorderBuilder.get()
-                        .withShow(false)
-                        .build())
-                .withAxisTicks(com.github.appreciated.apexcharts.config.yaxis.builder.AxisTicksBuilder.get()
-                        .withShow(false)
-                        .build())
-                .build();
-
-        Bar bar = BarBuilder.get()
-                .withHorizontal(true)
-                .build();
-
-        PlotOptions plotOptions = PlotOptionsBuilder.get()
-                .withBar(bar)
-                .build();
-
-        Toolbar toolbar = ToolbarBuilder.get()
-                .withShow(false)
-                .build();
-
-        Chart chart = ChartBuilder.get()
-                .withType(Type.BAR)
-                .withForeColor("#D4D0C3")
-                .withStacked(true)
-                .withOffsetY(-34.0)
-                .withStackType(StackType.FULL)
-                .withToolbar(toolbar)
-                .build();
-
+        XAxis xAxis = getxAxis();
+        YAxis yAxis = getyAxis();
+        PlotOptions plotOptions = getPlotOptions();
+        Chart chart = getChart();
         X x = new X();
         x.setShow(false);
 
@@ -78,6 +36,16 @@ public class PopulationChart {
                 .withTheme("dark")
                 .build();
 
+        return buildChart(server, xAxis, yAxis, plotOptions, chart, grid, tooltip);
+    }
+
+    private static ApexCharts buildChart(ServerResponse server,
+                                         XAxis xAxis,
+                                         YAxis yAxis,
+                                         PlotOptions plotOptions,
+                                         Chart chart,
+                                         Grid grid,
+                                         Tooltip tooltip) {
         return ApexChartsBuilder.get()
                 .withChart(chart)
                 .withGrid(grid)
@@ -87,13 +55,67 @@ public class PopulationChart {
                 .withYaxis(yAxis)
                 .withLegend(LegendBuilder.get()
                         .withHorizontalAlign(HorizontalAlign.CENTER)
-                        .withOffsetY(-9.0)
                         .build())
                 .withPlotOptions(plotOptions)
                 .withSeries(new Series<>("Alliance", server.population().popAlliance()),
                         new Series<>("Horde", server.population().popHorde())
 
                 )
+                .build();
+    }
+
+    private static Chart getChart() {
+        Toolbar toolbar = ToolbarBuilder.get()
+                .withShow(false)
+                .build();
+        return ChartBuilder.get()
+                .withType(Type.BAR)
+                .withForeColor("#D4D0C3")
+                .withStacked(true)
+
+                .withStackType(StackType.FULL)
+                .withToolbar(toolbar)
+                .build();
+    }
+
+
+    private static PlotOptions getPlotOptions() {
+        Bar bar = BarBuilder.get()
+                .withHorizontal(true)
+                .build();
+
+        return PlotOptionsBuilder.get()
+                .withBar(bar)
+                .build();
+    }
+
+
+
+    private static YAxis getyAxis() {
+        return YAxisBuilder.get()
+                .withLabels(com.github.appreciated.apexcharts.config.yaxis.builder.LabelsBuilder.get()
+                        .withShow(false)
+                        .build())
+                .withAxisBorder(com.github.appreciated.apexcharts.config.yaxis.builder.AxisBorderBuilder.get()
+                        .withShow(false)
+                        .build())
+                .withAxisTicks(com.github.appreciated.apexcharts.config.yaxis.builder.AxisTicksBuilder.get()
+                        .withShow(false)
+                        .build())
+                .build();
+    }
+
+    private static XAxis getxAxis() {
+        return XAxisBuilder.get()
+                .withLabels(LabelsBuilder.get()
+                        .withShow(false)
+                        .build())
+                .withAxisBorder(AxisBorderBuilder.get()
+                        .withShow(false)
+                        .build())
+                .withAxisTicks(AxisTicksBuilder.get()
+                        .withShow(false)
+                        .build())
                 .build();
     }
 }
