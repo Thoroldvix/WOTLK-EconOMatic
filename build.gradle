@@ -26,11 +26,13 @@ jib {
     }
 }
 ext {
-    testcontainers = "1.17.5"
-    mapstruct = "1.5.3.Final"
+    testContainers = "1.17.5"
+    mapStruct = "1.5.3.Final"
     springCloudVersion = "2022.0.0"
     vaadinVersion = "24.0.2"
-
+    apexCharts = "23.0.1"
+    gridPagination = "4.0.0"
+    caffeineCache = "3.1.6"
 }
 dependencyManagement {
     imports {
@@ -42,24 +44,26 @@ dependencyManagement {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation "org.mapstruct:mapstruct:${mapstruct}"
-    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.vaadin:vaadin-spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation 'com.github.appreciated:apexcharts:23.0.1'
-    implementation 'org.vaadin.klaudeta:grid-pagination:4.0.0'
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.6'
+    implementation 'com.vaadin:vaadin-spring-boot-starter'
+    implementation 'org.liquibase:liquibase-core'
+    implementation "org.mapstruct:mapstruct:${mapStruct}"
+    implementation "com.github.appreciated:apexcharts:${apexCharts}"
+    implementation "org.vaadin.klaudeta:grid-pagination:${gridPagination}"
+    implementation "com.github.ben-manes.caffeine:caffeine:${caffeineCache}"
+
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-    annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct}"
-    testImplementation "org.testcontainers:postgresql:${testcontainers}"
-    testImplementation "org.testcontainers:junit-jupiter:${testcontainers}"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapStruct}"
+    testImplementation "org.testcontainers:postgresql:${testContainers}"
+    testImplementation "org.testcontainers:junit-jupiter:${testContainers}"
 }
 
 test {
