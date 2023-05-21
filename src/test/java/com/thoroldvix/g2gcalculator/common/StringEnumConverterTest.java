@@ -9,15 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StringEnumConverterTest {
 
-    private final StringEnumConverter<Faction> converter = new StringEnumConverter<>(Faction.class);
+
 
     @Test
     void fromString_whenCorrectString_thenReturnEnum() {
-        Faction faction = converter.fromString("Horde");
+        Faction faction = StringEnumConverter.fromString("Horde",  Faction.class);
         assertEquals(Faction.HORDE, faction);
     }
     @Test
     void fromString_whenIncorrectString_throwsNotFoundException() {
-        assertThrows(NotFoundException.class, () -> converter.fromString("Horde2"));
+        assertThrows(NotFoundException.class, () -> StringEnumConverter.fromString("Horde2",  Faction.class));
     }
 }

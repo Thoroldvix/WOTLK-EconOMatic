@@ -125,8 +125,8 @@ public class ServerServiceImpl implements ServerService {
             throw new IllegalArgumentException("Server name must contain a faction");
         }
         String faction = split[split.length - 1];
-        StringEnumConverter<Faction> converter = new StringEnumConverter<>(Faction.class);
-        return converter.fromString(faction);
+
+        return StringEnumConverter.fromString(faction, Faction.class);
     }
 
 }

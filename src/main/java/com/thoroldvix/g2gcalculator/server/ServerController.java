@@ -19,18 +19,22 @@ public class ServerController {
 
     private final ServerService serverServiceImpl;
 
-    @GetMapping("/{realmName}")
-    public ResponseEntity<ServerResponse> getRealm(@PathVariable String realmName) {
-        return ResponseEntity.ok(serverServiceImpl.getServerResponse(realmName));
+    @GetMapping("/{serverName}")
+    public ResponseEntity<ServerResponse> getServer(@PathVariable String serverName) {
+        return ResponseEntity.ok(serverServiceImpl.getServerResponse(serverName));
     }
 
     @GetMapping
-    public ResponseEntity<List<ServerResponse>> getAllRealms(Pageable pageable) {
+    public ResponseEntity<List<ServerResponse>> getAllServers(Pageable pageable) {
         return ResponseEntity.ok(serverServiceImpl.getAllServers(pageable));
+    }
+     @GetMapping
+    public ResponseEntity<List<ServerResponse>> getAllServers() {
+        return ResponseEntity.ok(serverServiceImpl.getAllServers());
     }
 
     @GetMapping("/regions/{regions}")
-    public ResponseEntity<?> getAllRealmsForRegion(@PathVariable List<String> regions) {
+    public ResponseEntity<?> getAllServersForRegion(@PathVariable List<String> regions) {
         if (!verifyRegions(regions))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError(HttpStatus.BAD_REQUEST.value(), "Bad request"));
 
