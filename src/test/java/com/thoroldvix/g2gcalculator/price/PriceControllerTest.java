@@ -2,8 +2,6 @@ package com.thoroldvix.g2gcalculator.price;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.g2gcalculator.item.dto.RealMoneyItemPrice;
-import com.thoroldvix.g2gcalculator.item.price.RMItemPriceService;
 import com.thoroldvix.g2gcalculator.server.ServerService;
 import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
@@ -36,11 +34,10 @@ public class PriceControllerTest {
     @MockBean
     private PriceService classicPriceService;
 
-    @MockBean
-    private RMItemPriceService classicRMItemPriceService;
+
 
     @MockBean
-    private ServerService classicServerService;
+    private ServerService serverServiceImpl;
 
 
     @Test
@@ -103,35 +100,4 @@ public class PriceControllerTest {
                 .andReturn();
     }
 
-    @Test
-    void getPriceForItem_whenValidServerNameAndItemId_returnsItemPriceResponse() throws Exception {
-        String serverName = "test-server";
-        int itemId = 123;
-        BigDecimal price = BigDecimal.valueOf(50.0);
-        RealMoneyItemPrice itemPrice = RealMoneyItemPrice.builder()
-                .value(price)
-                .build();
-        when(classicRMItemPriceService.getPriceForItem(anyString(), anyString() ,anyInt(), anyBoolean()))
-                .thenReturn(itemPrice);
-
-        mockMvc.perform(get(API_REALMS + "/{serverName}/{itemId}", serverName, itemId))
-                .andExpect(status().isOk())
-                .andExpect(content().string(objectMapper.writeValueAsString(itemPrice)));
-    }
-
-
-    @Test
-    void getPriceForItem_whenInvalidServerName_returnsNotFound() throws Exception {
-        String serverName = "invalid";
-        String itemId = "123";
-        int amount = 1;
-        boolean minBuyout = false;
-
-        when(classicRMItemPriceService.getPriceForItem(serverName, itemId, amount, minBuyout)).thenThrow(NotFoundException.class);
-
-        mockMvc.perform(get(API_REALMS + "/{serverName}/items/{itemId}", serverName, itemId))
-                .andExpect(status().isNotFound());
-
-
-    }
 }
