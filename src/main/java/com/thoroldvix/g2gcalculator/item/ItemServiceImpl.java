@@ -1,137 +1,65 @@
 package com.thoroldvix.g2gcalculator.item;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.thoroldvix.g2gcalculator.common.StringFormatter;
-import com.thoroldvix.g2gcalculator.item.dto.AuctionHouseInfo;
 import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
-import com.thoroldvix.g2gcalculator.item.price.AuctionHouseService;
+import com.vaadin.flow.router.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+
 public class ItemServiceImpl implements ItemService {
 
-    private final ItemsClient itemsClient;
+    private final ItemMapper  itemMapper;
     private final ItemRepository itemRepository;
-    private final AuctionHouseService auctionHouseServiceImpl;
-    private final Map<Integer, Item> boeItemsCache = new HashMap<>();
 
-    private final Cache<String, Set<ItemInfo>> cache;
 
     @Autowired
-    public ItemServiceImpl(ItemsClient itemsClient, ItemRepository itemRepository, AuctionHouseService auctionHouseServiceImpl) {
-        this.itemsClient = itemsClient;
+    public ItemServiceImpl(ItemMapper itemMapper, ItemRepository itemRepository) {
+        this.itemMapper = itemMapper;
         this.itemRepository = itemRepository;
-        this.auctionHouseServiceImpl = auctionHouseServiceImpl;
-        this.cache = Caffeine.newBuilder()
-                .expireAfterWrite(15, TimeUnit.MINUTES)
-                .maximumSize(96)
-                .build();
     }
 
-
     @Override
-    public ItemInfo getItemByName(String server, String itemName) {
-        if (!StringUtils.hasText(itemName) || !StringUtils.hasText(server))
-            throw new IllegalArgumentException("Server name and item name must be valid");
-
+    public ItemInfo getItemByName(String itemName) {
+        if (!StringUtils.hasText(itemName))
+            throw new IllegalArgumentException("Item name must be valid");
         String formattedItemName = formatItemName(itemName);
-        String formattedServerName = formatServerName(server);
-        return itemsClient.getItemByName(formattedServerName, formattedItemName);
+        return itemRepository.findByName(formattedItemName).map(itemMapper::toItemInfo)
+                .orElseThrow(() -> new NotFoundException("Item with name " + itemName + " not found"));
     }
 
     @Override
-    public ItemInfo getItemById(String server, int itemId) {
-        if (itemId < 1 || !StringUtils.hasText(server))
-            throw new IllegalArgumentException("Server name and item id must be valid");
-        String formattedServerName = formatServerName(server);
-        return itemsClient.getItemById(formattedServerName, itemId);
+    public ItemInfo getItemById(int itemId) {
+        if (itemId <= 0)
+            throw new IllegalArgumentException("Item id must be valid");
+
+        return itemRepository.findById(itemId).map(itemMapper::toItemInfo)
+                .orElseThrow(() -> new NotFoundException("Item with id " + itemId + " not found"));
     }
-
-
-
     @Override
-    public Set<ItemInfo> getAllItemsInfoForServer(String server) {
-        if (!StringUtils.hasText(server)) {
-            throw new IllegalArgumentException("Server name must be valid");
-        }
-        String formattedServerName = formatServerName(server);
-        String cacheKey = "all-items-info-" + formattedServerName;
-
-        Set<ItemInfo> cachedItems = cache.getIfPresent(cacheKey);
-        if (cachedItems != null) {
-            return cachedItems;
-        }
-
-        List<AuctionHouseInfo> itemPrices = auctionHouseServiceImpl.getAuctionHouseInfoForServer(formattedServerName);
-        Map<Integer, Item> boeItemsCache = getBoeItemsCache(itemPrices);
-        Set<ItemInfo> itemsInfo = buildFullItemInfo(itemPrices, boeItemsCache);
-        cache.put(cacheKey, itemsInfo);
-        return itemsInfo;
-    }
-
-    @Override
-    public Set<ItemInfo> getAllItemsInfo() {
-        return itemRepository.findAll().stream()
-                .map(item -> ItemInfo.builder()
-                        .name(item.name)
-                        .icon(createItemIcon(item.icon))
-                        .quality(item.quality)
-                        .type(item.type)
-                        .build())
+    public Set<ItemInfo> getAllItems(Pageable pageable) {
+        return itemRepository.findAll(pageable).getContent().stream()
+                .map(itemMapper::toItemInfo)
                 .collect(Collectors.toSet());
-    }
-
-
-    private Map<Integer, Item> getBoeItemsCache(List<AuctionHouseInfo> itemPrices) {
-        Set<Integer> itemIds = itemPrices.stream()
-                .map(AuctionHouseInfo::itemId)
-                .filter(itemId -> !boeItemsCache.containsKey(itemId))
-                .collect(Collectors.toSet());
-        List<Item> items = itemRepository.findAllById(itemIds);
-        items.forEach(item -> boeItemsCache.putIfAbsent(item.id, item));
-        return boeItemsCache;
-    }
-
-    private Set<ItemInfo> buildFullItemInfo(List<AuctionHouseInfo> itemPrices, Map<Integer, Item> cachedItems) {
-        return itemPrices.stream()
-                .filter(itemInfo -> cachedItems.containsKey(itemInfo.itemId()))
-                .filter(itemInfo -> itemInfo.quantity() > 0)
-                .map(itemInfo -> createFullItemInfo(itemInfo, cachedItems.get(itemInfo.itemId())))
-                .collect(Collectors.toSet());
-    }
-
-    private ItemInfo createFullItemInfo(AuctionHouseInfo itemPrice, Item item) {
-        return ItemInfo.builder()
-                .name(item.name)
-                .icon(createItemIcon(item.icon))
-                .quality(item.quality)
-                .type(item.type)
-                .auctionHouseInfo(itemPrice)
-                .build();
-    }
-
-    private String createItemIcon(String icon) {
-        String wowheadImgLink = "https://wow.zamimg.com/images/wow/icons/large/%s.jpg";
-        return String.format(wowheadImgLink, icon);
     }
 
 
     @Override
     @Transactional
     public void saveItem(Item item) {
+        Objects.requireNonNull(item, "Item must be valid");
         itemRepository.save(item);
     }
 
@@ -140,12 +68,27 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.count();
     }
 
+    @Override
+    @Cacheable("item-cache")
+    public List<ItemInfo> findItemsByIds(List<Integer> ids) {
+       if (ids == null || ids.isEmpty()) {
+           throw new IllegalArgumentException("Item ids must be valid");
+       }
+
+        return itemRepository.findAllById(ids).stream()
+                .map(itemMapper::toItemInfo)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Cacheable("item-cache")
+    public List<ItemInfo> searchItems(String query, Pageable pageable) {
+        return itemRepository.searchItemsByName(query, pageable).getContent();
+    }
+
 
     private String formatItemName(String itemName) {
         return StringFormatter.formatString(itemName, String::toLowerCase);
     }
 
-    private String formatServerName(String serverName) {
-        return StringFormatter.formatString(serverName, word -> word.replaceAll("'", ""));
-    }
 }
