@@ -5,6 +5,7 @@ import com.thoroldvix.g2gcalculator.ui.views.items.ItemGridLayout;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -28,9 +29,10 @@ public class ServerSelectionField extends CustomField<ServerResponse> {
             }
         });
 
-
         configureFactionSelect();
         HorizontalLayout layout = new HorizontalLayout(serverSelect, factionSelect);
+        layout.setSpacing(false);
+        layout.getThemeList().add("spacing-xs");
         add(layout);
     }
 

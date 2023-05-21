@@ -29,8 +29,6 @@ public class ItemFilteringLayout extends HorizontalLayout {
 
     public ItemFilteringLayout(ItemGridLayout itemGrid) {
         this.itemGrid = itemGrid;
-        setWidthFull();
-
 
         prepareFilterFields();
         add(itemNameFilter, itemQualityFilter, itemTypeFilter);
@@ -45,8 +43,9 @@ public class ItemFilteringLayout extends HorizontalLayout {
     private MultiSelectComboBox<ItemQuality> getItemQualityFilter() {
         MultiSelectComboBox<ItemQuality> itemQualityFilter = new MultiSelectComboBox<>();
         itemQualityFilter.addThemeVariants(MultiSelectComboBoxVariant.LUMO_HELPER_ABOVE_FIELD);
-        itemQualityFilter.setHelperText("Select Quality");
+        itemQualityFilter.setHelperText("Quality");
         itemQualityFilter.setPlaceholder("Any");
+
         itemQualityFilter.setItems(ItemQuality.values());
         itemQualityFilter.setRenderer(new ComponentRenderer<Component, ItemQuality>(this::getItemQualityName));
         itemQualityFilter.setClearButtonVisible(true);
@@ -63,9 +62,10 @@ public class ItemFilteringLayout extends HorizontalLayout {
 
     private MultiSelectComboBox<ItemType> getItemTypeFilter() {
         MultiSelectComboBox<ItemType> itemTypeFilter = new MultiSelectComboBox<>();
-        itemTypeFilter.setHelperText("Select Type");
+        itemTypeFilter.setHelperText("Type");
         itemTypeFilter.addThemeVariants(MultiSelectComboBoxVariant.LUMO_HELPER_ABOVE_FIELD);
         itemTypeFilter.setPlaceholder("Any");
+        itemTypeFilter.setWidthFull();
         itemTypeFilter.setItems(ItemType.values());
         itemTypeFilter.setClearButtonVisible(true);
         itemTypeFilter.setItemLabelGenerator(ItemType::toString);
@@ -77,6 +77,7 @@ public class ItemFilteringLayout extends HorizontalLayout {
         TextField itemNameFilter = new TextField();
         itemNameFilter.addThemeVariants(TextFieldVariant.LUMO_HELPER_ABOVE_FIELD);
         itemNameFilter.setPlaceholder("Search...");
+
         itemNameFilter.setPrefixComponent(VaadinIcon.SEARCH.create());
         itemNameFilter.setHelperText("Name");
         itemNameFilter.setValueChangeMode(ValueChangeMode.LAZY);

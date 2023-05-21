@@ -30,7 +30,7 @@ public class MainLayout extends AppLayout {
     private final ServerSelectionField serverSelectionField;
 
     private final HorizontalLayout headerLayout = new HorizontalLayout();
-
+    private final HorizontalLayout logoLayout = new HorizontalLayout();
 
     private final ItemSearchBar itemSearchBar;
 
@@ -38,66 +38,43 @@ public class MainLayout extends AppLayout {
     public MainLayout(ServerSelectionField serverSelectionField, ItemSearchBar itemSearchBar) {
         this.serverSelectionField = serverSelectionField;
         this.itemSearchBar = itemSearchBar;
-
         menu = createMenu();
         setPrimarySection(Section.NAVBAR);
-
-        addToNavbar(true, createLogoLayout(), createHeaderContent());
-
-
+        configureHeaderLayout();
+        configureLogoLayout();
+        addToNavbar(true, logoLayout, headerLayout);
         addToDrawer(createDrawerContent(menu));
     }
 
 
-    private Component createHeaderContent() {
-        configureHeaderLayout();
-        headerLayout.add(itemSearchBar, serverSelectionField);
-
-        return headerLayout;
-    }
-
-    private HorizontalLayout createLogoLayout() {
-        HorizontalLayout logoLayout = new HorizontalLayout();
-        logoLayout.setId("logo");
-        logoLayout.setSpacing(false);
-        logoLayout.setMargin(false);
-        logoLayout.setPadding(false);
-        logoLayout.getThemeList().set("padding-s", true);
-        logoLayout.getThemeList().set("spacing-s", true);
-
-        logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-
+    private void configureLogoLayout() {
         H1 appTitle = new H1("PricePal");
         appTitle.getStyle().set("font-size", "var(--lumo-font-size-l)")
                 .set("font-weight", "bold")
                 .set("line-height", "var(--lumo-size-l)");
 
-
+        logoLayout.setSpacing(false);
+        logoLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.START);
         logoLayout.add(new DrawerToggle(), appTitle);
-
-
-        return logoLayout;
     }
 
     private void configureHeaderLayout() {
-        headerLayout.setId("header");
-        headerLayout.setWidth("50%");
-        headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        headerLayout.setWidthFull();
         headerLayout.setSpacing(false);
-        headerLayout.setMargin(false);
-        headerLayout.getThemeList().set("spacing-s", true);
-        headerLayout.getThemeList().set("margin-s", true);
-        headerLayout.getStyle().set("margin", "auto");
         headerLayout.setPadding(false);
+        headerLayout.setMargin(false);
+
+        headerLayout.getThemeList().add("spacing-xs");
+        headerLayout.setAlignItems(FlexComponent.Alignment.START);
+        headerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+
+        headerLayout.add(itemSearchBar, serverSelectionField);
     }
 
     private Component createDrawerContent(Tabs menu) {
         VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
         layout.setPadding(false);
-        layout.setSpacing(false);
-        layout.getThemeList().set("spacing-s", true);
-        layout.setAlignItems(FlexComponent.Alignment.STRETCH);
+
         layout.add(menu);
         return layout;
     }

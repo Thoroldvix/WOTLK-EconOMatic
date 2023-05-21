@@ -3,6 +3,7 @@ package com.thoroldvix.g2gcalculator.ui.views.servers;
 import com.github.appreciated.apexcharts.ApexCharts;
 import com.thoroldvix.g2gcalculator.server.Faction;
 import com.thoroldvix.g2gcalculator.server.ServerResponse;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -22,15 +23,14 @@ public class ServerOverviewBox extends VerticalLayout {
         this.server = server;
         addClassName("server-overview-box");
         getThemeList().set("dark", true);
-        setJustifyContentMode(JustifyContentMode.START);
+
         configureHeader();
-        setSizeFull();
+
         getStyle().set("background", "#383633");
 
 
         HorizontalLayout serverInfoLayout = new HorizontalLayout();
-        serverInfoLayout.setAlignItems(Alignment.START);
-        serverInfoLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
+
 
         VerticalLayout valueNamesLayout = new VerticalLayout();
         valueNamesLayout.add(new Span("Server"),
@@ -38,8 +38,7 @@ public class ServerOverviewBox extends VerticalLayout {
                 new Span("Region"),
                 new Span("Population"));
 
-        valueNamesLayout.setAlignItems(Alignment.START);
-        valueNamesLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
+
         serverInfoLayout.add(valueNamesLayout, getServerOverviewValues());
         add(header, serverInfoLayout);
     }
@@ -47,10 +46,10 @@ public class ServerOverviewBox extends VerticalLayout {
 
     private VerticalLayout getServerOverviewValues() {
         VerticalLayout serverOverviewLayout = new VerticalLayout();
+
         Span region = new Span(server.region().getParentRegion().name());
         serverOverviewLayout.add(getServerNameValue(), getFactionDisplay(server.faction()), region, getPopulationValue());
-        serverOverviewLayout.setAlignItems(Alignment.START);
-        serverOverviewLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
+
         return serverOverviewLayout;
     }
 
@@ -68,15 +67,16 @@ public class ServerOverviewBox extends VerticalLayout {
         header.add(icon, headerText);
     }
 
-    private HorizontalLayout getPopulationValue() {
+    private Component getPopulationValue() {
         HorizontalLayout populationLayout = new HorizontalLayout();
-        populationLayout.setAlignItems(Alignment.START);
-        populationLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
+
+        populationLayout.setSizeFull();
         if (server.population().popAlliance() == 0 && server.population().popHorde() == 0) {
             populationLayout.add(new Span("0"));
             return populationLayout;
         }
         ApexCharts populationChart = PopulationChart.getChart(server);
+
         populationLayout.add(populationChart);
         return populationLayout;
     }

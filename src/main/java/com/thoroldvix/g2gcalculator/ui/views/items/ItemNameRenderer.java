@@ -19,7 +19,8 @@ public class ItemNameRenderer extends HorizontalLayout {
         configureItemNameDisplay();
 
         setAlignItems(Alignment.CENTER);
-        setWidthFull();
+        setJustifyContentMode(JustifyContentMode.EVENLY);
+        setSizeFull();
     }
 
     private void configureItemIconDisplay() {
@@ -31,11 +32,13 @@ public class ItemNameRenderer extends HorizontalLayout {
 
     private void configureItemNameDisplay() {
         VerticalLayout itemNameLayout = new VerticalLayout();
-        itemNameLayout.setAlignItems(Alignment.START);
-        itemNameLayout.setWidthFull();
+        itemNameLayout.setAlignItems(Alignment.CENTER);
+        itemNameLayout.setDefaultHorizontalComponentAlignment(Alignment.START);
+
+        itemNameLayout.setSizeFull();
         itemNameLayout.setPadding(false);
         itemNameLayout.setSpacing(false);
-        itemNameLayout.setMargin(false);
+
 
         Span name = new Span(itemInfo.name());
         Span type = new Span(itemInfo.type().toString());
