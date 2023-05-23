@@ -6,8 +6,8 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-@JsonDeserialize(using = ItemPriceListDeserializer.class)
-public record ItemPriceList(
+@JsonDeserialize(using = AuctionHouseInfoDeserializer.class)
+public record AuctionHouseInfo(
         String slug,
         List<ItemPrice> items
 ) {
