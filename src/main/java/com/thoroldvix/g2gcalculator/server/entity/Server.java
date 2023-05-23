@@ -28,17 +28,27 @@ public class Server {
     @Column(name = "region", nullable = false)
     private Region region;
 
-
     @Column(name = "type", nullable = false)
     private String type;
 
     @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<Price> prices;
+    private List<ServerPrice> serverPrices;
+
+    @Column(nullable = false, updatable = false)
+    private String uniqueName;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "population_id", nullable = false)
+    private Population population;
 
 
-    public void setPrice(Price price) {
-        prices.add(price);
-        price.setServer(this);
+    public void setPrice(ServerPrice serverPrice) {
+        serverPrices.add(serverPrice);
+        serverPrice.setServer(this);
+    }
+    public void setPopulation(Population population) {
+        this.population = population;
+        population.getServers().add(this);
     }
 }
