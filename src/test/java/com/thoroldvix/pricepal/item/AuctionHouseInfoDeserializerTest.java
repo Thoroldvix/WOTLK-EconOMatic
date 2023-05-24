@@ -1,11 +1,11 @@
-package com.thoroldvix.g2gcalculator.item;
+package com.thoroldvix.pricepal.item;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.g2gcalculator.item.dto.ItemPrice;
-import com.thoroldvix.g2gcalculator.item.dto.ItemPriceList;
-import com.thoroldvix.g2gcalculator.item.dto.ItemPriceListDeserializer;
+import com.thoroldvix.pricepal.item.dto.AuctionHouseInfo;
+import com.thoroldvix.pricepal.item.dto.AuctionHouseInfoDeserializer;
+import com.thoroldvix.pricepal.item.dto.ItemPrice;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ItemPriceListDeserializerTest {
+class AuctionHouseInfoDeserializerTest {
 
     @Test
     void testDeserialize() throws IOException {
@@ -54,11 +54,11 @@ class ItemPriceListDeserializerTest {
                                ]
                     }
                 """;
-        ItemPriceListDeserializer deserializer = new ItemPriceListDeserializer();
+        AuctionHouseInfoDeserializer deserializer = new AuctionHouseInfoDeserializer();
         JsonParser jp = new ObjectMapper().getFactory().createParser(json);
         DeserializationContext ctxt = new ObjectMapper().getDeserializationContext();
         ItemPrice itemInfo1 = ItemPrice.builder()
-                .itemId(43)
+                .id(43)
                 .marketValue(2216718)
                 .minBuyout(0)
                 .numAuctions(0)
@@ -67,7 +67,7 @@ class ItemPriceListDeserializerTest {
 
 
         ItemPrice itemInfo2 = ItemPrice.builder()
-                .itemId(53)
+                .id(53)
                 .marketValue(196866)
                 .minBuyout(0)
                 .numAuctions(0)
@@ -75,12 +75,12 @@ class ItemPriceListDeserializerTest {
                 .build();
         List<ItemPrice> itemInfoList = List.of(itemInfo1, itemInfo2);
 
-        ItemPriceList expectedResult = ItemPriceList.builder()
+        AuctionHouseInfo expectedResult = AuctionHouseInfo.builder()
                 .slug("everlook-alliance")
                 .items(itemInfoList)
                 .build();
 
-        ItemPriceList actualResult = deserializer.deserialize(jp, ctxt);
+        AuctionHouseInfo actualResult = deserializer.deserialize(jp, ctxt);
 
         assertThat(actualResult).isEqualTo(expectedResult);
     }
