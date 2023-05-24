@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -38,18 +38,18 @@ public class AuctionHouseServiceImpl implements AuctionHouseService {
         List<Integer> itemIds = auctionHouseInfo.items().stream()
                 .map(ItemPrice::id)
                 .toList();
-        Map<Integer, ItemInfo> itemInfos = itemServiceImpl.findItemsByIds(itemIds).stream()
-                .map(itemInfo -> new AbstractMap.SimpleEntry<>(itemInfo.id(), itemInfo))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        List<ItemPrice> itemPrices = auctionHouseInfo.items();
 
-        List<FullItemInfo> fullItemInfos = itemPrices.stream()
-                .filter(itemPrice -> itemPrice.quantity() > 0)
-                .filter(itemPrice -> itemPrice.minBuyout() > 0)
-                .filter(itemPrice -> itemInfos.containsKey(itemPrice.id()))
-                .map(itemPrice -> new FullItemInfo(itemInfos.get(itemPrice.id()), itemPrice))
+        Map<Integer, ItemInfo> itemInfoMap = itemServiceImpl.findItemsByIds(itemIds).stream()
+                .collect(Collectors.toMap(ItemInfo::id, Function.identity()));
+
+        List<ItemPrice> validItemPrices = auctionHouseInfo.items().stream()
+                .filter(itemPrice -> itemPrice.quantity() > 0 && itemPrice.minBuyout() > 0)
+                .filter(itemPrice -> itemInfoMap.containsKey(itemPrice.id()))
                 .toList();
 
+        List<FullItemInfo> fullItemInfos = validItemPrices.stream()
+                .map(itemPrice -> new FullItemInfo(itemInfoMap.get(itemPrice.id()), itemPrice))
+                .toList();
 
         return new FullAuctionHouseInfo(slug, fullItemInfos);
     }
