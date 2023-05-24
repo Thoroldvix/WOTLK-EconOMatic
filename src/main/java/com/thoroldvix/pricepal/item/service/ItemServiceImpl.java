@@ -1,9 +1,8 @@
-package com.thoroldvix.g2gcalculator.item.service;
+package com.thoroldvix.pricepal.item.service;
 
-import com.thoroldvix.g2gcalculator.common.StringFormatter;
-import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
-import com.thoroldvix.g2gcalculator.item.entity.Item;
-import com.thoroldvix.g2gcalculator.item.entity.ItemRepository;
+import com.thoroldvix.pricepal.item.dto.ItemInfo;
+import com.thoroldvix.pricepal.item.entity.Item;
+import com.thoroldvix.pricepal.item.entity.ItemRepository;
 import com.vaadin.flow.router.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -34,25 +33,34 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemInfo getItemByName(String itemName) {
+    public ItemInfo getItem(String itemName) {
         if (!StringUtils.hasText(itemName))
             throw new IllegalArgumentException("Item name must be valid");
-        String formattedItemName = formatItemName(itemName);
-        return itemRepository.findByName(formattedItemName).map(itemMapper::toItemInfo)
-                .orElseThrow(() -> new NotFoundException("Item with name " + itemName + " not found"));
+
+        return itemRepository.findByUniqueName(itemName).map(itemMapper::toItemInfo)
+                .orElseThrow(() -> new NotFoundException("Item with name " + itemName + " was not found"));
     }
 
     @Override
-    public ItemInfo getItemById(int itemId) {
+    public ItemInfo getItem(int itemId) {
         if (itemId <= 0)
             throw new IllegalArgumentException("Item id must be valid");
 
         return itemRepository.findById(itemId).map(itemMapper::toItemInfo)
-                .orElseThrow(() -> new NotFoundException("Item with id " + itemId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Item with id " + itemId + " was not found"));
     }
     @Override
+    @Cacheable("item-cache")
     public Set<ItemInfo> getAllItems(Pageable pageable) {
-        return itemRepository.findAll(pageable).getContent().stream()
+        return itemRepository.findAll(pageable).stream()
+                .map(itemMapper::toItemInfo)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    @Cacheable("item-cache")
+    public Set<ItemInfo> getAllItems() {
+        return itemRepository.findAll().stream()
                 .map(itemMapper::toItemInfo)
                 .collect(Collectors.toSet());
     }
@@ -72,14 +80,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Cacheable("item-cache")
-    public List<ItemInfo> findItemsByIds(List<Integer> ids) {
+    public Set<ItemInfo> findItemsByIds(List<Integer> ids) {
        if (ids == null || ids.isEmpty()) {
            throw new IllegalArgumentException("Item ids must be valid");
        }
-
-        return itemRepository.findAllById(ids).stream()
+       return itemRepository.findAllById(ids).stream()
                 .map(itemMapper::toItemInfo)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -89,8 +96,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-    private String formatItemName(String itemName) {
-        return StringFormatter.formatString(itemName, String::toLowerCase);
-    }
+
 
 }
