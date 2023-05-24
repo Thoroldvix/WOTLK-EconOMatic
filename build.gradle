@@ -22,7 +22,7 @@ repositories {
 }
 jib {
     to {
-        image = "registry.hub.docker.com/thorold/${rootProject.name}"
+        image = "registry.hub.docker.com/thorold/price-pal"
     }
 }
 ext {

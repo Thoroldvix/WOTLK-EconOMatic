@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  postgres-g2g-calc:
+  postgres-price-pal:
     image: postgres
-    container_name: postgres-g2g-calc
+    container_name: postgres-price-pal
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_SCHEMA=wow
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=g2g_calculator
+      - POSTGRES_DB=price_pal
       - PGDATA=/data/postgres
     volumes:
         - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,16 +18,16 @@ services:
       - "5433:5433"
     command: -p 5433
     restart: unless-stopped
-  g2g-calculator:
-    image: thorold/g2g-calculator
-    container_name: g2g-calculator
+  price-pal:
+    image: thorold/price-pal
+    container_name: price-pal
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-g2g-calc:5433/g2g_calculator?currentSchema=wow
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-price-pal:5433/price_pal?currentSchema=wow
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
     depends_on:
-      - postgres-g2g-calc
+      - postgres-price-pal
     restart: unless-stopped
