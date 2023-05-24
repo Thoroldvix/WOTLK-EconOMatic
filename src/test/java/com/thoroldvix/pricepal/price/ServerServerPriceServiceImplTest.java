@@ -1,14 +1,14 @@
-package com.thoroldvix.g2gcalculator.price;
+package com.thoroldvix.pricepal.price;
 
-import com.thoroldvix.g2gcalculator.server.dto.ServerPrice;
-import com.thoroldvix.g2gcalculator.server.entity.Faction;
-import com.thoroldvix.g2gcalculator.server.entity.Price;
-import com.thoroldvix.g2gcalculator.server.entity.PriceRepository;
-import com.thoroldvix.g2gcalculator.server.entity.Server;
-import com.thoroldvix.g2gcalculator.server.service.G2GService;
-import com.thoroldvix.g2gcalculator.server.service.PriceMapper;
-import com.thoroldvix.g2gcalculator.server.service.PriceServiceImpl;
-import com.thoroldvix.g2gcalculator.server.service.ServerServiceImpl;
+import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
+import com.thoroldvix.pricepal.server.entity.Faction;
+import com.thoroldvix.pricepal.server.entity.PriceRepository;
+import com.thoroldvix.pricepal.server.entity.Server;
+import com.thoroldvix.pricepal.server.entity.ServerPrice;
+import com.thoroldvix.pricepal.server.service.G2GService;
+import com.thoroldvix.pricepal.server.service.ServerPriceMapper;
+import com.thoroldvix.pricepal.server.service.ServerPriceServiceImpl;
+import com.thoroldvix.pricepal.server.service.ServerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class PriceServiceImplTest {
+class ServerServerPriceServiceImplTest {
 
     @Mock
     private PriceRepository priceRepository;
@@ -42,61 +42,61 @@ class PriceServiceImplTest {
     private ServerServiceImpl serverServiceImpl;
 
     @Mock
-    private PriceMapper priceMapper;
+    private ServerPriceMapper serverPriceMapper;
     @Mock
     G2GService g2GService;
 
     @InjectMocks
-    private PriceServiceImpl priceServiceImpl;
+    private ServerPriceServiceImpl priceServiceImpl;
 
     
     @Test
     void getPriceForServer_whenServerNameProvided_returnsValidPriceResponse() {
         String serverName = "everlook-alliance";
         Server server = Server.builder()
-                .prices(new ArrayList<>())
+                .serverPrices(new ArrayList<>())
                 .faction(Faction.ALLIANCE)
                 .name("everlook")
                 .build();
-         Price price = Price.builder()
+         ServerPrice serverPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
-                .updatedAt(LocalDateTime.now())
+                .lastUpdated(LocalDateTime.now())
                 .currency("USD")
                 .build();
-        ServerPrice serverPrice = ServerPrice.builder()
+        ServerPriceResponse serverPriceResponse = ServerPriceResponse.builder()
                 .value(BigDecimal.valueOf(200))
                 .build();
 
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
-        when(priceRepository.findMostRecentPriceByServer(server)).thenReturn(Optional.of(price));
-        when(priceMapper.toPriceResponse(any(Price.class))).thenReturn(serverPrice);
+        when(priceRepository.findMostRecentPriceByServer(server)).thenReturn(Optional.of(serverPrice));
+        when(serverPriceMapper.toPriceResponse(any(ServerPrice.class))).thenReturn(serverPriceResponse);
      
-        ServerPrice result = priceServiceImpl.getPriceForServer(serverName);
+        ServerPriceResponse result = priceServiceImpl.getPriceForServer(serverName);
 
-        assertThat(result.value()).isEqualTo(serverPrice.value());
+        assertThat(result.value()).isEqualTo(serverPriceResponse.value());
     }
      @Test
     void getPriceForServer_whenServerProvided_returnsValidPriceResponse() {
         Server server = Server.builder()
-                .prices(new ArrayList<>())
+                .serverPrices(new ArrayList<>())
                 .faction(Faction.ALLIANCE)
                 .name("everlook")
                 .build();
-         Price price = Price.builder()
+         ServerPrice serverPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
-                .updatedAt(LocalDateTime.now())
+                .lastUpdated(LocalDateTime.now())
                 .currency("USD")
                 .build();
-        ServerPrice serverPrice = ServerPrice.builder()
+        ServerPriceResponse serverPriceResponse = ServerPriceResponse.builder()
                 .value(BigDecimal.valueOf(200))
                 .build();
 
-        when(priceRepository.findMostRecentPriceByServer(server)).thenReturn(Optional.of(price));
-        when(priceMapper.toPriceResponse(any(Price.class))).thenReturn(serverPrice);
+        when(priceRepository.findMostRecentPriceByServer(server)).thenReturn(Optional.of(serverPrice));
+        when(serverPriceMapper.toPriceResponse(any(ServerPrice.class))).thenReturn(serverPriceResponse);
 
-        ServerPrice result = priceServiceImpl.getPriceForServer(server);
+        ServerPriceResponse result = priceServiceImpl.getPriceForServer(server);
 
-        assertThat(result.value()).isEqualTo(serverPrice.value());
+        assertThat(result.value()).isEqualTo(serverPriceResponse.value());
     }
     @Test
     void getPriceForServer_whenServerIsNull_throwsNullPointerException() {
@@ -122,33 +122,33 @@ class PriceServiceImplTest {
     void getAllPricesForServer_returnsListOfPriceResponses() {
         Server server = new Server();
         String serverName = "everlook-alliance";
-        Price firstPrice = Price.builder()
-                .value(BigDecimal.valueOf(100))
-                .server(server)
-                .build();
-        Price secondPrice = Price.builder()
-                .value(BigDecimal.valueOf(200))
-                .server(server)
-                .build();
-        Page<Price> prices = new PageImpl<>(List.of(firstPrice, secondPrice));
         ServerPrice firstServerPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(100))
+                .server(server)
                 .build();
         ServerPrice secondServerPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
+                .server(server)
                 .build();
-        List<ServerPrice> expectedServerPriceRespons = List.of(firstServerPrice, secondServerPrice);
+        Page<ServerPrice> prices = new PageImpl<>(List.of(firstServerPrice, secondServerPrice));
+        ServerPriceResponse firstServerPriceResponse = ServerPriceResponse.builder()
+                .value(BigDecimal.valueOf(100))
+                .build();
+        ServerPriceResponse secondServerPriceResponse = ServerPriceResponse.builder()
+                .value(BigDecimal.valueOf(200))
+                .build();
+        List<ServerPriceResponse> expectedServerPriceResponseRespons = List.of(firstServerPriceResponse, secondServerPriceResponse);
 
         when(serverServiceImpl.getServer(serverName)).thenReturn(server);
         Pageable pageable = PageRequest.of(0, 10);
         when(priceRepository.findAllByServer(server, pageable)).thenReturn(prices);
-        when(priceMapper.toPriceResponse(firstPrice)).thenReturn(firstServerPrice);
-        when(priceMapper.toPriceResponse(secondPrice)).thenReturn(secondServerPrice);
+        when(serverPriceMapper.toPriceResponse(firstServerPrice)).thenReturn(firstServerPriceResponse);
+        when(serverPriceMapper.toPriceResponse(secondServerPrice)).thenReturn(secondServerPriceResponse);
 
-        List<ServerPrice> actualResponse = priceServiceImpl
+        List<ServerPriceResponse> actualResponse = priceServiceImpl
                 .getAllPricesForServer(serverName, pageable);
 
-        assertThat(actualResponse).isEqualTo(expectedServerPriceRespons);
+        assertThat(actualResponse).isEqualTo(expectedServerPriceResponseRespons);
     }
 
 
@@ -157,25 +157,25 @@ class PriceServiceImplTest {
     void updatePrice_whenValidServerIdAndPriceResponseProvided_savesToPriceInDB() {
         Server server = Server.builder()
                 .id(1)
-                .prices(new ArrayList<>())
+                .serverPrices(new ArrayList<>())
                 .faction(Faction.ALLIANCE)
                 .name("everlook")
                 .build();
-        Price price = Price.builder()
-                .value(BigDecimal.valueOf(200))
-                .updatedAt(LocalDateTime.now())
-                .currency("USD")
-                .build();
         ServerPrice serverPrice = ServerPrice.builder()
                 .value(BigDecimal.valueOf(200))
+                .lastUpdated(LocalDateTime.now())
+                .currency("USD")
+                .build();
+        ServerPriceResponse serverPriceResponse = ServerPriceResponse.builder()
+                .value(BigDecimal.valueOf(200))
                 .build();
 
-        when(serverServiceImpl.getServerById(1)).thenReturn(server);
-        when(priceMapper.toPrice(serverPrice)).thenReturn(price);
+        when(serverServiceImpl.getServer(1)).thenReturn(server);
+        when(serverPriceMapper.toPrice(serverPriceResponse)).thenReturn(serverPrice);
 
-        priceServiceImpl.savePrice(1, serverPrice);
+        priceServiceImpl.savePrice(1, serverPriceResponse);
 
-        verify(priceRepository, times(1)).save(price);
+        verify(priceRepository, times(1)).save(serverPrice);
     }
      @Test
     void updatePrice_whenPriceResponseIsNul_throwsNullPointerException() {

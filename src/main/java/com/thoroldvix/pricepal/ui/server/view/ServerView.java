@@ -1,15 +1,15 @@
-package com.thoroldvix.g2gcalculator.ui.server.view;
+package com.thoroldvix.pricepal.ui.server.view;
 
-import com.thoroldvix.g2gcalculator.server.api.PriceController;
-import com.thoroldvix.g2gcalculator.server.api.ServerController;
-import com.thoroldvix.g2gcalculator.server.dto.ServerPrice;
-import com.thoroldvix.g2gcalculator.server.dto.ServerResponse;
-import com.thoroldvix.g2gcalculator.server.entity.Faction;
-import com.thoroldvix.g2gcalculator.ui.AppHeader;
-import com.thoroldvix.g2gcalculator.ui.MainLayout;
-import com.thoroldvix.g2gcalculator.ui.server.component.ServerOverviewBox;
-import com.thoroldvix.g2gcalculator.ui.server.component.ServerStatBox;
-import com.thoroldvix.g2gcalculator.ui.server.renderer.FactionRenderer;
+import com.thoroldvix.pricepal.server.api.PriceController;
+import com.thoroldvix.pricepal.server.api.ServerController;
+import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
+import com.thoroldvix.pricepal.server.dto.ServerResponse;
+import com.thoroldvix.pricepal.server.entity.Faction;
+import com.thoroldvix.pricepal.ui.AppHeader;
+import com.thoroldvix.pricepal.ui.MainLayout;
+import com.thoroldvix.pricepal.ui.server.component.ServerOverviewBox;
+import com.thoroldvix.pricepal.ui.server.component.ServerStatBox;
+import com.thoroldvix.pricepal.ui.server.renderer.FactionRenderer;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -17,6 +17,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ServerView extends VerticalLayout {
     private AppHeader appHeader = new AppHeader();
 
     private ServerResponse server;
-    private List<ServerPrice> prices;
+    private List<ServerPriceResponse> prices;
 
 
     public ServerView(PriceController priceController,  ServerController serverController) {
@@ -43,8 +44,8 @@ public class ServerView extends VerticalLayout {
         add(appHeader);
     }
 
-    private List<ServerPrice> getPrices(String serverName) {
-        return priceController.getAllPricesForServer(serverName).getBody();
+    private List<ServerPriceResponse> getPrices(String serverName) {
+        return priceController.getAllPricesForServer(serverName, PageRequest.of(0, Integer.MAX_VALUE)).getBody();
     }
 
     public void setup(String serverName) {
@@ -52,7 +53,7 @@ public class ServerView extends VerticalLayout {
         prices = getPrices(serverName);
 
         server = serverController.getServer(serverName).getBody();
-        VaadinSession.getCurrent().setAttribute("selectedServer", server);
+        VaadinSession.getCurrent().setAttribute("selectedServer", serverName);
 
         configureHeader();
         configureServerDetailsLayout();

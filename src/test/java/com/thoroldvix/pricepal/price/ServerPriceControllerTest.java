@@ -1,11 +1,11 @@
-package com.thoroldvix.g2gcalculator.price;
+package com.thoroldvix.pricepal.price;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.g2gcalculator.server.api.PriceController;
-import com.thoroldvix.g2gcalculator.server.dto.ServerPrice;
-import com.thoroldvix.g2gcalculator.server.service.PriceService;
-import com.thoroldvix.g2gcalculator.server.service.ServerService;
+import com.thoroldvix.pricepal.server.api.PriceController;
+import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
+import com.thoroldvix.pricepal.server.service.ServerPriceService;
+import com.thoroldvix.pricepal.server.service.ServerService;
 import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(PriceController.class)
 @ActiveProfiles("test")
-public class PriceControllerTest {
+public class ServerPriceControllerTest {
 
     public static final String API_REALMS = "/wow-classic/api/v1/prices";
 
@@ -35,7 +35,7 @@ public class PriceControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
-    private PriceService classicPriceService;
+    private ServerPriceService classicServerPriceService;
 
 
 
@@ -46,17 +46,17 @@ public class PriceControllerTest {
     @Test
     void getPriceForRealm_whenValidRealmData_returnsPriceResponse() throws Exception {
         String serverName = "test-server";
-        ServerPrice serverPrice = ServerPrice.builder()
+        ServerPriceResponse serverPriceResponse = ServerPriceResponse.builder()
                 .value(BigDecimal.valueOf(100))
                 .build();
 
-        when(classicPriceService.getPriceForServer((serverName))).thenReturn(serverPrice);
+        when(classicServerPriceService.getPriceForServer((serverName))).thenReturn(serverPriceResponse);
 
         mockMvc.perform(get(API_REALMS + "/{serverName}", serverName))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(serverPrice)));
+                .andExpect(content().json(objectMapper.writeValueAsString(serverPriceResponse)));
 
-        verify(classicPriceService).getPriceForServer(serverName);
+        verify(classicServerPriceService).getPriceForServer(serverName);
     }
 
 
@@ -64,7 +64,7 @@ public class PriceControllerTest {
     void getPriceForRealm_whenServerNameInvalid_returnsNotFound() throws Exception {
         String serverName = "invalid";
 
-        when(classicPriceService.getPriceForServer(serverName)).thenThrow(NotFoundException.class);
+        when(classicServerPriceService.getPriceForServer(serverName)).thenThrow(NotFoundException.class);
 
         mockMvc.perform(get(API_REALMS + "/{serverName}", serverName))
                 .andExpect(status().isNotFound());
@@ -75,7 +75,7 @@ public class PriceControllerTest {
     void getAllPricesForRealm_whenServerNameInvalid_returnsNotFound() throws Exception {
         String serverName = "invalid";
 
-        when(classicPriceService.getAllPricesForServer(anyString(), any(Pageable.class))).thenThrow(NotFoundException.class);
+        when(classicServerPriceService.getAllPricesForServer(anyString(), any(Pageable.class))).thenThrow(NotFoundException.class);
 
         mockMvc.perform(get(API_REALMS + "/{serverName}/all", serverName))
                 .andExpect(status().isNotFound());
@@ -87,15 +87,15 @@ public class PriceControllerTest {
     @Test
     void getAllPricesForRealm_returnsListOfPriceResponse() throws Exception {
         String serverName = "test-server";
-        ServerPrice firstServerPrice = ServerPrice.builder()
+        ServerPriceResponse firstServerPriceResponse = ServerPriceResponse.builder()
                 .value(BigDecimal.valueOf(100))
                 .build();
-        ServerPrice secondServerPrice = ServerPrice.builder()
+        ServerPriceResponse secondServerPriceResponse = ServerPriceResponse.builder()
                 .value(BigDecimal.valueOf(200))
                 .build();
-        List<ServerPrice> expectedResponse = List.of(firstServerPrice, secondServerPrice);
+        List<ServerPriceResponse> expectedResponse = List.of(firstServerPriceResponse, secondServerPriceResponse);
 
-        when(classicPriceService.getAllPricesForServer(anyString(), any(Pageable.class))).thenReturn(expectedResponse);
+        when(classicServerPriceService.getAllPricesForServer(anyString(), any(Pageable.class))).thenReturn(expectedResponse);
 
         mockMvc.perform(get(API_REALMS + "/{serverName}/all", serverName))
                 .andExpect(status().isOk())
