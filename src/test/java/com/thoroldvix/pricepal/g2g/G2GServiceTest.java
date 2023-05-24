@@ -1,14 +1,15 @@
-package com.thoroldvix.g2gcalculator.g2g;
+package com.thoroldvix.pricepal.g2g;
 
-import com.thoroldvix.g2gcalculator.server.api.G2GPriceClient;
-import com.thoroldvix.g2gcalculator.server.dto.G2GPriceListResponse;
-import com.thoroldvix.g2gcalculator.server.dto.ServerPrice;
-import com.thoroldvix.g2gcalculator.server.dto.ServerResponse;
-import com.thoroldvix.g2gcalculator.server.entity.Faction;
-import com.thoroldvix.g2gcalculator.server.entity.Region;
-import com.thoroldvix.g2gcalculator.server.service.G2GService;
-import com.thoroldvix.g2gcalculator.server.service.PriceService;
-import com.thoroldvix.g2gcalculator.server.service.ServerService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoroldvix.pricepal.server.api.G2GPriceClient;
+import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
+import com.thoroldvix.pricepal.server.dto.ServerResponse;
+import com.thoroldvix.pricepal.server.entity.Faction;
+import com.thoroldvix.pricepal.server.entity.Region;
+import com.thoroldvix.pricepal.server.service.G2GService;
+import com.thoroldvix.pricepal.server.service.ServerPriceService;
+import com.thoroldvix.pricepal.server.service.ServerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -31,14 +31,16 @@ class G2GServiceTest {
     ServerService serverServiceImpl;
 
     @Mock
-    PriceService priceServiceImpl;
+    ServerPriceService serverPriceServiceImpl;
+
+    private ObjectMapper mapper;
 
     @InjectMocks
     G2GService g2GService;
 
 
     @Test
-    void updateUSPrices_shouldWork() {
+    void updateUSPrices_shouldWork() throws JsonProcessingException {
         String server1Name = "Server1 [US] - Alliance";
         String server2Name = "Server2 [OCE] - Horde";
         String regionId = "dfced32f-2f0a-4df5-a218-1e068cfadffa";
@@ -55,36 +57,33 @@ class G2GServiceTest {
                 .region(Region.OCE)
                 .faction(Faction.HORDE)
                 .build();
-        ServerPrice price1 = ServerPrice.builder()
+        ServerPriceResponse price1 = ServerPriceResponse.builder()
                 .serverName(server1Name)
                 .currency("USD")
                 .value(BigDecimal.valueOf(10))
                 .build();
-        ServerPrice price2 = ServerPrice.builder()
+        ServerPriceResponse price2 = ServerPriceResponse.builder()
                 .serverName(server2Name)
                 .currency("USD")
                 .value(BigDecimal.valueOf(20))
                 .build();
         List<ServerResponse> usServers = List.of(server1, server2);
-
-        G2GPriceListResponse usPrices = new G2GPriceListResponse(List.of(price1, price2));
+        List<ServerPriceResponse> usPrices = List.of(price1, price2);
 
 
         when(serverServiceImpl.getAllServersForRegion(Region.getUSRegions())).thenReturn(usServers);
-        when(g2GPriceClient.getPrices(regionId, currency)).thenReturn(usPrices);
+        when(g2GPriceClient.getPrices(regionId, currency)).thenReturn(mapper.writeValueAsString(usPrices));
 
-
-        g2GService.updateUSPrices();
-
+        g2GService.updateUsPrices();
 
         verify(serverServiceImpl, times(1)).getAllServersForRegion(Region.getUSRegions());
         verify(g2GPriceClient, times(1)).getPrices(eq(regionId), eq(currency));
-        verify(priceServiceImpl, times(1)).savePrice(eq(1), eq(price1));
-        verify(priceServiceImpl, times(1)).savePrice(eq(2), eq(price2));
+        verify(serverPriceServiceImpl, times(1)).savePrice(eq(1), eq(price1));
+        verify(serverPriceServiceImpl, times(1)).savePrice(eq(2), eq(price2));
     }
 
     @Test
-    void updateEUPrices_shouldWork() {
+    void updateEUPrices_shouldWork() throws JsonProcessingException {
         String server1Name = "Pyrewood Village [EU] - Alliance";
         String server2Name = "Everlook [DE] - Horde";
         String server3Name = "Flamegor [RU] - Horde";
@@ -104,12 +103,12 @@ class G2GServiceTest {
                 .region(Region.DE)
                 .faction(Faction.HORDE)
                 .build();
-        ServerPrice price1 = ServerPrice.builder()
+        ServerPriceResponse price1 = ServerPriceResponse.builder()
                 .serverName(server1Name)
                 .currency(currency)
                 .value(BigDecimal.valueOf(10))
                 .build();
-        ServerPrice price2 = ServerPrice.builder()
+        ServerPriceResponse price2 = ServerPriceResponse.builder()
                 .serverName(server2Name)
                 .currency(currency)
                 .value(BigDecimal.valueOf(20))
@@ -127,34 +126,34 @@ class G2GServiceTest {
                 .region(Region.RU)
                 .faction(Faction.ALLIANCE)
                 .build();
-        ServerPrice price3 = ServerPrice.builder()
+        ServerPriceResponse price3 = ServerPriceResponse.builder()
                 .serverName(server3Name)
                 .currency("USD")
                 .value(BigDecimal.valueOf(10))
                 .build();
-        ServerPrice price4 = ServerPrice.builder()
+        ServerPriceResponse price4 = ServerPriceResponse.builder()
                 .serverName(server4Name)
                 .currency("USD")
                 .value(BigDecimal.valueOf(20))
                 .build();
         List<ServerResponse> euServers = List.of(server1, server2, server3, server4);
 
-        G2GPriceListResponse euPrices = new G2GPriceListResponse(new ArrayList<>(List.of(price1, price2)));
-        G2GPriceListResponse ruPrices = new G2GPriceListResponse(new ArrayList<>(List.of(price3, price4)));
+        List<ServerPriceResponse> euPrices = List.of(price1, price2);
+        List<ServerPriceResponse> ruPrices = List.of(price3, price4);
 
 
         when(serverServiceImpl.getAllServersForRegion(Region.getEURegions())).thenReturn(euServers);
-        when(g2GPriceClient.getPrices(euRegionId, currency)).thenReturn(euPrices);
-        when(g2GPriceClient.getPrices(ruRegionId, currency)).thenReturn(ruPrices);
+        when(g2GPriceClient.getPrices(euRegionId, currency)).thenReturn(mapper.writeValueAsString(euPrices));
+        when(g2GPriceClient.getPrices(ruRegionId, currency)).thenReturn(mapper.writeValueAsString(ruPrices));
 
 
-        g2GService.updateEUPrices();
+        g2GService.updateEuPrices();
 
 
         verify(serverServiceImpl, times(1)).getAllServersForRegion(Region.getEURegions());
         verify(g2GPriceClient, times(1)).getPrices(eq(euRegionId), eq(currency));
-        verify(priceServiceImpl, times(1)).savePrice(eq(1), eq(price1));
-        verify(priceServiceImpl, times(1)).savePrice(eq(2), eq(price2));
+        verify(serverPriceServiceImpl, times(1)).savePrice(eq(1), eq(price1));
+        verify(serverPriceServiceImpl, times(1)).savePrice(eq(2), eq(price2));
     }
 
 
