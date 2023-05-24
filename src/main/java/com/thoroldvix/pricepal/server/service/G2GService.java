@@ -45,7 +45,7 @@ public class G2GService {
 
     public void updateUsPrices() {
         log.info("Updating US prices");
-        List<ServerResponse> usServers = serverServiceImpl.getAllServersForRegion(Region.getUSRegions());
+        List<ServerResponse> usServers = serverServiceImpl.getAllServersForRegion(Region.US);
 
         String usPricesJson = g2GPriceClient.getPrices(US_REGION_ID, currency);
         List<ServerPriceResponse> usPrices = extractPricesFromJson(usPricesJson);
@@ -60,7 +60,7 @@ public class G2GService {
 
     public void updateEuPrices() {
         log.info("Updating EU prices");
-        List<ServerResponse> euServers = serverServiceImpl.getAllServersForRegion(Region.getEURegions());
+        List<ServerResponse> euServers = serverServiceImpl.getAllServersForRegion(Region.EU);
 
         String euPricesJson = g2GPriceClient.getPrices(EU_REGION_ID, currency);
         String ruPricesJson = g2GPriceClient.getPrices(RU_REGION_ID, currency);

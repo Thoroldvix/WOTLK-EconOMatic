@@ -16,7 +16,6 @@ public interface ServerService {
     ServerResponse getServerResponse(int id);
 
     List<ServerResponse> getAllServersForRegion(Region region);
-    List<ServerResponse> getAllServersForRegion(List<Region> regions);
 
     List<ServerResponse> searchServerByName(String filterText);
 

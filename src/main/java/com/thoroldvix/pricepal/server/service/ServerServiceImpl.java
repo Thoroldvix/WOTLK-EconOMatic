@@ -36,16 +36,12 @@ public class ServerServiceImpl implements ServerService {
                 .orElseThrow(() -> new NotFoundException("No server found for id: " + id));
     }
 
+
+
     @Override
     public List<ServerResponse> getAllServersForRegion(Region region) {
         Objects.requireNonNull(region, "Region cannot be null");
-        return getAllServersForRegion(List.of(region));
-    }
-
-    @Override
-    public List<ServerResponse> getAllServersForRegion(List<Region> regions) {
-        Objects.requireNonNull(regions, "Regions cannot be null");
-        return serverRepository.findAllByRegionIn(regions).stream()
+        return serverRepository.findAllByRegion(region).stream()
                 .map(serverMapper::toServerResponse)
                 .toList();
     }

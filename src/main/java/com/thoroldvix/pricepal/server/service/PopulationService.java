@@ -35,9 +35,7 @@ public class PopulationService {
     private void updatePopulationForRegion(Region region) {
         log.info(String.format("Updating %s population", region.name()));
 
-        List<ServerResponse> servers = serverServiceImpl.getAllServersForRegion(region == Region.EU
-                ? Region.getEURegions()
-                : Region.getUSRegions());
+        List<ServerResponse> servers = serverServiceImpl.getAllServersForRegion(region);
 
         Set<String> serverNames = servers.stream().map(ServerResponse::name).collect(Collectors.toSet());
         serverNames.forEach(serverName -> {

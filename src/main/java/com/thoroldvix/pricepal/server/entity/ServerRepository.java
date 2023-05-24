@@ -14,8 +14,8 @@ public interface ServerRepository extends JpaRepository<Server, Integer> {
     @Query("select r from Server r  where lower(r.name) = lower(?1) and r.faction = ?2")
     Optional<Server> findByNameAndFaction(String name, Faction faction);
 
-    @Query("SELECT s FROM Server s WHERE s.region IN (:regions)")
-    List<Server> findAllByRegionIn(List<Region> regions);
+    @Query("SELECT s FROM Server s WHERE s.region = ?1")
+    List<Server> findAllByRegion(Region region);
 
     List<Server> findAllByFaction(Faction faction);
 
