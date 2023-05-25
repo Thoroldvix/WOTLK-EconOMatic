@@ -1,5 +1,6 @@
 package com.thoroldvix.pricepal.server.api;
 
+import com.thoroldvix.pricepal.server.entity.Currency;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,5 +9,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface G2GPriceClient {
     @GetMapping
     String getPrices(@RequestParam("region_id") String regionId,
-                                   @RequestParam("currency") String currency);
+                                   @RequestParam("currency") Currency currency);
 }

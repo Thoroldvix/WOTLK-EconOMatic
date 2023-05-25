@@ -7,6 +7,7 @@ import com.thoroldvix.pricepal.server.api.G2GPriceClient;
 import com.thoroldvix.pricepal.server.dto.G2GPriceListDeserializer;
 import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
+import com.thoroldvix.pricepal.server.entity.Currency;
 import com.thoroldvix.pricepal.server.entity.Region;
 import com.thoroldvix.pricepal.server.error.G2GPriceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class G2GService {
 
     private final ServerPriceService serverPriceServiceImpl;
 
-    private final String currency = "USD";
+
 
 
     @Scheduled(fixedDelay = 15, timeUnit = TimeUnit.MINUTES)
@@ -47,7 +48,7 @@ public class G2GService {
         log.info("Updating US prices");
         List<ServerResponse> usServers = serverServiceImpl.getAllServersForRegion(Region.US);
 
-        String usPricesJson = g2GPriceClient.getPrices(US_REGION_ID, currency);
+        String usPricesJson = g2GPriceClient.getPrices(US_REGION_ID, Currency.USD);
         List<ServerPriceResponse> usPrices = extractPricesFromJson(usPricesJson);
 
         usServers.forEach(server -> {
@@ -62,8 +63,8 @@ public class G2GService {
         log.info("Updating EU prices");
         List<ServerResponse> euServers = serverServiceImpl.getAllServersForRegion(Region.EU);
 
-        String euPricesJson = g2GPriceClient.getPrices(EU_REGION_ID, currency);
-        String ruPricesJson = g2GPriceClient.getPrices(RU_REGION_ID, currency);
+        String euPricesJson = g2GPriceClient.getPrices(EU_REGION_ID, Currency.USD);
+        String ruPricesJson = g2GPriceClient.getPrices(RU_REGION_ID, Currency.USD);
 
         List<ServerPriceResponse> euPrices = extractPricesFromJson(euPricesJson);
         List<ServerPriceResponse> ruPrices = extractPricesFromJson(ruPricesJson);

@@ -1,10 +1,11 @@
-package com.thoroldvix.pricepal.g2g;
+package com.thoroldvix.pricepal.server;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.pricepal.server.dto.G2GPriceListDeserializer;
 import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
+import com.thoroldvix.pricepal.server.entity.Currency;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -41,11 +42,11 @@ class G2GServerPriceListDeserializerTest {
         List<ServerPriceResponse> prices = new G2GPriceListDeserializer().deserialize(jp, ctxt);
 
         assertThat(prices).hasSize(2);
-        assertThat(prices.get(0).serverName()).isEqualTo("Giantstalker [EU] - Horde");
-        assertThat(prices.get(0).currency()).isEqualTo("USD");
+        assertThat(prices.get(0).serverName()).isEqualTo("giantstalker-horde");
+        assertThat(prices.get(0).currency()).isEqualTo(Currency.USD);
         assertThat(prices.get(0).value()).isEqualTo(BigDecimal.valueOf(0.000624));
-        assertThat(prices.get(1).serverName()).isEqualTo("Nethergarde Keep [EU] - Horde");
-        assertThat(prices.get(1).currency()).isEqualTo("USD");
+        assertThat(prices.get(1).serverName()).isEqualTo("nethergarde-keep-horde");
+        assertThat(prices.get(1).currency()).isEqualTo(Currency.USD);
         assertThat(prices.get(1).value()).isEqualTo(BigDecimal.valueOf(0.000745));
 
 

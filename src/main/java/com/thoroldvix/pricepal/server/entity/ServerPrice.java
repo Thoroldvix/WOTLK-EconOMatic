@@ -25,7 +25,8 @@ public class ServerPrice {
     @CreationTimestamp
     private LocalDateTime lastUpdated;
     @Column(name = "currency")
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    private Currency currency;
     @ManyToOne
     @JoinColumn(name = "server_id")
     private Server server;
