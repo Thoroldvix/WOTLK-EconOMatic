@@ -19,14 +19,18 @@ public class ServerPrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "value")
+
+    @Column(nullable = false)
     private BigDecimal value;
-    @Column(name = "last_updated")
+
+    @Column(nullable = false)
     @CreationTimestamp
-    private LocalDateTime lastUpdated;
+    private LocalDateTime updatedAt;
+
     @Column(name = "currency")
     @Enumerated(EnumType.STRING)
     private Currency currency;
+
     @ManyToOne
     @JoinColumn(name = "server_id")
     private Server server;
