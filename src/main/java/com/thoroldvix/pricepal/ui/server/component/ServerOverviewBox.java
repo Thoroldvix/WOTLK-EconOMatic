@@ -49,7 +49,7 @@ public class ServerOverviewBox extends VerticalLayout {
     private VerticalLayout getServerOverviewValues() {
         VerticalLayout serverOverviewLayout = new VerticalLayout();
 
-        Span region = new Span(server.region().getParentRegion().name());
+        Span region = new Span(server.region().name());
         serverOverviewLayout.add(getServerNameValue(), getFactionDisplay(server.faction()), region, getPopulationValue());
 
         return serverOverviewLayout;
@@ -73,10 +73,10 @@ public class ServerOverviewBox extends VerticalLayout {
         HorizontalLayout populationLayout = new HorizontalLayout();
 
         populationLayout.setSizeFull();
-        if (server.population().popAlliance() == 0 && server.population().popHorde() == 0) {
-            populationLayout.add(new Span("0"));
-            return populationLayout;
-        }
+//        if (server.population().popAlliance() == 0 && server.population().popHorde() == 0) {
+//            populationLayout.add(new Span("0"));
+//            return populationLayout;
+//        }
         ApexCharts populationChart = PopulationChart.getChart(server);
 
         populationLayout.add(populationChart);

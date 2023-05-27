@@ -1,6 +1,7 @@
 package com.thoroldvix.pricepal.server.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.thoroldvix.pricepal.server.entity.Currency;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -10,11 +11,12 @@ import java.time.LocalDateTime;
 public record ServerPriceResponse(
         BigDecimal value,
 
-        @JsonIgnore
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         String serverName,
 
-        LocalDateTime lastUpdated,
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        LocalDateTime updatedAt,
 
-        String currency
+        Currency currency
 ) {
 }

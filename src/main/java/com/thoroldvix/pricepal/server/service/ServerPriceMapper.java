@@ -16,7 +16,7 @@ public interface ServerPriceMapper {
 
     @Mapping(target = "server", ignore = true)
     @Mapping(target = "id", ignore = true)
-    ServerPrice toPrice(ServerPriceResponse serverPriceResponse);
+    ServerPrice toServerPrice(ServerPriceResponse serverPriceResponse);
 
     @Named("serverName")
     default String serverName(Server server) {

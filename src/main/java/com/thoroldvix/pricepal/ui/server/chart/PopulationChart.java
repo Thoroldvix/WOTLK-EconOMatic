@@ -15,7 +15,6 @@ import com.github.appreciated.apexcharts.config.tooltip.X;
 import com.github.appreciated.apexcharts.config.xaxis.builder.AxisBorderBuilder;
 import com.github.appreciated.apexcharts.config.xaxis.builder.AxisTicksBuilder;
 import com.github.appreciated.apexcharts.config.xaxis.builder.LabelsBuilder;
-import com.github.appreciated.apexcharts.helper.Series;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 
 
@@ -76,10 +75,10 @@ public class PopulationChart {
                         .withHorizontalAlign(HorizontalAlign.CENTER)
                         .build())
                 .withPlotOptions(plotOptions)
-                .withSeries(new Series<>("Alliance", server.population().popAlliance()),
-                        new Series<>("Horde", server.population().popHorde())
-
-                )
+//                .withSeries(new Series<>("Alliance", server.population().popAlliance()),
+//                        new Series<>("Horde", server.population().popHorde())
+//
+//                )
                 .build();
     }
 

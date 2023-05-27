@@ -1,10 +1,7 @@
-package com.thoroldvix.pricepal.price;
+package com.thoroldvix.pricepal.server.repository;
 
 import com.thoroldvix.pricepal.PostgreSqlContainerInitializer;
-import com.thoroldvix.pricepal.server.entity.Faction;
-import com.thoroldvix.pricepal.server.entity.Region;
-import com.thoroldvix.pricepal.server.entity.Server;
-import com.thoroldvix.pricepal.server.entity.ServerPrice;
+import com.thoroldvix.pricepal.server.entity.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -27,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ServerPriceRepositoryTest implements PostgreSqlContainerInitializer {
 
     @Autowired
-    private com.thoroldvix.pricepal.server.entity.PriceRepository PriceRepository;
+    private ServerPriceRepository ServerPriceRepository;
 
     @Autowired
     private TestEntityManager entityManager;
@@ -43,13 +40,26 @@ class ServerPriceRepositoryTest implements PostgreSqlContainerInitializer {
                 .build();
 
         entityManager.persist(server);
-        ServerPrice oldServerPrice = new ServerPrice(null, BigDecimal.valueOf(0.5), LocalDateTime.now().minus(1, ChronoUnit.HOURS),"USD", server);
-        ServerPrice expectedRecentServerPrice = new ServerPrice(null, BigDecimal.valueOf(0.4), LocalDateTime.now(), "USD", server);
+
+        ServerPrice oldServerPrice = ServerPrice.builder()
+                .value(BigDecimal.valueOf(0.5))
+                .createdAt(LocalDateTime.now().minus(1, ChronoUnit.HOURS))
+                .currency(Currency.USD)
+                .server(server)
+                .build();
+
+        ServerPrice expectedRecentServerPrice = ServerPrice.builder()
+                .createdAt(LocalDateTime.now())
+                .value(BigDecimal.valueOf(0.4))
+                .currency(Currency.USD)
+                .server(server)
+                .build();
+
         entityManager.persist(oldServerPrice);
         entityManager.persist(expectedRecentServerPrice);
 
 
-        Optional<ServerPrice> actualRecentPrice = PriceRepository.findMostRecentPriceByServer(server);
+        Optional<ServerPrice> actualRecentPrice = ServerPriceRepository.findMostRecentPriceByServer(server);
 
 
         assertTrue(actualRecentPrice.isPresent());

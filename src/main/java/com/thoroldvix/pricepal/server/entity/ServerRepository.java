@@ -9,23 +9,15 @@ import java.util.Optional;
 
 @Repository
 public interface ServerRepository extends JpaRepository<Server, Integer> {
-
-
-    @Query("select r from Server r  where lower(r.name) = lower(?1) and r.faction = ?2")
-    Optional<Server> findByNameAndFaction(String name, Faction faction);
-
-    @Query("SELECT s FROM Server s WHERE s.region = ?1")
     List<Server> findAllByRegion(Region region);
-
     List<Server> findAllByFaction(Faction faction);
-
     Optional<Server> findByUniqueName(String uniqueName);
-
     List<Server> findByName(String serverName);
 
-    @Query("SELECT s " +
-           "FROM Server s " +
-           "WHERE lower( s.name) " +
+    @Query("select s " +
+           "from Server s " +
+           "where lower( s.name) " +
            "like lower(concat('%', ?1, '%' ))")
     List<Server> searchByName(String name);
+
 }

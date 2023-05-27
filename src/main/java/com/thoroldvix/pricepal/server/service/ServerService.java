@@ -1,19 +1,20 @@
 package com.thoroldvix.pricepal.server.service;
 
-import com.thoroldvix.pricepal.server.dto.PopulationResponse;
+import com.thoroldvix.pricepal.server.dto.FullPopulationResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
+import com.thoroldvix.pricepal.server.entity.Faction;
 import com.thoroldvix.pricepal.server.entity.Region;
 import com.thoroldvix.pricepal.server.entity.Server;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ServerService {
-    List<ServerResponse> getAllServers(Pageable pageable);
     List<ServerResponse> getAllServers();
+
 
     Server getServer(int id);
     ServerResponse getServerResponse(int id);
+
 
     List<ServerResponse> getAllServersForRegion(Region region);
 
@@ -21,7 +22,10 @@ public interface ServerService {
 
     ServerResponse getServerResponse(String serverName);
 
-    void updatePopulationForServer(String serverName, PopulationResponse population);
+    void updatePopulationForServer(String serverName, FullPopulationResponse population);
 
+    List<ServerResponse> getAllServersForFaction(Faction faction);
+
+    List<ServerResponse> getAllServersForName(String serverName);
     Server getServer(String serverName);
 }

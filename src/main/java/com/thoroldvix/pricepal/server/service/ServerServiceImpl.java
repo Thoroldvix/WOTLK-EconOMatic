@@ -1,18 +1,17 @@
 package com.thoroldvix.pricepal.server.service;
 
-import com.thoroldvix.pricepal.server.dto.PopulationResponse;
+import com.thoroldvix.pricepal.server.dto.FullPopulationResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.server.entity.*;
-import com.vaadin.flow.router.NotFoundException;
+import com.thoroldvix.pricepal.server.error.ServerNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,116 +20,122 @@ public class ServerServiceImpl implements ServerService {
 
     private final ServerRepository serverRepository;
     private final ServerMapper serverMapper;
-    private final ServerPriceMapper serverPriceMapper;
-
-    @Override
-    public List<ServerResponse> getAllServers(Pageable pageable) {
-        return serverRepository.findAll(pageable).getContent().stream()
-                .map(serverMapper::toServerResponse)
-                .toList();
-    }
 
     @Override
     public Server getServer(int id) {
+        verifyServerId(id);
         return serverRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("No server found for id: " + id));
-    }
-
-
-
-    @Override
-    public List<ServerResponse> getAllServersForRegion(Region region) {
-        Objects.requireNonNull(region, "Region cannot be null");
-        return serverRepository.findAllByRegion(region).stream()
-                .map(serverMapper::toServerResponse)
-                .toList();
+                .orElseThrow(() -> new ServerNotFoundException("No server found for ID: " + id));
     }
 
     @Override
-    public List<ServerResponse> getAllServers() {
-        return serverRepository.findAll().stream()
-                .map(serverMapper::toServerResponse)
-                .toList();
-    }
-
-    public List<ServerResponse> searchServerByName(String serverName) {
-        if (!StringUtils.hasText(serverName)) {
-            return getAllServers();
-        } else {
-            return serverRepository.searchByName(serverName).stream()
-                    .map(serverMapper::toServerResponse)
-                    .toList();
-        }
+    public Server getServer(String uniqueServerName) {
+        verifyServerName(uniqueServerName);
+        return serverRepository.findByUniqueName(uniqueServerName)
+                .orElseThrow(() -> new ServerNotFoundException("No server found with name: " + uniqueServerName));
     }
 
     @Override
     public ServerResponse getServerResponse(int id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("Id must be valid");
-        }
-       return serverRepository.findById(id)
-               .map(serverMapper::toServerResponse)
-                .orElseThrow(() -> new NotFoundException("No server found for id: " + id));
+        verifyServerId(id);
+        return serverRepository.findById(id)
+                .map(serverMapper::toServerResponse)
+                .orElseThrow(() -> new ServerNotFoundException("No server found for ID: " + id));
 
     }
 
     @Override
     public ServerResponse getServerResponse(String uniqueServerName) {
-        if (!StringUtils.hasText(uniqueServerName)) {
-            throw new IllegalArgumentException("Server name cannot be empty");
-        }
-
+        verifyServerName(uniqueServerName);
         return serverRepository.findByUniqueName(uniqueServerName)
                 .map(serverMapper::toServerResponse)
-                .orElseThrow(() -> new NotFoundException("No server found with name: " + uniqueServerName));
-
-
-
+                .orElseThrow(() -> new ServerNotFoundException("No server found with name: " + uniqueServerName));
     }
-    public List<ServerResponse> getAllByFaction(Faction faction) {
+
+    @Override
+    public List<ServerResponse> getAllServers() {
+        List<ServerResponse> servers = serverRepository.findAll().stream()
+                .map(serverMapper::toServerResponse)
+                .toList();
+        if (servers.isEmpty()) {
+            throw new ServerNotFoundException("No servers found");
+        }
+        return servers;
+    }
+
+
+    @Override
+    public List<ServerResponse> getAllServersForRegion(Region region) {
+        Objects.requireNonNull(region, "Region cannot be null");
+        List<ServerResponse> servers = serverRepository.findAllByRegion(region).stream()
+                .map(serverMapper::toServerResponse)
+                .toList();
+        if (servers.isEmpty()) {
+            throw new ServerNotFoundException("No servers found for region: " + region);
+        }
+        return servers;
+    }
+
+
+    public List<ServerResponse> searchServerByName(String serverName) {
+        return StringUtils.hasText(serverName)
+                ? serverRepository.searchByName(serverName).stream()
+                .map(serverMapper::toServerResponse)
+                .collect(Collectors.toList())
+                : getAllServers();
+    }
+
+
+    @Override
+    public List<ServerResponse> getAllServersForFaction(Faction faction) {
         return serverRepository.findAllByFaction(faction).stream()
                 .map(serverMapper::toServerResponse)
                 .toList();
     }
 
     @Override
-    @Transactional
-    public void updatePopulationForServer(String serverName, PopulationResponse populationResponse) {
-        if (!StringUtils.hasText(serverName)) {
-            throw new IllegalArgumentException("Server name cannot be empty");
+    public List<ServerResponse> getAllServersForName(String serverName) {
+        List<ServerResponse> servers = serverRepository.findByName(serverName).stream()
+                .map(serverMapper::toServerResponse)
+                .toList();
+        if (servers.isEmpty()) {
+            throw new ServerNotFoundException("No server found with name: " + serverName);
         }
+        return servers;
+    }
+
+    @Override
+    @Transactional
+    public void updatePopulationForServer(String serverName, FullPopulationResponse populationResponse) {
+        verifyServerName(serverName);
         List<Server> servers = serverRepository.findByName(serverName);
         if (servers.isEmpty()) {
-            throw new NotFoundException("No server found with name: " + serverName);
+            throw new ServerNotFoundException("No servers found with name: " + serverName);
         }
-        servers.forEach(server ->
-        {
-            Population serverPopulation = server.getPopulation();
-            if (serverPopulation == null) {
-                serverPopulation = new Population();
-                serverPopulation.setServers(new ArrayList<>());
-                server.setPopulation(serverPopulation);
+        servers.forEach(server -> {
+            if (server.getFaction().equals(Faction.HORDE)) {
+                Population population = Population.builder()
+                        .population(populationResponse.popHorde())
+                        .build();
+                server.addPopulation(population);
             }
-            serverPopulation.setPopAlliance(populationResponse.popAlliance());
-            serverPopulation.setPopHorde(populationResponse.popHorde());
-
-            serverRepository.save(server);
+            Population population = Population.builder()
+                    .population(populationResponse.popAlliance())
+                    .build();
+            server.addPopulation(population);
         });
     }
 
 
-    @Override
-    public Server getServer(String uniqueServerName) {
-        if (!StringUtils.hasText(uniqueServerName)) {
+    private void verifyServerName(String serverName) {
+        if (!StringUtils.hasText(serverName)) {
             throw new IllegalArgumentException("Server name cannot be empty");
         }
-        return serverRepository.findByUniqueName(uniqueServerName)
-                .orElseThrow(() -> new NotFoundException("No server found with name: " + uniqueServerName));
     }
 
-    public List<ServerResponse> getAllByName(String serverName) {
-        return serverRepository.findByName(serverName).stream()
-                .map(serverMapper::toServerResponse)
-                .toList();
+    private void verifyServerId(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Server ID must be positive");
+        }
     }
 }

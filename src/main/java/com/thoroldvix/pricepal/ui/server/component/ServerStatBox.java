@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.ui.server.component;
 
-import com.thoroldvix.pricepal.server.api.PriceController;
+import com.thoroldvix.pricepal.server.api.ServerPriceController;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.ui.server.renderer.ServerPriceRenderer;
 import com.vaadin.flow.component.html.H1;
@@ -16,13 +16,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class ServerStatBox extends VerticalLayout {
-    private final PriceController priceController;
+    private final ServerPriceController serverPriceController;
     private final ServerResponse server;
     private final H1 header = new H1();
 
 
-    public ServerStatBox(ServerResponse server, PriceController priceController) {
-        this.priceController = priceController;
+    public ServerStatBox(ServerResponse server, ServerPriceController serverPriceController) {
+        this.serverPriceController = serverPriceController;
 
         this.server = server;
         configureHeader();
@@ -81,22 +81,22 @@ public class ServerStatBox extends VerticalLayout {
     }
 
     private ServerPriceRenderer getAvgPriceValue() {
-        BigDecimal averagePrice = Objects.requireNonNull(priceController
+        BigDecimal averagePrice = Objects.requireNonNull(serverPriceController
                 .getAvgPriceForServer(server.uniqueName()).getBody()).value();
         return new ServerPriceRenderer(averagePrice);
     }
 
     private ServerPriceRenderer getServerRegionAvgPriceValue() {
-        String regionName = server.region().getParentRegion().name();
+        String regionName = server.region().name();
 
-        BigDecimal regionAveragePrice = Objects.requireNonNull(priceController
-                .getPriceForServer(regionName, true).getBody()).value();
+        BigDecimal regionAveragePrice = Objects.requireNonNull(serverPriceController
+                .getAvgPriceForRegion(regionName).getBody()).value();
 
         return new ServerPriceRenderer(regionAveragePrice);
     }
 
     private Span getLastUpdatedValue() {
-        return new Span(getLastUpdatedText(server.price().lastUpdated()));
+        return new Span(getLastUpdatedText(server.price().updatedAt()));
     }
 
 

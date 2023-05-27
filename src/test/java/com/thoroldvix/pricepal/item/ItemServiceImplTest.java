@@ -1,11 +1,11 @@
-package com.thoroldvix.g2gcalculator.item;
+package com.thoroldvix.pricepal.item;
 
-import com.thoroldvix.g2gcalculator.item.dto.ItemInfo;
-import com.thoroldvix.g2gcalculator.item.entity.Item;
-import com.thoroldvix.g2gcalculator.item.entity.ItemQuality;
-import com.thoroldvix.g2gcalculator.item.entity.ItemRepository;
-import com.thoroldvix.g2gcalculator.item.entity.ItemType;
-import com.thoroldvix.g2gcalculator.item.service.ItemServiceImpl;
+import com.thoroldvix.pricepal.item.dto.ItemInfo;
+import com.thoroldvix.pricepal.item.entity.Item;
+import com.thoroldvix.pricepal.item.entity.ItemQuality;
+import com.thoroldvix.pricepal.item.entity.ItemRepository;
+import com.thoroldvix.pricepal.item.entity.ItemType;
+import com.thoroldvix.pricepal.item.service.ItemServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,7 +48,7 @@ class ItemServiceImplTest {
 
         when(itemRepository.findByName(itemName)).thenReturn(Optional.of(item));
 
-        ItemInfo actualItemInfo = itemServiceImpl.getItemByName(itemName);
+        ItemInfo actualItemInfo = itemServiceImpl.getItem(itemName);
 
         assertThat(actualItemInfo).isEqualTo(expectedItemInfo);
     }
@@ -57,7 +57,7 @@ class ItemServiceImplTest {
     void getItemByName_whenEmptyItemName_throwsIllegalArgumentException() {
         String itemName = "";
 
-        assertThatThrownBy(() -> itemServiceImpl.getItemByName(itemName))
+        assertThatThrownBy(() -> itemServiceImpl.getItem(itemName))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -65,15 +65,15 @@ class ItemServiceImplTest {
     void getItemByName_whenBlankItemName_throwsIllegalArgumentException() {
         String itemName = " ";
 
-        assertThatThrownBy(() -> itemServiceImpl.getItemByName(itemName))
+        assertThatThrownBy(() -> itemServiceImpl.getItem(itemName))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void getItemByName_whenNullItemName_throwsIllegalArgumentException() {
-        String itemName = null;
 
-        assertThatThrownBy(() -> itemServiceImpl.getItemByName(itemName))
+
+        assertThatThrownBy(() -> itemServiceImpl.getItem(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -97,7 +97,7 @@ class ItemServiceImplTest {
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
-        ItemInfo actualItemInfo = itemServiceImpl.getItemById(itemId);
+        ItemInfo actualItemInfo = itemServiceImpl.getItem(itemId);
 
         assertThat(actualItemInfo).isEqualTo(expectedItemInfo);
     }
@@ -106,7 +106,7 @@ class ItemServiceImplTest {
     void getItemById_whenInvalidItemId_throwsIllegalArgumentException() {
         int itemId = -1;
 
-        assertThatThrownBy(() -> itemServiceImpl.getItemById(itemId))
+        assertThatThrownBy(() -> itemServiceImpl.getItem(itemId))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

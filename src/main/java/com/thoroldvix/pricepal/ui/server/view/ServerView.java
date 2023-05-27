@@ -1,7 +1,7 @@
 package com.thoroldvix.pricepal.ui.server.view;
 
-import com.thoroldvix.pricepal.server.api.PriceController;
 import com.thoroldvix.pricepal.server.api.ServerController;
+import com.thoroldvix.pricepal.server.api.ServerPriceController;
 import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.server.entity.Faction;
@@ -25,17 +25,16 @@ import java.util.List;
 @UIScope
 @SpringComponent
 public class ServerView extends VerticalLayout {
-    private final PriceController priceController;
+    private final ServerPriceController serverPriceController;
     private final ServerController serverController;
     private HorizontalLayout serverDetailsLayout;
     private AppHeader appHeader = new AppHeader();
 
     private ServerResponse server;
-    private List<ServerPriceResponse> prices;
 
 
-    public ServerView(PriceController priceController,  ServerController serverController) {
-        this.priceController = priceController;
+    public ServerView(ServerPriceController serverPriceController, ServerController serverController) {
+        this.serverPriceController = serverPriceController;
         this.serverController = serverController;
         setPadding(false);
 
@@ -45,12 +44,12 @@ public class ServerView extends VerticalLayout {
     }
 
     private List<ServerPriceResponse> getPrices(String serverName) {
-        return priceController.getAllPricesForServer(serverName, PageRequest.of(0, Integer.MAX_VALUE)).getBody();
+        return serverPriceController.getAllPricesForServer(serverName, PageRequest.of(0, Integer.MAX_VALUE)).getBody();
     }
 
     public void setup(String serverName) {
         removeAll();
-        prices = getPrices(serverName);
+        List<ServerPriceResponse> prices = getPrices(serverName);
 
         server = serverController.getServer(serverName).getBody();
         VaadinSession.getCurrent().setAttribute("selectedServer", serverName);
@@ -75,7 +74,7 @@ public class ServerView extends VerticalLayout {
 
     private void configureServerInfo(ServerResponse server) {
         ServerOverviewBox serverOverviewBox = new ServerOverviewBox(server);
-        ServerStatBox serverStatBox = new ServerStatBox(server, priceController);
+        ServerStatBox serverStatBox = new ServerStatBox(server, serverPriceController);
 
         serverDetailsLayout.add(serverOverviewBox, serverStatBox);
     }
