@@ -23,8 +23,8 @@ spring:
   data:
     web:
       pageable:
-        max-page-size: 2000
-        default-page-size: 100
+        max-page-size: 1000000000
+        default-page-size: 1000000000
 server:
   port: ${PORT:8080}
 
