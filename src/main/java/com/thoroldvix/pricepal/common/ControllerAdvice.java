@@ -1,6 +1,8 @@
 package com.thoroldvix.pricepal.common;
 
 import com.thoroldvix.pricepal.server.error.G2GPriceNotFoundException;
+import com.thoroldvix.pricepal.server.error.ServerNotFoundException;
+import com.thoroldvix.pricepal.server.error.ServerPriceNotFoundException;
 import com.vaadin.flow.router.NotFoundException;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,14 @@ public class ControllerAdvice {
     }
     @ExceptionHandler(G2GPriceNotFoundException.class)
     public ResponseEntity<ApiError> handleG2GPriceNotFoundException(G2GPriceNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+    }
+    @ExceptionHandler(ServerPriceNotFoundException.class)
+    public ResponseEntity<ApiError> handleServerPriceNotFoundException(ServerPriceNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+    }
+     @ExceptionHandler(ServerNotFoundException.class)
+    public ResponseEntity<ApiError> handleServerNotFoundException(ServerNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(HttpStatus.NOT_FOUND.value(), e.getMessage()));
     }
 }
