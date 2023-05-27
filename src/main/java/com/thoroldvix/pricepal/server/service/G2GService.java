@@ -25,18 +25,14 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public class G2GService {
-    private static final String EU_REGION_ID = "ac3f85c1-7562-437e-b125-e89576b9a38e";
-    private static final String US_REGION_ID = "dfced32f-2f0a-4df5-a218-1e068cfadffa";
-    private static final String RU_REGION_ID = "166fbf02-6d9a-45a0-9f74-ac3ba5a002b4";
 
     private final G2GPriceClient g2GPriceClient;
 
     private final ServerService serverServiceImpl;
 
     private final ServerPriceService serverPriceServiceImpl;
-
-
-
+    
+    private final Currency currency = Currency.USD;
 
     @Scheduled(fixedDelay = 15, timeUnit = TimeUnit.MINUTES)
     public void updateAllServerPrices() {
@@ -48,7 +44,7 @@ public class G2GService {
         log.info("Updating US prices");
         List<ServerResponse> usServers = serverServiceImpl.getAllServersForRegion(Region.US);
 
-        String usPricesJson = g2GPriceClient.getPrices(US_REGION_ID, Currency.USD);
+        String usPricesJson = g2GPriceClient.getPrices(Region.US.g2gId, currency);
         List<ServerPriceResponse> usPrices = extractPricesFromJson(usPricesJson);
 
         usServers.forEach(server -> {
@@ -63,8 +59,8 @@ public class G2GService {
         log.info("Updating EU prices");
         List<ServerResponse> euServers = serverServiceImpl.getAllServersForRegion(Region.EU);
 
-        String euPricesJson = g2GPriceClient.getPrices(EU_REGION_ID, Currency.USD);
-        String ruPricesJson = g2GPriceClient.getPrices(RU_REGION_ID, Currency.USD);
+        String euPricesJson = g2GPriceClient.getPrices(Region.EU.g2gId, currency);
+        String ruPricesJson = g2GPriceClient.getPrices(Region.RU.g2gId, currency);
 
         List<ServerPriceResponse> euPrices = extractPricesFromJson(euPricesJson);
         List<ServerPriceResponse> ruPrices = extractPricesFromJson(ruPricesJson);
