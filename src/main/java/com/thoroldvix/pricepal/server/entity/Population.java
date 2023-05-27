@@ -2,8 +2,9 @@ package com.thoroldvix.pricepal.server.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,19 +19,19 @@ public class Population {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
-    @OneToMany(mappedBy = "population", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private List<Server> servers;
+    @Column(nullable = false)
+    private int population;
 
     @Column(nullable = false)
-    private int popAlliance;
+    @CreationTimestamp
+    private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private int popHorde;
+    @ManyToOne
+    @JoinColumn(name = "server_id")
+    private Server server;
 
-    public void addServer(Server server) {
-        servers.add(server);
-        server.setPopulation(this);
+    public void setServer(Server server) {
+        server.getPopulations().add(this);
+        this.server = server;
     }
 }

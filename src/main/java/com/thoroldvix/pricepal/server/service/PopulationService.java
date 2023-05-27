@@ -1,7 +1,7 @@
 package com.thoroldvix.pricepal.server.service;
 
 import com.thoroldvix.pricepal.server.api.PopulationClient;
-import com.thoroldvix.pricepal.server.dto.PopulationResponse;
+import com.thoroldvix.pricepal.server.dto.FullPopulationResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.server.entity.Region;
 import lombok.RequiredArgsConstructor;
@@ -37,14 +37,18 @@ public class PopulationService {
 
         List<ServerResponse> servers = serverServiceImpl.getAllServersForRegion(region);
 
+
         Set<String> serverNames = servers.stream().map(ServerResponse::name).collect(Collectors.toSet());
         serverNames.forEach(serverName -> {
             String formattedServerName = formatServerName(serverName);
-            PopulationResponse population = populationClient.getPopulationForServer(region, formattedServerName);
+            FullPopulationResponse population = populationClient.getPopulationForServer(region, formattedServerName);
+
             serverServiceImpl.updatePopulationForServer(serverName, population);
         });
         log.info(String.format("Updated %s population", region.name()));
     }
+
+
 
 
     private String formatServerName(String serverName) {

@@ -2,9 +2,12 @@ package com.thoroldvix.pricepal.server.dto;
 
 import lombok.Builder;
 
+import java.time.LocalDateTime;
+
 @Builder
 public record PopulationResponse(
-        int popAlliance,
-        int popHorde
+        String serverName,
+        int population,
+        LocalDateTime updatedAt
 ) {
 }

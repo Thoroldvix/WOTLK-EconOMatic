@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @Entity
 @Getter
@@ -20,15 +21,18 @@ public class Server {
     @Column(unique = true, nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Faction faction;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "region", nullable = false)
     private Region region;
 
-    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Faction faction;
+
+    @Column(nullable = false)
+    private Locale locale;
+
+    @Column(nullable = false)
     private String type;
 
     @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -38,17 +42,18 @@ public class Server {
     @Column(nullable = false, updatable = false)
     private String uniqueName;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "population_id", nullable = false)
-    private Population population;
+    @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Population> populations;
 
 
     public void setPrice(ServerPrice serverPrice) {
         serverPrices.add(serverPrice);
         serverPrice.setServer(this);
     }
-    public void setPopulation(Population population) {
-        this.population = population;
-        population.getServers().add(this);
+
+    public void addPopulation(Population population) {
+        populations.add(population);
+        population.setServer(this);
     }
 }
