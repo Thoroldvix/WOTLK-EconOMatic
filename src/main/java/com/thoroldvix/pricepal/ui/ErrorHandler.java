@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public abstract class ErrorHandler<T extends RuntimeException> extends Div implements HasErrorParameter<T> {
 
-    protected Paragraph message = new Paragraph();
+    protected final Paragraph message = new Paragraph();
 
     public ErrorHandler() {
         setClassName("custom-error-page");
