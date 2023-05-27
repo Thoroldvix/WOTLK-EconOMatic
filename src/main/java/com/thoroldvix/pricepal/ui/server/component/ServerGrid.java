@@ -114,7 +114,7 @@ public class ServerGrid extends VerticalLayout {
     private void configureColumns() {
         grid.addColumn(ServerResponse::name).setHeader("Name");
         grid.addColumn(new ComponentRenderer<>(server -> new FactionRenderer(server.faction()))).setHeader("Faction");
-        grid.addColumn(server -> server.region().getParentRegion().name()).setHeader("Region");
+        grid.addColumn(server -> server.region().name()).setHeader("Region");
         grid.addColumn(new ComponentRenderer<>(server -> new ServerPriceRenderer(server.price().value())))
                 .setHeader("Price")
                 .setComparator(Comparator.comparing(server -> server.price().value()));
