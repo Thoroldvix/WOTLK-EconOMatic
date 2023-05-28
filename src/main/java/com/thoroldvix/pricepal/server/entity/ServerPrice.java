@@ -21,7 +21,7 @@ public class ServerPrice {
     private Long id;
 
     @Column(nullable = false)
-    private BigDecimal value;
+    private BigDecimal price;
 
     @Column(nullable = false)
     @CreationTimestamp
