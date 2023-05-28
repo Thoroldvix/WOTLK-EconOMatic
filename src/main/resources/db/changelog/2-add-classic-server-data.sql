@@ -6,7 +6,7 @@ VALUES (41074, 'Nethergarde Keep', 'EU', 'en_GB', 'HORDE', 'PVE');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
 VALUES (46326, 'Giantstalker', 'EU', 'en_GB', 'HORDE', 'PVE');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
-VALUES (41070, 'Mograine', 'EU', 'enGB', 'HORDE', 'PVP');
+VALUES (41070, 'Mograine', 'EU', 'en_GB', 'HORDE', 'PVP');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
 VALUES (41066, 'Mirage Raceway', 'EU', 'en_GB', 'HORDE', 'PVE');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
@@ -186,10 +186,10 @@ VALUES (41161, 'Benediction', 'US','en_US', 'ALLIANCE', 'PVP');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
 VALUES (41303, 'Whitemane', 'US','en_US', 'HORDE', 'PVP');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
-VALUES (41322, 'Flamegor', 'RU','ru_RU', 'ALLIANCE', 'PVP');
+VALUES (41322, 'Flamegor', 'EU','ru_RU', 'ALLIANCE', 'PVP');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
-VALUES (41323, 'Flamegor', 'RU','ru_RU', 'HORDE', 'PVP');
+VALUES (41323, 'Flamegor', 'EU','ru_RU', 'HORDE', 'PVP');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
-VALUES (41320, 'Chromie', 'RU','ru_RU', 'ALLIANCE', 'PVE');
+VALUES (41320, 'Chromie', 'EU','ru_RU', 'ALLIANCE', 'PVE');
 INSERT INTO wow.server (id, name, region, locale, faction, type)
-VALUES (41321, 'Chromie', 'RU','ru_RU', 'HORDE', 'PVE');
+VALUES (41321, 'Chromie', 'EU','ru_RU', 'HORDE', 'PVE');
