@@ -54,6 +54,7 @@ dependencies {
     implementation "com.github.appreciated:apexcharts:${apexCharts}"
     implementation "org.vaadin.klaudeta:grid-pagination:${gridPagination}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineCache}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3"
 
 
     compileOnly 'org.projectlombok:lombok'
