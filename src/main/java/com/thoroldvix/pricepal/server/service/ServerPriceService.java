@@ -65,6 +65,14 @@ public class ServerPriceService {
                 () -> new ServerPriceNotFoundException("No prices found for server name: " + serverName));
         return serverPriceMapper.toPriceResponseList(prices);
     }
+    public List<ServerPriceResponse> getPricesForServer(int serverId, Pageable pageable) {
+        ValidationUtils.validatePositiveInt(serverId, "Server id must be positive");
+        Objects.requireNonNull(pageable, "Pageable must not be null");
+        List<ServerPrice> prices = serverPriceRepository.findAllForServerId(serverId, pageable).getContent();
+        ValidationUtils.validateListNotEmpty(prices,
+                () -> new ServerPriceNotFoundException("No prices found for server id: " + serverId));
+        return serverPriceMapper.toPriceResponseList(prices);
+    }
 
     public StatisticsResponse getStatisticsForSearch(RequestDto requestDto) {
         Objects.requireNonNull(requestDto, "RequestDto must not be null");
@@ -77,6 +85,12 @@ public class ServerPriceService {
         List<ServerPriceResponse> prices = getPricesForServer(serverName, Pageable.unpaged());
         return calculateStatistics(prices);
     }
+    public StatisticsResponse getStatisticsForServer(int serverId) {
+        ValidationUtils.validatePositiveInt(serverId, "Server id must be positive");
+        List<ServerPriceResponse> prices = getPricesForServer(serverId, Pageable.unpaged());
+        return calculateStatistics(prices);
+    }
+
 
 
     @Transactional
@@ -142,5 +156,10 @@ public class ServerPriceService {
                 .orElseThrow(() -> new ServerPriceNotFoundException("Cannot find price"));
     }
 
-
+    @Transactional
+    public void saveAllPrices(List<ServerPrice> pricesToSave) {
+        ValidationUtils.validateListNotEmpty(pricesToSave,
+                () -> new IllegalArgumentException("Prices cannot be null or empty"));
+        serverPriceRepository.saveAll(pricesToSave);
+    }
 }

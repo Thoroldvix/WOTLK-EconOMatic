@@ -8,7 +8,11 @@ import com.thoroldvix.pricepal.server.dto.G2GPriceListDeserializer;
 import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.server.entity.Region;
+import com.thoroldvix.pricepal.server.entity.Server;
+import com.thoroldvix.pricepal.server.entity.ServerPrice;
 import com.thoroldvix.pricepal.server.error.G2GPriceNotFoundException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +20,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public class G2GService {
+    @PersistenceContext
+    private final EntityManager entityManager;
 
     private final G2GPriceClient g2GPriceClient;
 
@@ -31,7 +39,7 @@ public class G2GService {
 
     private final ServerPriceService serverPriceServiceImpl;
 
-    @Scheduled(fixedDelay = 15, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.HOURS)
     public void updateAllServerPrices() {
         updateEuPrices();
         updateUsPrices();
@@ -43,12 +51,12 @@ public class G2GService {
 
         String usPricesJson = g2GPriceClient.getPrices(Region.US.g2gId);
         List<ServerPriceResponse> usPrices = extractPricesFromJson(usPricesJson);
-
+        List<ServerPrice> pricesToSave = new ArrayList<>();
         usServers.forEach(server -> {
-            String serverName = server.uniqueName();
-            ServerPriceResponse price = findPriceInResponse(serverName, usPrices);
-            serverPriceServiceImpl.savePrice(server.id(), price);
+            ServerPrice price = getPriceForServer(server, usPrices);
+            pricesToSave.add(price);
         });
+        serverPriceServiceImpl.saveAllPrices(pricesToSave);
         log.info("Finished updating US prices");
     }
 
@@ -62,19 +70,26 @@ public class G2GService {
         List<ServerPriceResponse> euPrices = extractPricesFromJson(euPricesJson);
         List<ServerPriceResponse> ruPrices = extractPricesFromJson(ruPricesJson);
         euPrices.addAll(ruPrices);
-
+        List<ServerPrice> pricesToSave = new ArrayList<>();
         euServers.forEach(server -> {
-            String serverName = server.uniqueName();
-            ServerPriceResponse price = findPriceInResponse(serverName, euPrices);
-            serverPriceServiceImpl.savePrice(server.id(), price);
+            ServerPrice price = getPriceForServer(server, euPrices);
+            pricesToSave.add(price);
         });
+        serverPriceServiceImpl.saveAllPrices(pricesToSave);
         log.info("Finished updating EU prices");
     }
 
-    private ServerPriceResponse findPriceInResponse(String serverName, List<ServerPriceResponse> prices) {
-        return prices.stream().filter(result -> result.serverName().equals(serverName))
+    private ServerPrice getPriceForServer(ServerResponse server, List<ServerPriceResponse> prices) {
+        String serverName = server.uniqueName();
+        BigDecimal price = prices.stream().filter(result -> result.serverName().equals(serverName))
                 .findFirst()
+                .map(ServerPriceResponse::price)
                 .orElseThrow(() -> new G2GPriceNotFoundException("Price not found for server: " + serverName));
+        Server serverEntity = entityManager.getReference(Server.class, server.id());
+        return ServerPrice.builder()
+                .price(price)
+                .server(serverEntity)
+                .build();
     }
 
     @SneakyThrows
