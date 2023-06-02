@@ -1,16 +1,13 @@
 package com.thoroldvix.pricepal.server.api;
 
-import com.thoroldvix.pricepal.common.StringEnumConverter;
+import com.thoroldvix.pricepal.common.RequestDto;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
-import com.thoroldvix.pricepal.server.entity.Region;
 import com.thoroldvix.pricepal.server.service.ServerService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,26 +16,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ServerController {
 
-    private final ServerService serverServiceImpl;
+    private final ServerService serverService;
 
-    @GetMapping("/{serverName}")
-    public ResponseEntity<ServerResponse> getServer(@PathVariable String serverName) {
-        if (StringUtils.hasText(serverName)) {
-            return ResponseEntity.ok(serverServiceImpl.getServerResponse(serverName));
+    @GetMapping("/{serverIdentifier}")
+    public ResponseEntity<ServerResponse> getServer(@PathVariable String serverIdentifier) {
+        if (!StringUtils.hasText(serverIdentifier)) {
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.notFound().build();
+        return NumberUtils.isCreatable(serverIdentifier)
+                ? ResponseEntity.ok(serverService.getServerResponse(Integer.parseInt(serverIdentifier)))
+                : ResponseEntity.ok(serverService.getServerResponse(serverIdentifier));
     }
-
+     @PostMapping("/search")
+    public ResponseEntity<List<ServerResponse>> searchServers(@RequestBody RequestDto requestDto) {
+        if (requestDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(serverService.searchServers(requestDto));
+    }
 
     @GetMapping
     public ResponseEntity<List<ServerResponse>> getAllServers() {
-        return ResponseEntity.ok(serverServiceImpl.getAllServers());
+        return ResponseEntity.ok(serverService.getAllServers());
     }
-
-    @GetMapping("/regions/{regionName}")
-    public ResponseEntity<?> getAllServersForRegion(@PathVariable String regionName) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return ResponseEntity.ok(serverServiceImpl.getAllServersForRegion(region));
-    }
-
 }

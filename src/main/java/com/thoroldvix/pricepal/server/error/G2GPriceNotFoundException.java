@@ -1,6 +1,8 @@
 package com.thoroldvix.pricepal.server.error;
 
-public class G2GPriceNotFoundException extends RuntimeException {
+import com.vaadin.flow.router.NotFoundException;
+
+public class G2GPriceNotFoundException extends NotFoundException {
     public G2GPriceNotFoundException(String s) {
         super(s);
     }

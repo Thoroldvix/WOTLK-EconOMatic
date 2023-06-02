@@ -1,7 +1,11 @@
 package com.thoroldvix.pricepal.ui.server.component;
 
+import com.thoroldvix.pricepal.common.RequestDto;
+import com.thoroldvix.pricepal.common.SearchCriteria;
 import com.thoroldvix.pricepal.server.api.ServerPriceController;
+import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
+import com.thoroldvix.pricepal.server.dto.StatisticsResponse;
 import com.thoroldvix.pricepal.ui.server.renderer.ServerPriceRenderer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
@@ -13,6 +17,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public class ServerStatBox extends VerticalLayout {
@@ -77,26 +82,48 @@ public class ServerStatBox extends VerticalLayout {
     }
 
     private ServerPriceRenderer getCurrentPriceValue() {
-        return new ServerPriceRenderer(server.price().value());
+        ServerPriceResponse recentPrice = getMostRecentPriceForServer(server);
+        return new ServerPriceRenderer(recentPrice);
     }
 
     private ServerPriceRenderer getAvgPriceValue() {
-        BigDecimal averagePrice = Objects.requireNonNull(serverPriceController
-                .getAvgPriceForServer(server.uniqueName()).getBody()).value();
-        return new ServerPriceRenderer(averagePrice);
+        BigDecimal averagePrice =  getStatisticsForServer(server).average();
+        ServerPriceResponse serverPriceResponse = ServerPriceResponse.builder()
+                .price(averagePrice)
+                .build();
+        return new ServerPriceRenderer(serverPriceResponse);
     }
 
+    private StatisticsResponse getStatisticsForServer(ServerResponse server) {
+       return serverPriceController.getStatisticsForServer(server.uniqueName()).getBody();
+    }
+    private ServerPriceResponse getMostRecentPriceForServer(ServerResponse server) {
+        return serverPriceController.getPricesForServer(server.uniqueName(), 0, 1, "updatedAt,desc")
+                .getBody()
+                .get(0);
+    }
+
+
     private ServerPriceRenderer getServerRegionAvgPriceValue() {
-        String regionName = server.region().name();
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .column("region")
+                .operation(SearchCriteria.Operation.EQUALS)
+                .joinTable("server")
+                .joinOperation(true)
+                .value(server.region().name())
+                .build();
 
         BigDecimal regionAveragePrice = Objects.requireNonNull(serverPriceController
-                .getAvgPriceForRegion(regionName).getBody()).value();
-
-        return new ServerPriceRenderer(regionAveragePrice);
+                .getStatistics(new RequestDto(List.of(searchCriteria))).getBody()).average();
+        ServerPriceResponse serverPriceResponse = ServerPriceResponse.builder()
+                .price(regionAveragePrice)
+                .build();
+        return new ServerPriceRenderer(serverPriceResponse);
     }
 
     private Span getLastUpdatedValue() {
-        return new Span(getLastUpdatedText(server.price().updatedAt()));
+        ServerPriceResponse recentPrice = getMostRecentPriceForServer(server);
+        return new Span(getLastUpdatedText(recentPrice.updatedAt()));
     }
 
 

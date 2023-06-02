@@ -1,6 +1,7 @@
-package com.thoroldvix.pricepal.item.entity;
+package com.thoroldvix.pricepal.item.repository;
 
 import com.thoroldvix.pricepal.item.dto.ItemInfo;
+import com.thoroldvix.pricepal.item.entity.Item;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

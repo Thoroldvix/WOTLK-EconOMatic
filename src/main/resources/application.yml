@@ -1,4 +1,8 @@
+
 spring:
+  jackson:
+    mapper:
+      accept-case-insensitive-enums: true
   task:
     scheduling:
       pool:
@@ -24,13 +28,17 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-  data:
-    web:
-      pageable:
-        max-page-size: 1000000000
-        default-page-size: 1000000000
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
 server:
   port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: never
+
 
 logging:
   level:
@@ -38,3 +46,4 @@ logging:
     atmosphere: warn
 vaadin:
   whitelisted-packages: com.vaadin,org.vaadin,dev.hilla,com.example.application,com.vaadin,org.vaadin,com.github.appreciated.apexcharts,com.thoroldvix.pricepal.ui
+  exclude-urls: /swagger-ui/**

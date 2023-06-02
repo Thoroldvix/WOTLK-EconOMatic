@@ -1,6 +1,5 @@
 package com.thoroldvix.pricepal.item.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +10,6 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @RequiredArgsConstructor
-@JsonDeserialize(using = ItemDeserializer.class)
 public class Item {
 
     @Id

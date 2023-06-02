@@ -1,6 +1,8 @@
 package com.thoroldvix.pricepal.ui.server.component;
 
 import com.thoroldvix.pricepal.server.api.ServerController;
+import com.thoroldvix.pricepal.server.api.ServerPriceController;
+import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.ui.server.renderer.FactionRenderer;
 import com.thoroldvix.pricepal.ui.server.renderer.ServerPriceRenderer;
@@ -20,13 +22,12 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
-import java.util.Comparator;
-
 
 @SpringComponent
 @UIScope
 public class ServerGrid extends VerticalLayout {
     private final ServerController serverController;
+    private final ServerPriceController serverPriceController;
 
     private final ServerSelectionField serverSelectionField;
 
@@ -35,8 +36,9 @@ public class ServerGrid extends VerticalLayout {
     private TextField serverNameFilter;
     private FactionSelect factionFilter;
 
-    public ServerGrid(ServerController serverController, ServerSelectionField serverSelectionField) {
+    public ServerGrid(ServerController serverController, ServerPriceController serverPriceController, ServerSelectionField serverSelectionField) {
         this.serverController = serverController;
+        this.serverPriceController = serverPriceController;
 
         this.serverSelectionField = serverSelectionField;
         setSizeFull();
@@ -115,15 +117,17 @@ public class ServerGrid extends VerticalLayout {
         grid.addColumn(ServerResponse::name).setHeader("Name");
         grid.addColumn(new ComponentRenderer<>(server -> new FactionRenderer(server.faction()))).setHeader("Faction");
         grid.addColumn(server -> server.region().name()).setHeader("Region");
-        grid.addColumn(new ComponentRenderer<>(server -> new ServerPriceRenderer(server.price().value())))
-                .setHeader("Price")
-                .setComparator(Comparator.comparing(server -> server.price().value()));
-
-
+        grid.addColumn(new ComponentRenderer<>(server -> new ServerPriceRenderer(getRecentServerPrice(server))))
+                .setHeader("Price");
         grid.getColumns().forEach(col -> {
             col.setAutoWidth(true);
             col.setSortable(true);
         });
+    }
+    private ServerPriceResponse getRecentServerPrice(ServerResponse server) {
+        return serverPriceController.getPricesForServer(server.uniqueName(), 0, 1, "updatedAt,desc")
+                .getBody()
+                .get(0);
     }
     private void navigateToServer(ServerResponse server) {
         serverSelectionField.setValue(server);

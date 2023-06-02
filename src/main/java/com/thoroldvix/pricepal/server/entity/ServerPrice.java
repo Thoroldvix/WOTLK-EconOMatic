@@ -27,12 +27,10 @@ public class ServerPrice {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(name = "currency")
-    @Enumerated(EnumType.STRING)
-    private Currency currency;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "server_id")
+    @ToString.Exclude
     private Server server;
 
     public void setServer(Server server) {

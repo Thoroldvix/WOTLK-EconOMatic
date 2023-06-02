@@ -10,9 +10,7 @@ public record ServerResponse(
         String name,
         Faction faction,
         Region region,
-        ServerPriceResponse price,
         String type,
-        PopulationResponse population,
         String uniqueName
 ) {
 

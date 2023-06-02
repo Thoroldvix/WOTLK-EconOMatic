@@ -1,144 +1,146 @@
 package com.thoroldvix.pricepal.server.service;
 
+import com.thoroldvix.pricepal.common.FiltersSpecification;
+import com.thoroldvix.pricepal.common.RequestDto;
 import com.thoroldvix.pricepal.common.ValidationUtils;
 import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
-import com.thoroldvix.pricepal.server.entity.*;
+import com.thoroldvix.pricepal.server.dto.StatisticsResponse;
+import com.thoroldvix.pricepal.server.entity.Server;
+import com.thoroldvix.pricepal.server.entity.ServerPrice;
 import com.thoroldvix.pricepal.server.error.ServerPriceNotFoundException;
 import com.thoroldvix.pricepal.server.repository.ServerPriceRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
-public class ServerPriceService  {
-
+public class ServerPriceService {
+    @PersistenceContext
+    private final EntityManager entityManager;
     private final ServerPriceRepository serverPriceRepository;
-    private final ServerService serverServiceImpl;
     private final ServerPriceMapper serverPriceMapper;
+    private final FiltersSpecification<ServerPrice> filtersSpecification;
 
 
-    private final LocalDateTime AVERAGE_TIME_PERIOD = LocalDateTime.now().minusDays(14);
-
-
-    public ServerPriceResponse getPriceForServer(String serverName) {
-        ValidationUtils.validateNonEmptyString(serverName, "Server name must not be null or empty");
-        return serverPriceRepository.findRecentPriceByUniqueServerName(serverName)
-                .map(serverPriceMapper::toPriceResponse)
-                .orElseThrow(() -> new ServerPriceNotFoundException("No price found for server: " + serverName));
+    public List<ServerPriceResponse> getAllPrices(Pageable pageable) {
+        Objects.requireNonNull(pageable, "Pageable must not be null");
+        List<ServerPrice> prices = serverPriceRepository.findAll(pageable).getContent();
+        ValidationUtils.validateListNotEmpty(prices,
+                () -> new ServerPriceNotFoundException("No prices found"));
+        return serverPriceMapper.toPriceResponseList(prices);
     }
 
-
-    public ServerPriceResponse getPriceForServer(int serverId) {
-        ValidationUtils.validatePositiveInt(serverId, "Server id must be a positive integer");
-        return serverPriceRepository.findRecentPriceByServerId(serverId)
-                .map(serverPriceMapper::toPriceResponse)
-                .orElseThrow(() -> new ServerPriceNotFoundException("No price found for server: " + serverId));
+    public List<ServerPriceResponse> searchForPrices(RequestDto requestDto, Pageable pageable) {
+        Objects.requireNonNull(requestDto, "RequestDto must not be null");
+        Objects.requireNonNull(pageable, "Pageable must not be null");
+        Specification<ServerPrice> searchSpecification =
+                filtersSpecification.getSearchSpecification(requestDto.searchCriteria(), requestDto.globalOperator());
+        List<ServerPrice> prices = serverPriceRepository.findAll(searchSpecification, pageable).getContent();
+        ValidationUtils.validateListNotEmpty(prices,
+                () -> new ServerPriceNotFoundException("No prices found"));
+        return serverPriceMapper.toPriceResponseList(prices);
     }
 
+    public List<ServerPriceResponse> getPricesForServer(String serverName, Pageable pageable) {
+        ValidationUtils.validateNonEmptyString(serverName, "Server name cannot be null or empty");
+        Objects.requireNonNull(pageable, "Pageable must not be null");
+        List<ServerPrice> prices = serverPriceRepository.findAllForServerUniqueName(serverName, pageable).getContent();
+        ValidationUtils.validateListNotEmpty(prices,
+                () -> new ServerPriceNotFoundException("No prices found for server name: " + serverName));
+        return serverPriceMapper.toPriceResponseList(prices);
+    }
 
-    public ServerPriceResponse getPriceForServer(Server server) {
-        Objects.requireNonNull(server, "Server must not be null");
-        return serverPriceRepository.findMostRecentPriceByServer(server)
-                .map(serverPriceMapper::toPriceResponse)
-                .orElseThrow(() -> new ServerPriceNotFoundException("No price found for server: " + server.getName()));
+    public StatisticsResponse getStatisticsForSearch(RequestDto requestDto) {
+        Objects.requireNonNull(requestDto, "RequestDto must not be null");
+        List<ServerPriceResponse> prices = searchForPrices(requestDto, Pageable.unpaged());
+        return calculateStatistics(prices);
+    }
+
+    public StatisticsResponse getStatisticsForServer(String serverName) {
+        ValidationUtils.validateNonEmptyString(serverName, "Server name cannot be null or empty");
+        List<ServerPriceResponse> prices = getPricesForServer(serverName, Pageable.unpaged());
+        return calculateStatistics(prices);
     }
 
 
     @Transactional
     public void savePrice(int serverId, ServerPriceResponse recentPrice) {
         Objects.requireNonNull(recentPrice, "Recent server price must not be null");
-        ValidationUtils.validatePositiveInt(serverId, "Server id must be a positive integer");
-        Server server = serverServiceImpl.getServer(serverId);
+        Server server = entityManager.getReference(Server.class, serverId);
         ServerPrice serverPrice = serverPriceMapper.toServerPrice(recentPrice);
         serverPrice.setServer(server);
+        serverPriceRepository.save(serverPrice);
+    }
+
+    private ServerPriceResponse calculatePrice(List<ServerPriceResponse> prices, Function<Stream<BigDecimal>, Optional<BigDecimal>> operation) {
+        ValidationUtils.validateListNotEmpty(prices, () -> new IllegalArgumentException("Prices cannot be null or empty"));
+        BigDecimal price = operation.apply(prices.stream().map(ServerPriceResponse::price))
+                .orElseThrow(() -> new ServerPriceNotFoundException("Cannot find price"));
+        return findPriceResponseForPriceInList(prices, price);
+    }
+
+    private BigDecimal calculateAvgPrice(List<ServerPriceResponse> prices) {
+        ValidationUtils.validateListNotEmpty(prices, () -> new IllegalArgumentException("Prices cannot be null or empty"));
+        return prices.stream()
+                .map(ServerPriceResponse::price)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(BigDecimal.valueOf(prices.size()), RoundingMode.HALF_UP)
+                .setScale(5, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateMedianPrice(List<ServerPriceResponse> prices) {
+        ValidationUtils.validateListNotEmpty(prices, () -> new IllegalArgumentException("Prices cannot be null or empty"));
+        List<BigDecimal> sortedPrices = prices.stream()
+                .map(ServerPriceResponse::price)
+                .sorted()
+                .toList();
+
+        int size = sortedPrices.size();
+        int middleIndex = size / 2;
+
+        if (size % 2 == 0) {
+            return sortedPrices.get(middleIndex)
+                    .add(sortedPrices.get(middleIndex - 1))
+                    .divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP)
+                    .setScale(5, RoundingMode.HALF_UP);
+        } else {
+            return sortedPrices.get(middleIndex);
+        }
+    }
+
+    private StatisticsResponse calculateStatistics(List<ServerPriceResponse> prices) {
+        ValidationUtils.validateListNotEmpty(prices, () -> new IllegalArgumentException("Prices cannot be null or empty"));
+        BigDecimal avgPrice = calculateAvgPrice(prices);
+        BigDecimal medianPrice = calculateMedianPrice(prices);
+        ServerPriceResponse maxPrice = calculatePrice(prices, stream -> stream.max(BigDecimal::compareTo));
+        ServerPriceResponse minPrice = calculatePrice(prices, stream -> stream.min(BigDecimal::compareTo));
+        return new StatisticsResponse(avgPrice, medianPrice, minPrice, maxPrice);
+    }
+
+    private ServerPriceResponse findPriceResponseForPriceInList(List<ServerPriceResponse> prices, BigDecimal price) {
+        Objects.requireNonNull(prices, "Prices cannot be null");
+        Objects.requireNonNull(price, "Price value cannot be null");
+        return prices.stream()
+                .filter(serverPriceResponse -> serverPriceResponse.price().equals(price))
+                .findFirst()
+                .orElseThrow(() -> new ServerPriceNotFoundException("Cannot find price"));
     }
 
 
-    public ServerPriceResponse getAvgPriceForRegion(Region region) {
-        Objects.requireNonNull(region, "Region must not be null");
-        BigDecimal price = serverPriceRepository.findAvgPriceByRegion(region, AVERAGE_TIME_PERIOD)
-                .orElseThrow(() -> new ServerPriceNotFoundException("No avg price found for region: " + region.name()));
-        return serverPriceMapper.toPriceResponse(price, Currency.USD);
-    }
-
-
-    public List<ServerPriceResponse> getAllPricesForRegion(Region region, Pageable pageable) {
-        Objects.requireNonNull(region, "Region must not be null");
-        Objects.requireNonNull(pageable, "Pageable parameter must not be null");
-        List<ServerPrice> prices = serverPriceRepository.findAllPricesByRegion(region, pageable).getContent();
-        ValidationUtils.validateListNotEmpty(prices,
-                () -> new ServerPriceNotFoundException("No prices found for region: " + region.name()));
-        return serverPriceMapper.toPriceResponseList(prices);
-    }
-
-
-
-    public List<ServerPriceResponse> getAllPricesForFaction(Faction faction, Pageable pageable) {
-        Objects.requireNonNull(faction, "Faction must not be null");
-        Objects.requireNonNull(pageable, "Pageable parameter must not be null");
-        List<ServerPrice> prices = serverPriceRepository.findAllPricesByFaction(faction, pageable).getContent();
-        ValidationUtils.validateListNotEmpty(prices,
-                () -> new ServerPriceNotFoundException("No prices found for faction: " + faction.name()));
-        return serverPriceMapper.toPriceResponseList(prices);
-    }
-
-
-    public ServerPriceResponse getAvgPriceForFaction(Faction faction) {
-        Objects.requireNonNull(faction, "Faction must not be null");
-        BigDecimal price = serverPriceRepository.findAvgPriceByFaction(faction, AVERAGE_TIME_PERIOD)
-                .orElseThrow(() -> new ServerPriceNotFoundException("No avg price found for faction: " + faction.name()));
-        return serverPriceMapper.toPriceResponse(price, Currency.USD);
-    }
-
-
-    public List<ServerPriceResponse> getAllPricesForServer(String serverName, Pageable pageable) {
-        Objects.requireNonNull(pageable, "Pageable parameter cannot be null");
-        ValidationUtils.validateNonEmptyString(serverName, "Server name must not be null or empty");
-        List<ServerPrice> prices = serverPriceRepository.findAllByUniqueServerName(serverName, pageable).getContent();
-        ValidationUtils.validateListNotEmpty(prices,
-                () -> new ServerPriceNotFoundException("No prices found for server: " + serverName));
-        return serverPriceMapper.toPriceResponseList(prices);
-    }
-
-
-    public List<ServerPriceResponse> getAllPricesForServer(int serverId, Pageable pageable) {
-        Objects.requireNonNull(pageable, "Pageable parameter cannot be null");
-        ValidationUtils.validatePositiveInt(serverId, "Server id must be a positive integer");
-        List<ServerPrice> prices = serverPriceRepository.findAllPricesByServerId(serverId, pageable).getContent();
-        ValidationUtils.validateListNotEmpty(prices,
-                () -> new ServerPriceNotFoundException("No prices found for server ID: " + serverId));
-        return serverPriceMapper.toPriceResponseList(prices);
-    }
-
-
-
-    public ServerPriceResponse getAvgPriceForServer(String serverName) {
-        ValidationUtils.validateNonEmptyString(serverName, "Server name must not be null or empty");
-        BigDecimal price = serverPriceRepository.findAvgPriceByUniqueServerName(serverName, AVERAGE_TIME_PERIOD)
-                .orElseThrow(() -> new ServerPriceNotFoundException("No avg price found for server: " + serverName));
-        return serverPriceMapper.toPriceResponse(price, Currency.USD);
-    }
-
-
-    public ServerPriceResponse getAvgPriceForServer(int serverId) {
-        ValidationUtils.validatePositiveInt(serverId,  "Server id must be a positive integer");
-        BigDecimal price = serverPriceRepository.findAvgPriceByServerId(serverId, AVERAGE_TIME_PERIOD)
-                .orElseThrow(() -> new ServerPriceNotFoundException("No avg price found for server ID: " + serverId));
-        return serverPriceMapper.toPriceResponse(price, Currency.USD);
-    }
-
-
-    public LocalDateTime getAVERAGE_TIME_PERIOD() {
-        return AVERAGE_TIME_PERIOD;
-    }
 }

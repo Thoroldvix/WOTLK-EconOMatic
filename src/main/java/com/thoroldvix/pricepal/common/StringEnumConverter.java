@@ -15,7 +15,7 @@ public class StringEnumConverter {
                 return value;
             }
         }
-        throw new NotFoundException(String.format("Could not find %s with name: %s", enumClass.getSimpleName().toLowerCase(),
+        throw new NotFoundException(String.format("Could not find %s with name: %s", enumClass.getSimpleName(),
                 str));
     }
 }

@@ -18,17 +18,17 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ItemsController {
 
-    private final ItemService itemServiceImpl;
+    private final ItemService itemService;
 
     @GetMapping
     public ResponseEntity<Set<ItemInfo>> getAllItems(Pageable pageable) {
-        return ResponseEntity.ok(itemServiceImpl.getAllItems(pageable));
+        return ResponseEntity.ok(itemService.getAllItems(pageable));
     }
 
 
     @GetMapping("/search")
     public ResponseEntity<List<ItemInfo>> searchItems(@RequestParam("query") String query, Pageable pageable) {
-        return ResponseEntity.ok(itemServiceImpl.searchItems(query, pageable));
+        return ResponseEntity.ok(itemService.searchItems(query, pageable));
     }
 
 

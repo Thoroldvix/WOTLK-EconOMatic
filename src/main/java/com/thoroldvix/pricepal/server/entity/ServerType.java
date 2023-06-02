@@ -5,8 +5,6 @@ public enum ServerType {
     PVP,
     RP,
     PVP_RP;
-
-
     @Override
     public String toString() {
         String typeName = this.name().replaceAll("_", " ");

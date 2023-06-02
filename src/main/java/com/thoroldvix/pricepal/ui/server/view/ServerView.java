@@ -2,7 +2,6 @@ package com.thoroldvix.pricepal.ui.server.view;
 
 import com.thoroldvix.pricepal.server.api.ServerController;
 import com.thoroldvix.pricepal.server.api.ServerPriceController;
-import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.server.entity.Faction;
 import com.thoroldvix.pricepal.ui.AppHeader;
@@ -17,9 +16,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.List;
 
 @Route(value = "wow-classic/server", layout = MainLayout.class)
 @UIScope
@@ -43,13 +39,11 @@ public class ServerView extends VerticalLayout {
         add(appHeader);
     }
 
-    private List<ServerPriceResponse> getPrices(String serverName) {
-        return serverPriceController.getAllPricesForServer(serverName, PageRequest.of(0, Integer.MAX_VALUE)).getBody();
-    }
+
 
     public void setup(String serverName) {
         removeAll();
-        List<ServerPriceResponse> prices = getPrices(serverName);
+
 
         server = serverController.getServer(serverName).getBody();
         VaadinSession.getCurrent().setAttribute("selectedServer", serverName);

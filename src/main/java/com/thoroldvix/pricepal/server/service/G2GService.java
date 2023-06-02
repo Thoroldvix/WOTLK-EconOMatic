@@ -7,7 +7,6 @@ import com.thoroldvix.pricepal.server.api.G2GPriceClient;
 import com.thoroldvix.pricepal.server.dto.G2GPriceListDeserializer;
 import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
-import com.thoroldvix.pricepal.server.entity.Currency;
 import com.thoroldvix.pricepal.server.entity.Region;
 import com.thoroldvix.pricepal.server.error.G2GPriceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +30,6 @@ public class G2GService {
     private final ServerService serverServiceImpl;
 
     private final ServerPriceService serverPriceServiceImpl;
-    
-    private final Currency currency = Currency.USD;
 
     @Scheduled(fixedDelay = 15, timeUnit = TimeUnit.MINUTES)
     public void updateAllServerPrices() {
@@ -44,7 +41,7 @@ public class G2GService {
         log.info("Updating US prices");
         List<ServerResponse> usServers = serverServiceImpl.getAllServersForRegion(Region.US);
 
-        String usPricesJson = g2GPriceClient.getPrices(Region.US.g2gId, currency);
+        String usPricesJson = g2GPriceClient.getPrices(Region.US.g2gId);
         List<ServerPriceResponse> usPrices = extractPricesFromJson(usPricesJson);
 
         usServers.forEach(server -> {
@@ -59,8 +56,8 @@ public class G2GService {
         log.info("Updating EU prices");
         List<ServerResponse> euServers = serverServiceImpl.getAllServersForRegion(Region.EU);
 
-        String euPricesJson = g2GPriceClient.getPrices(Region.EU.g2gId, currency);
-        String ruPricesJson = g2GPriceClient.getPrices(Region.RU.g2gId, currency);
+        String euPricesJson = g2GPriceClient.getPrices(Region.EU.g2gId);
+        String ruPricesJson = g2GPriceClient.getPrices(Region.RU.g2gId);
 
         List<ServerPriceResponse> euPrices = extractPricesFromJson(euPricesJson);
         List<ServerPriceResponse> ruPrices = extractPricesFromJson(ruPricesJson);
@@ -89,5 +86,6 @@ public class G2GService {
 
         return deserializer.deserialize(parser, context);
     }
+
 
 }

@@ -1,5 +1,6 @@
 package com.thoroldvix.pricepal.ui.server.renderer;
 
+import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -8,9 +9,17 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class ServerPriceRenderer extends HorizontalLayout {
-    public ServerPriceRenderer(BigDecimal price) {
-        double formattedPrice = price.multiply(BigDecimal.valueOf(1000)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+public class ServerPriceRenderer extends HorizontalLayout implements Comparable<BigDecimal> {
+
+    private final double formattedPrice;
+    public ServerPriceRenderer(ServerPriceResponse priceResponse) {
+
+        if (priceResponse == null) {
+            formattedPrice = 0;
+        } else {
+            BigDecimal price = priceResponse.price();
+            formattedPrice = price.multiply(BigDecimal.valueOf(1000)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        }
         setSpacing(false);
         getThemeList().add("spacing-s");
         add(getPriceLayout(formattedPrice), new Text("/"), getGoldLayout());
@@ -36,5 +45,10 @@ public class ServerPriceRenderer extends HorizontalLayout {
 
         priceLayout.add(priceSpan);
         return priceLayout;
+    }
+
+    @Override
+    public int compareTo(BigDecimal bigDecimal) {
+         return (int) (formattedPrice - bigDecimal.doubleValue());
     }
 }

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.thoroldvix.pricepal.common.StringEnumConverter;
-import com.thoroldvix.pricepal.server.entity.Currency;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -40,17 +38,13 @@ public class G2GPriceListDeserializer extends StdDeserializer<List<ServerPriceRe
 
     private ServerPriceResponse getServerPrice(JsonNode resultNode) {
         String serverName = formatServerName(resultNode.get("title").asText());
-        Currency currency = StringEnumConverter.fromString(resultNode
-                .get("display_currency")
-                .asText(),
-                Currency.class);
 
-        BigDecimal value = resultNode.get("converted_unit_price").decimalValue();
+
+        BigDecimal price = resultNode.get("converted_unit_price").decimalValue();
 
         return ServerPriceResponse.builder()
                 .serverName(serverName)
-                .currency(currency)
-                .value(value)
+                .price(price)
                 .build();
     }
 

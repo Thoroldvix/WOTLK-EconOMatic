@@ -1,59 +1,42 @@
 package com.thoroldvix.pricepal.server.service;
 
-import com.thoroldvix.pricepal.server.api.PopulationClient;
-import com.thoroldvix.pricepal.server.dto.FullPopulationResponse;
-import com.thoroldvix.pricepal.server.dto.ServerResponse;
-import com.thoroldvix.pricepal.server.entity.Region;
+import com.thoroldvix.pricepal.common.ValidationUtils;
+import com.thoroldvix.pricepal.server.entity.Population;
+import com.thoroldvix.pricepal.server.entity.Server;
+import com.thoroldvix.pricepal.server.repository.PopulationRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @EnableScheduling
+@Transactional(readOnly = true)
 @Slf4j
 public class PopulationService {
+    @PersistenceContext
+    private final EntityManager entityManager;
+    private final PopulationRepository populationRepository;
+    private final PopulationMapper populationMapper;
 
-    private final PopulationClient populationClient;
 
-    private final ServerService serverServiceImpl;
-
-    @Scheduled(fixedRate = 7, timeUnit = TimeUnit.DAYS)
-    protected void updatePopulation() {
-        updatePopulationForRegion(Region.EU);
-        updatePopulationForRegion(Region.US);
+    @Transactional
+    public void savePopulation(int serverId, int populationSize) {
+        if (populationSize < 0) {
+            throw new IllegalArgumentException("Population size must be positive");
+        }
+        ValidationUtils.validatePositiveInt(serverId, "Server id must be positive");
+        Server server = entityManager.getReference(Server.class, serverId);
+        Population population = new Population();
+        population.setPopulation(populationSize);
+        population.setServer(server);
+        populationRepository.save(population);
     }
 
 
-    private void updatePopulationForRegion(Region region) {
-        log.info(String.format("Updating %s population", region.name()));
-
-        List<ServerResponse> servers = serverServiceImpl.getAllServersForRegion(region);
-
-
-        Set<String> serverNames = servers.stream().map(ServerResponse::name).collect(Collectors.toSet());
-        serverNames.forEach(serverName -> {
-            String formattedServerName = formatServerName(serverName);
-            FullPopulationResponse population = populationClient.getPopulationForServer(region, formattedServerName);
-
-            serverServiceImpl.updatePopulationForServer(serverName, population);
-        });
-        log.info(String.format("Updated %s population", region.name()));
-    }
-
-
-
-
-    private String formatServerName(String serverName) {
-        return serverName.replaceAll(" ", "-")
-                .replaceAll("'", "").toLowerCase();
-    }
 
 }

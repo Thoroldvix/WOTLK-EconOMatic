@@ -1,20 +1,18 @@
 package com.thoroldvix.pricepal.server.api;
 
-import com.thoroldvix.pricepal.common.ApiError;
-import com.thoroldvix.pricepal.server.dto.FilterRequest;
-import com.thoroldvix.pricepal.server.dto.FilteredPriceResponse;
+import com.thoroldvix.pricepal.common.RequestDto;
 import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
-import com.thoroldvix.pricepal.server.entity.ServerPrice;
-import com.thoroldvix.pricepal.server.entity.ServerPriceSpecifications;
+import com.thoroldvix.pricepal.server.dto.StatisticsResponse;
 import com.thoroldvix.pricepal.server.service.ServerPriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.thoroldvix.pricepal.common.BuildUtils.buildPageable;
 
 @RestController
 @RequestMapping("/wow-classic/api/v1/prices")
@@ -22,75 +20,60 @@ import java.util.List;
 public class ServerPriceController {
 
     private final ServerPriceService serverPriceService;
-    @GetMapping("/avg")
-    public ResponseEntity<FilteredPriceResponse> getAvgPrice(@ModelAttribute FilterRequest filters) {
-        Specification<ServerPrice> spec = buildSpec(filters);
-        ServerPriceResponse avgPrice = serverPriceService.getAvgPrices(spec);
-        FilteredPriceResponse filteredPriceResponse = FilteredPriceResponse.builder()
-                .avgPrice(avgPrice)
-                .filters(filters)
-                .build();
-        return ResponseEntity.ok(filteredPriceResponse);
+
+    @PostMapping("/statistics")
+    public ResponseEntity<StatisticsResponse> getStatistics(@RequestBody RequestDto requestDto) {
+        if (requestDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        StatisticsResponse statistics = serverPriceService.getStatisticsForSearch(requestDto);
+        return ResponseEntity.ok(statistics);
     }
-    @GetMapping("/max")
-    public ResponseEntity<FilteredPriceResponse> getMaxPrice(@ModelAttribute FilterRequest filters) {
-        Specification<ServerPrice> spec = buildSpec(filters);
-        ServerPriceResponse maxPrice = serverPriceService.getMaxPrices(spec);
-        FilteredPriceResponse filteredPriceResponse = FilteredPriceResponse.builder()
-                .maxPrice(maxPrice)
-                .filters(filters)
-                .build();
-        return ResponseEntity.ok(filteredPriceResponse);
+
+    @GetMapping("/{serverName}")
+    public ResponseEntity<List<ServerPriceResponse>> getPricesForServer(@PathVariable String serverName,
+                                                                        @RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "100") int size,
+                                                                        @RequestParam(defaultValue = "id,desc") String sort) {
+        if (!StringUtils.hasText(serverName)) {
+            return ResponseEntity.badRequest().build();
+        }
+        Pageable pageable = buildPageable(page, size, sort);
+        List<ServerPriceResponse> prices = serverPriceService.getPricesForServer(serverName, pageable);
+        return ResponseEntity.ok(prices);
     }
-    @GetMapping("/min")
-    public ResponseEntity<FilteredPriceResponse> getMinPrice(@ModelAttribute FilterRequest filters) {
-        Specification<ServerPrice> spec = buildSpec(filters);
-        ServerPriceResponse minPrice = serverPriceService.getMinPrices(spec);
-        FilteredPriceResponse filteredPriceResponse = FilteredPriceResponse.builder()
-                .minPrice(minPrice)
-                .filters(filters)
-                .build();
-        return ResponseEntity.ok(filteredPriceResponse);
+
+    @GetMapping("/{serverName}/statistics")
+    public ResponseEntity<StatisticsResponse> getStatisticsForServer(@PathVariable String serverName) {
+        if (!StringUtils.hasText(serverName)) {
+            return ResponseEntity.badRequest().build();
+        }
+        StatisticsResponse statistics = serverPriceService.getStatisticsForServer(serverName);
+        return ResponseEntity.ok(statistics);
     }
-    @GetMapping("/med")
-    public ResponseEntity<FilteredPriceResponse> getMedianPrice(@ModelAttribute FilterRequest filters) {
-        Specification<ServerPrice> spec = buildSpec(filters);
-        ServerPriceResponse medianPrice = serverPriceService.getMedianPrices(spec);
-        FilteredPriceResponse filteredPriceResponse = FilteredPriceResponse.builder()
-                .medianPrice(medianPrice)
-                .filters(filters)
-                .build();
-        return ResponseEntity.ok(filteredPriceResponse);
-    }
+
 
     @GetMapping
-    public ResponseEntity<FilteredPriceResponse> getFilteredPrices(@ModelAttribute FilterRequest filters,
-                                                                       Pageable pageable) {
-        Specification<ServerPrice> spec = buildSpec(filters);
-        List<ServerPriceResponse> prices = serverPriceService.getFilteredPrices(spec, pageable);
-        FilteredPriceResponse filteredPriceResponse = FilteredPriceResponse.builder()
-                .prices(prices)
-                .filters(filters)
-                .build();
-        return ResponseEntity.ok(filteredPriceResponse);
+    public ResponseEntity<List<ServerPriceResponse>> getAllPrices(@RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "100") int size,
+                                                                  @RequestParam(defaultValue = "id,desc") String sort) {
+        Pageable pageable = buildPageable(page, size, sort);
+        List<ServerPriceResponse> prices = serverPriceService.getAllPrices(pageable);
+        return ResponseEntity.ok(prices);
     }
 
-    private Specification<ServerPrice> buildSpec(FilterRequest filters) {
-        Specification<ServerPrice> spec = Specification.where(null);
-        if (filters != null) {
-            spec = spec.and(ServerPriceSpecifications.serverNameIsEqualTo(filters.serverName()))
-                    .and(ServerPriceSpecifications.regionIsEqualTo(filters.region()))
-                    .and(ServerPriceSpecifications.factionIsEqualTo(filters.faction()))
-                    .and(ServerPriceSpecifications.serverPriceIsInTimeRange(filters.timeRange()))
-                    .and(ServerPriceSpecifications.uniqueServerNameIsEqualTo(filters.uniqueServerName()));
+    @PostMapping("/search")
+    public ResponseEntity<List<ServerPriceResponse>> searchForPrices(@RequestBody RequestDto requestDto,
+                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "100") int size,
+                                                                     @RequestParam(defaultValue = "id,desc") String sort) {
+        if (requestDto == null) {
+            return ResponseEntity.badRequest().build();
         }
-        return spec;
+        Pageable pageable = buildPageable(page, size, sort);
+        List<ServerPriceResponse> prices = serverPriceService.searchForPrices(requestDto, pageable);
+        return ResponseEntity.ok(prices);
     }
 
-
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ApiError> handleNullPointerException(NullPointerException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(HttpStatus.NOT_FOUND.value(), "Not found"));
-    }
 
 }

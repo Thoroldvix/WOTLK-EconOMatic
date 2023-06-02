@@ -1,7 +1,10 @@
 package com.thoroldvix.pricepal.server.repository;
 
 import com.thoroldvix.pricepal.PostgreSqlContainerInitializer;
-import com.thoroldvix.pricepal.server.entity.*;
+import com.thoroldvix.pricepal.server.entity.Faction;
+import com.thoroldvix.pricepal.server.entity.Region;
+import com.thoroldvix.pricepal.server.entity.Server;
+import com.thoroldvix.pricepal.server.entity.ServerPrice;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -42,15 +45,15 @@ class ServerPriceRepositoryTest implements PostgreSqlContainerInitializer {
         entityManager.persist(server);
 
         ServerPrice oldServerPrice = ServerPrice.builder()
-                .value(BigDecimal.valueOf(0.5))
-                .createdAt(LocalDateTime.now().minus(1, ChronoUnit.HOURS))
+                .price(BigDecimal.valueOf(0.5))
+                .updatedAt(LocalDateTime.now().minus(1, ChronoUnit.HOURS))
                 .currency(Currency.USD)
                 .server(server)
                 .build();
 
         ServerPrice expectedRecentServerPrice = ServerPrice.builder()
-                .createdAt(LocalDateTime.now())
-                .value(BigDecimal.valueOf(0.4))
+                .updatedAt(LocalDateTime.now())
+                .price(BigDecimal.valueOf(0.4))
                 .currency(Currency.USD)
                 .server(server)
                 .build();

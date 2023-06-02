@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 
+import java.util.List;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ServerPriceMapper {
     @Mapping(target = "serverName", source = "server", qualifiedByName = "serverName")
@@ -18,6 +20,9 @@ public interface ServerPriceMapper {
     @Mapping(target = "id", ignore = true)
     ServerPrice toServerPrice(ServerPriceResponse serverPriceResponse);
 
+
+
+    List<ServerPriceResponse> toPriceResponseList(List<ServerPrice> serverPrices);
     @Named("serverName")
     default String serverName(Server server) {
         return server.getUniqueName();

@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ItemPriceController {
 
-    private final AuctionHouseService auctionHouseServiceImpl;
+    private final AuctionHouseService auctionHouseService;
     @GetMapping("/{serverName}")
     public ResponseEntity<?> getAuctionHouseInfo(@PathVariable String serverName, @RequestParam(required = false) boolean detailed) {
         if (!StringUtils.hasText(serverName)) {
             return ResponseEntity.badRequest().build();
         }
         if (detailed) {
-            return ResponseEntity.ok(auctionHouseServiceImpl.getFullAuctionHouseInfo(serverName));
+            return ResponseEntity.ok(auctionHouseService.getFullAuctionHouseInfo(serverName));
         }
-        return ResponseEntity.ok(auctionHouseServiceImpl.getAuctionHouseInfo(serverName));
+        return ResponseEntity.ok(auctionHouseService.getAuctionHouseInfo(serverName));
     }
 }
