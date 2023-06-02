@@ -3,7 +3,11 @@ package com.thoroldvix.pricepal.server.service;
 import com.thoroldvix.pricepal.server.api.WarcraftTavernClient;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.server.entity.Faction;
+import com.thoroldvix.pricepal.server.entity.Population;
 import com.thoroldvix.pricepal.server.entity.Region;
+import com.thoroldvix.pricepal.server.entity.Server;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -22,6 +26,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @EnableScheduling
 public class WarcraftTavernService {
+    @PersistenceContext
+    private final EntityManager entityManager;
     private final WarcraftTavernClient warcraftTavernClient;
 
     private final ServerService serverService;
@@ -37,46 +43,55 @@ public class WarcraftTavernService {
     private void updatePopulationForRegion(Region region) {
         Objects.requireNonNull(region, "Region cannot be null");
         log.info(String.format("Updating %s population", region.name()));
+
         List<ServerResponse> servers = serverService.getAllServersForRegion(region);
         Set<String> serverNames = getServerNames(servers);
 
-        serverNames.forEach(serverName -> {
-            String formattedServerName = formatServerName(serverName);
-            Map<String, String> population = warcraftTavernClient.getPopulationForServer(region, formattedServerName);
-            updatePopulationForServer(serverName, servers, population);
-        });
+        List<Population> populations = serverNames.stream()
+                .flatMap(serverName -> {
+                    String formattedServerName = formatServerName(serverName);
+                    Map<String, String> warcraftTavernResponse = warcraftTavernClient.getPopulationForServer(region, formattedServerName);
+                    return getPopulationForBothFactions(serverName, servers, warcraftTavernResponse).stream();
+                })
+                .collect(Collectors.toList());
+
+        populationService.saveAllPopulations(populations);
         log.info(String.format("Updated %s population", region.name()));
     }
 
-    private void updatePopulationForServer(String serverName, List<ServerResponse> servers, Map<String, String> population) {
-        List<ServerResponse> filteredServers = filterByName(serverName, servers);
-        filteredServers.forEach(server -> {
-            int populationSize = Integer.parseInt(getPopulationSize(server, population));
-            populationService.savePopulation(server.id(), populationSize);
-        });
-    }
+    private List<Population> getPopulationForBothFactions(String serverName,
+                                                          List<ServerResponse> servers,
+                                                          Map<String, String> warcraftTavernResponse) {
 
-    private  List<ServerResponse> filterByName(String serverName, List<ServerResponse> servers) {
         return servers.stream()
                 .filter(server -> server.name().equals(serverName))
-                .toList();
+                .map(server -> getPopulation(server, warcraftTavernResponse))
+                .collect(Collectors.toList());
     }
 
-    private String getPopulationSize(ServerResponse serverResponse, Map<String, String> population) {
-        return serverResponse.faction().equals(Faction.HORDE)
+
+    private Population getPopulation(ServerResponse server, Map<String, String> population) {
+        int populationSize = Integer.parseInt(server.faction().equals(Faction.HORDE)
                 ? population.getOrDefault("popHorde", "0")
-                : population.getOrDefault("popAlliance", "0");
+                : population.getOrDefault("popAlliance", "0"));
+        Server serverEntity = entityManager.getReference(Server.class, server.id());
+
+        return Population.builder()
+                .population(populationSize)
+                .server(serverEntity)
+                .build();
     }
 
-    private  Set<String> getServerNames(List<ServerResponse> servers) {
+    private Set<String> getServerNames(List<ServerResponse> servers) {
         return servers.stream()
                 .map(ServerResponse::name)
                 .collect(Collectors.toSet());
     }
 
 
-    private  String formatServerName(String serverName) {
+    private String formatServerName(String serverName) {
         Objects.requireNonNull(serverName, "Server name cannot be null");
+
         return serverName.replaceAll(" ", "-")
                 .replaceAll("'", "").toLowerCase();
     }
