@@ -1,4 +1,4 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.util;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.PageRequest;

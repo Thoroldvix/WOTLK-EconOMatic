@@ -1,4 +1,4 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.dto;
 
 import lombok.Builder;
 

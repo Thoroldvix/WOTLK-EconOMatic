@@ -1,4 +1,4 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.error;
 
 import lombok.Builder;
 

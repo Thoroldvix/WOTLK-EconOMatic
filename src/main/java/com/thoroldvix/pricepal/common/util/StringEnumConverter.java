@@ -1,4 +1,4 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.util;
 
 import com.vaadin.flow.router.NotFoundException;
 import org.springframework.util.StringUtils;

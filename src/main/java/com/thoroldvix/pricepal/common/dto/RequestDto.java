@@ -1,4 +1,4 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.dto;
 
 import lombok.Builder;
 
@@ -9,6 +9,7 @@ public record RequestDto(
         List<SearchCriteria> searchCriteria,
 
         GlobalOperator globalOperator
+
 ) {
    public enum GlobalOperator {
         AND, OR

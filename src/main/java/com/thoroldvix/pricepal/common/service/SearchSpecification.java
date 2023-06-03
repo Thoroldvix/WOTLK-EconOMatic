@@ -1,5 +1,8 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.service;
 
+import com.thoroldvix.pricepal.common.dto.RequestDto;
+import com.thoroldvix.pricepal.common.dto.SearchCriteria;
+import com.thoroldvix.pricepal.common.util.ValidationUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -13,8 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class FiltersSpecification<T> {
+public class SearchSpecification<T> {
     public Specification<T> getSearchSpecification(List<SearchCriteria> searchCriteria, RequestDto.GlobalOperator globalOperator) {
+        ValidationUtils.validateListNotNullOrEmpty(searchCriteria,
+                () -> new IllegalArgumentException("Search criteria list cannot be null or empty."));
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             for (SearchCriteria criteria : searchCriteria) {

@@ -1,4 +1,4 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.util;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.util.StringUtils;
@@ -24,7 +24,7 @@ public class ValidationUtils {
         }
     }
 
-    public <T, E extends RuntimeException> void validateListNotEmpty(List<T> list, Supplier<E> exceptionSupplier) {
+    public <T, E extends RuntimeException> void validateListNotNullOrEmpty(List<T> list, Supplier<E> exceptionSupplier) {
         Objects.requireNonNull(list, "List cannot be null");
         Objects.requireNonNull(exceptionSupplier, "Exception supplier cannot be null");
         if (list.isEmpty()) {
