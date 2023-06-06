@@ -19,26 +19,16 @@ import static com.thoroldvix.pricepal.common.util.ValidationUtils.*;
 
 @Service
 public class SearchSpecification<T> {
-    public Specification<T> getSearchSpecification(List<SearchCriteria> searchCriteria, RequestDto.GlobalOperator globalOperator,
-                                                   String joinTable) {
-        if (searchCriteria == null || searchCriteria.isEmpty()) {
-            return (root, query, cb) -> cb.isTrue(cb.literal(true));
-        }
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            for (SearchCriteria criteria : searchCriteria) {
-                Path<?> columnPath = getColumnPath(root, criteria, joinTable);
-                Predicate predicate = getPredicateFromOperation(cb, criteria, columnPath);
-                predicates.add(predicate);
-            }
-            if (globalOperator == null || globalOperator.equals(RequestDto.GlobalOperator.AND)) {
-                return cb.and(predicates.toArray(new Predicate[0]));
-            } else if (globalOperator.equals(RequestDto.GlobalOperator.OR)) {
-                return cb.or(predicates.toArray(new Predicate[0]));
-            }
-            throw new IllegalArgumentException("Invalid global operator: " + globalOperator);
-        };
+
+
+    public Specification<T> getSearchSpecification(List<SearchCriteria> searchCriteria, RequestDto.GlobalOperator globalOperator) {
+        return createSearchSpecification(searchCriteria, globalOperator, null);
     }
+
+    public Specification<T> getJoinSearchSpecification(List<SearchCriteria> searchCriteria, RequestDto.GlobalOperator globalOperator, String joinTable) {
+        return createSearchSpecification(searchCriteria, globalOperator, joinTable);
+    }
+
 
     public Specification<T> getJoinSpecForServerIdentifier(String serverIdentifier) {
         if (isNumber(serverIdentifier)) {
@@ -57,7 +47,7 @@ public class SearchSpecification<T> {
                 .operation(SearchCriteria.Operation.EQUALS)
                 .build();
 
-        return getSearchSpecification(Collections.singletonList(searchCriteria),
+        return getJoinSearchSpecification(Collections.singletonList(searchCriteria),
                 RequestDto.GlobalOperator.AND,
                 "server");
     }
@@ -69,7 +59,26 @@ public class SearchSpecification<T> {
                 .operation(SearchCriteria.Operation.EQUALS)
                 .build();
 
-        return getSearchSpecification(Collections.singletonList(searchCriteria), RequestDto.GlobalOperator.AND, "server");
+        return getJoinSearchSpecification(Collections.singletonList(searchCriteria), RequestDto.GlobalOperator.AND, "server");
+    }
+
+    private Specification<T> createSearchSpecification(List<SearchCriteria> searchCriteria, RequestDto.GlobalOperator globalOperator, String joinTable) {
+        if (searchCriteria == null || searchCriteria.isEmpty()) {
+            return (root, query, cb) -> cb.isTrue(cb.literal(true));
+        }
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            for (SearchCriteria criteria : searchCriteria) {
+                Path<?> columnPath = getColumnPath(root, criteria, joinTable);
+                Predicate predicate = getPredicateFromOperation(cb, criteria, columnPath);
+                predicates.add(predicate);
+            }
+            if (globalOperator.equals(RequestDto.GlobalOperator.OR)) {
+                return cb.or(predicates.toArray(new Predicate[0]));
+            } else {
+                return cb.and(predicates.toArray(new Predicate[0]));
+            }
+        };
     }
 
     private Predicate getPredicateFromOperation(CriteriaBuilder cb, SearchCriteria searchCriteria, Path<?> columnPath) {
