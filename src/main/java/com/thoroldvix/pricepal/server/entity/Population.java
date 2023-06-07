@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -24,10 +24,11 @@ public class Population {
 
     @Column(nullable = false)
     @CreationTimestamp
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "server_id")
+    @ToString.Exclude
     private Server server;
 
     public void setServer(Server server) {
