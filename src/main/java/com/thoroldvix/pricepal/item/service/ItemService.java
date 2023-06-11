@@ -1,9 +1,9 @@
 package com.thoroldvix.pricepal.item.service;
 
+import com.thoroldvix.pricepal.common.error.NotFoundException;
 import com.thoroldvix.pricepal.item.dto.ItemInfo;
 import com.thoroldvix.pricepal.item.entity.Item;
 import com.thoroldvix.pricepal.item.repository.ItemRepository;
-import com.vaadin.flow.router.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

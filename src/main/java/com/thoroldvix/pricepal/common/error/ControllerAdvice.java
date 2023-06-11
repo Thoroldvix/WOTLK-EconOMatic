@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.common.error;
 
-import com.vaadin.flow.router.NotFoundException;
+
 import feign.FeignException;
 import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;

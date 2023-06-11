@@ -1,6 +1,7 @@
 package com.thoroldvix.pricepal.common.util;
 
-import com.vaadin.flow.router.NotFoundException;
+
+import com.thoroldvix.pricepal.common.error.NotFoundException;
 
 import static com.thoroldvix.pricepal.common.util.ValidationUtils.hasText;
 
