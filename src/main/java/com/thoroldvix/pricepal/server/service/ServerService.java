@@ -1,8 +1,7 @@
 package com.thoroldvix.pricepal.server.service;
 
-import com.thoroldvix.pricepal.common.FiltersSpecification;
-import com.thoroldvix.pricepal.common.RequestDto;
-import com.thoroldvix.pricepal.common.ValidationUtils;
+import com.thoroldvix.pricepal.common.dto.RequestDto;
+import com.thoroldvix.pricepal.common.service.SearchSpecification;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
 import com.thoroldvix.pricepal.server.entity.Region;
 import com.thoroldvix.pricepal.server.entity.Server;
@@ -15,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
+import static com.thoroldvix.pricepal.common.util.ValidationUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,55 +25,42 @@ public class ServerService {
 
     private final ServerRepository serverRepository;
     private final ServerMapper serverMapper;
-    private final FiltersSpecification<Server> filtersSpecification;
+    private final SearchSpecification<Server> searchSpecification;
 
-    public Server getServer(int id) {
-        ValidationUtils.validatePositiveInt(id, "Server id must be a positive integer");
-        return serverRepository.findById(id)
-                .orElseThrow(() -> new ServerNotFoundException("No server found for ID: " + id));
-    }
-
-    public Server getServer(String uniqueServerName) {
-        ValidationUtils.validateNonEmptyString(uniqueServerName, "Server name cannot be null or empty");
-        return serverRepository.findByUniqueName(uniqueServerName)
-                .orElseThrow(() -> new ServerNotFoundException("No server found with name: " + uniqueServerName));
-    }
-
-    public ServerResponse getServerResponse(int id) {
-        ValidationUtils.validatePositiveInt(id, "Server id must be a positive integer");
-        return serverRepository.findById(id)
-                .map(serverMapper::toServerResponse)
-                .orElseThrow(() -> new ServerNotFoundException("No server found for ID: " + id));
-
-    }
-
-
-    public ServerResponse getServerResponse(String uniqueServerName) {
-        ValidationUtils.validateNonEmptyString(uniqueServerName, "Server name cannot be null or empty");
-        return serverRepository.findByUniqueName(uniqueServerName)
-                .map(serverMapper::toServerResponse)
-                .orElseThrow(() -> new ServerNotFoundException("No server found with name: " + uniqueServerName));
+    public ServerResponse getServer(String serverIdentifier) {
+        if (!hasText(serverIdentifier)) {
+            throw new IllegalArgumentException("Server identifier cannot be null or empty");
+        }
+        Optional<Server> server;
+        if (isNumber(serverIdentifier)) {
+            server  = serverRepository.findById(Integer.parseInt(serverIdentifier));
+        } else {
+            server = serverRepository.findByUniqueName(serverIdentifier);
+        }
+        return server.map(serverMapper::toServerResponse)
+                .orElseThrow(() -> new ServerNotFoundException("No server found with for identifier: " + serverIdentifier));
     }
 
 
     public List<ServerResponse> searchServers(RequestDto requestDto) {
-        Specification<Server> specification =
-                filtersSpecification.getSearchSpecification(requestDto.searchCriteria(), requestDto.globalOperator());
-        List<Server> servers = serverRepository.findAll(specification);
-        ValidationUtils.validateListNotEmpty(servers, () -> new ServerNotFoundException("No servers found"));
+        Objects.requireNonNull(requestDto, "RequestDto cannot be null");
+        Specification<Server> spec =
+                searchSpecification.createSearchSpecification(requestDto.searchCriteria(), requestDto.globalOperator());
+        List<Server> servers = serverRepository.findAll(spec);
+        validateListNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found"));
         return serverMapper.toServerResponseList(servers);
     }
 
     public List<ServerResponse> getAllServers() {
         List<Server> servers = serverRepository.findAll();
-        ValidationUtils.validateListNotEmpty(servers, () -> new ServerNotFoundException("No servers found"));
+        validateListNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found"));
         return serverMapper.toServerResponseList(servers);
     }
 
     public List<ServerResponse> getAllServersForRegion(Region region) {
         Objects.requireNonNull(region, "Region cannot be null");
         List<Server> servers = serverRepository.findAllByRegion(region);
-        ValidationUtils.validateListNotEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + region.name()));
+        validateListNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + region.name()));
         return serverMapper.toServerResponseList(servers);
     }
 }

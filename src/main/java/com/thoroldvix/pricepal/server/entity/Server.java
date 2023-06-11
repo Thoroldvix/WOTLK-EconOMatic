@@ -35,14 +35,14 @@ public class Server {
     @Column(nullable = false)
     private String type;
 
-    @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<ServerPrice> serverPrices;
 
     @Column(nullable = false, updatable = false)
     private String uniqueName;
 
-    @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Population> populations;
 

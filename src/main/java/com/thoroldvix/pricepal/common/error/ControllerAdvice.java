@@ -1,10 +1,8 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.error;
 
-import com.thoroldvix.pricepal.server.error.G2GPriceNotFoundException;
-import com.thoroldvix.pricepal.server.error.ServerNotFoundException;
-import com.thoroldvix.pricepal.server.error.ServerPriceNotFoundException;
 import com.vaadin.flow.router.NotFoundException;
 import feign.FeignException;
+import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +26,12 @@ public class ControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
+    @ExceptionHandler(NoResultException.class)
+    public ResponseEntity<ApiError> handleNoResultException(NoResultException e, HttpServletRequest request) {
+        ApiError apiError = getApiError(e, HttpStatus.NOT_FOUND, request);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
         ApiError apiError = ApiError.builder()
@@ -38,25 +42,6 @@ public class ControllerAdvice {
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
-
-    @ExceptionHandler(G2GPriceNotFoundException.class)
-    public ResponseEntity<ApiError> handleG2GPriceNotFoundException(G2GPriceNotFoundException e, HttpServletRequest request) {
-        ApiError apiError = getApiError(e, HttpStatus.NOT_FOUND, request);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
-    }
-
-    @ExceptionHandler(ServerPriceNotFoundException.class)
-    public ResponseEntity<ApiError> handleServerPriceNotFoundException(ServerPriceNotFoundException e, HttpServletRequest request) {
-          ApiError apiError = getApiError(e, HttpStatus.NOT_FOUND, request);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
-    }
-
-    @ExceptionHandler(ServerNotFoundException.class)
-    public ResponseEntity<ApiError> handleServerNotFoundException(ServerNotFoundException e,  HttpServletRequest request) {
-        ApiError apiError = getApiError(e, HttpStatus.NOT_FOUND, request);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
-    }
-
 
     private ApiError getApiError(RuntimeException e, HttpStatus status, HttpServletRequest request) {
         return ApiError.builder()

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record PopulationResponse(
+        long id,
         @JsonInclude(JsonInclude.Include.NON_NULL)
         String serverName,
         int population,

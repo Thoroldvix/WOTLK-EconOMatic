@@ -17,5 +17,5 @@ public record ServerPriceResponse(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         LocalDateTime updatedAt
 
-) {
+)  {
 }

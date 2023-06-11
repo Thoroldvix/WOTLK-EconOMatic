@@ -1,5 +1,6 @@
 package com.thoroldvix.pricepal.common;
 
+import com.thoroldvix.pricepal.common.util.StringEnumConverter;
 import com.thoroldvix.pricepal.server.entity.Faction;
 import com.vaadin.flow.router.NotFoundException;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,8 @@
-
 spring:
-  jackson:
-    mapper:
-      accept-case-insensitive-enums: true
+  data:
+    rest:
+      max-page-size: 40000
+      default-page-size: 100
   task:
     scheduling:
       pool:
@@ -32,14 +32,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
 server:
   port: ${PORT:8080}
   error:
     include-stacktrace: never
     include-message: never
-
-
 logging:
   level:
    org:

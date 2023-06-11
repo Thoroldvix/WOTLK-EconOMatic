@@ -5,6 +5,7 @@ import com.thoroldvix.pricepal.server.dto.PopulationResponse;
 import com.thoroldvix.pricepal.server.dto.StatsResponse;
 import com.thoroldvix.pricepal.server.dto.TotalPopResponse;
 import com.thoroldvix.pricepal.server.service.PopulationService;
+import com.thoroldvix.pricepal.server.service.PopulationStatsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,6 +33,7 @@ import static com.thoroldvix.pricepal.common.util.ValidationUtils.hasText;
 public class PopulationController {
 
     private final PopulationService populationService;
+    private final PopulationStatsService populationStatsService;
 
     @Operation(summary = "Retrieves all populations",
             description = "Return all population scans for given time range in days")
@@ -73,7 +75,6 @@ public class PopulationController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(implementation = PopulationResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Incorrect server identifier", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Time range less than 1 day", content = @Content),
             @ApiResponse(responseCode = "404", description = "Population not found for server identifier", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
     })
@@ -82,13 +83,12 @@ public class PopulationController {
     public ResponseEntity<List<PopulationResponse>> getPopulationForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier,
-            @Parameter(description = "Range of days to retrieve populations for")
-            @RequestParam(defaultValue = "7") int timeRangeInDays,
+
             @ParameterObject Pageable pageable) {
-        if (!hasText(serverIdentifier) || timeRangeInDays < 1) {
+        if (!hasText(serverIdentifier)) {
             return ResponseEntity.badRequest().build();
         }
-        List<PopulationResponse> populationForServer = populationService.getPopulationForServer(serverIdentifier, timeRangeInDays, pageable);
+        List<PopulationResponse> populationForServer = populationService.getPopulationForServer(serverIdentifier,  pageable);
         return ResponseEntity.ok(populationForServer);
     }
 
@@ -131,57 +131,11 @@ public class PopulationController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria for filtering populations. Based on population properties")
             @RequestBody RequestDto requestDto,
             @ParameterObject Pageable pageable) {
-        List<PopulationResponse> responseForSearch = populationService.searchForPopulation(requestDto, pageable, false);
+        List<PopulationResponse> responseForSearch = populationService.searchForPopulation(requestDto, pageable);
         return ResponseEntity.ok(responseForSearch);
     }
 
 
-    @Operation(summary = "Retrieves populations for a specified search criteria",
-            description = "Returns all populations that match given search criteria")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval of populations for search criteria",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = PopulationResponse.class)))),
-            @ApiResponse(responseCode = "400", description = "Incorrect search criteria", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No populations found for search criteria", content = @Content),
-            @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
-    })
-    @PostMapping(value = "/servers/search",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PopulationResponse>> searchForPopulationInServers(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria for filtering populations. Based on server properties")
-            @RequestBody RequestDto requestDto,
-            @ParameterObject Pageable pageable) {
-        List<PopulationResponse> population = populationService.searchForPopulation(requestDto, pageable, true);
-        return ResponseEntity.ok(population);
-    }
-
-    @Operation(summary = "Retrieves basic population statistics for a specified search criteria",
-            description = "The statistics are based on the provided search criteria and the time range in days")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = StatsResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Incorrect search criteria", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Time range less than 1 day", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No statistics found for search criteria", content = @Content),
-            @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
-    })
-    @PostMapping(value = "/servers/search/stats",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForSearchInServers(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria for filtering populations. Based on server properties.")
-            @RequestBody RequestDto requestDto,
-            @Parameter(description = "Range of days to retrieve statistics for")
-            @RequestParam(defaultValue = "7") int timeRangeInDays) {
-        if (timeRangeInDays < 1) {
-            return ResponseEntity.badRequest().build();
-        }
-        StatsResponse<PopulationResponse> statsForSearchInServers = populationService.getStatsForSearch(requestDto, true, timeRangeInDays);
-        return ResponseEntity.ok(statsForSearchInServers);
-    }
 
     @Operation(summary = "Retrieves basic population statistics for all servers",
             description = "The statistics are based on all server population scans and the time range in days")
@@ -200,7 +154,7 @@ public class PopulationController {
         if (timeRangeInDays < 1) {
             return ResponseEntity.badRequest().build();
         }
-        StatsResponse<PopulationResponse> statsForAll = populationService.getStatsForAll(timeRangeInDays);
+        StatsResponse<PopulationResponse> statsForAll = populationStatsService.getStatsForAll(timeRangeInDays);
         return ResponseEntity.ok(statsForAll);
     }
 
@@ -211,7 +165,6 @@ public class PopulationController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = StatsResponse.class))),
             @ApiResponse(responseCode = "400", description = "Incorrect server identifier", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Time range less than 1 day", content = @Content),
             @ApiResponse(responseCode = "404", description = "No statistics found for server identifier", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
     })
@@ -219,13 +172,11 @@ public class PopulationController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
-            @PathVariable String serverIdentifier,
-            @Parameter(description = "Range of days to retrieve statistics for")
-            @RequestParam(defaultValue = "7") int timeRangeInDays) {
-        if (!hasText(serverIdentifier) || timeRangeInDays < 1) {
+            @PathVariable String serverIdentifier) {
+        if (!hasText(serverIdentifier)) {
             return ResponseEntity.badRequest().build();
         }
-        StatsResponse<PopulationResponse> statsForServer = populationService.getStatsForServer(serverIdentifier, timeRangeInDays);
+        StatsResponse<PopulationResponse> statsForServer = populationStatsService.getStatsForServer(serverIdentifier);
         return ResponseEntity.ok(statsForServer);
     }
 
@@ -260,7 +211,6 @@ public class PopulationController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = StatsResponse.class))),
             @ApiResponse(responseCode = "400", description = "Incorrect search criteria", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Time range less than 1 day", content = @Content),
             @ApiResponse(responseCode = "404", description = "No statistics found for search criteria", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
     })
@@ -269,13 +219,9 @@ public class PopulationController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForSearch(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria to retrieve statistics for Based on population properties")
-            @RequestBody RequestDto requestDto,
-            @Parameter(description = "Range of days to retrieve statistics for")
-            @RequestParam(defaultValue = "7") int timeRangeInDays) {
-        if (timeRangeInDays < 1) {
-            return ResponseEntity.badRequest().build();
-        }
-        StatsResponse<PopulationResponse> statsForSearch = populationService.getStatsForSearch(requestDto, false, timeRangeInDays);
+            @RequestBody RequestDto requestDto) {
+
+        StatsResponse<PopulationResponse> statsForSearch = populationStatsService.getStatsForSearch(requestDto);
         return ResponseEntity.ok(statsForSearch);
     }
 

@@ -5,36 +5,32 @@ import com.thoroldvix.pricepal.item.entity.Item;
 import com.thoroldvix.pricepal.item.repository.ItemRepository;
 import com.vaadin.flow.router.NotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.thoroldvix.pricepal.common.util.ValidationUtils.hasText;
+
 @Service
 @Slf4j
-
+@RequiredArgsConstructor
 public class ItemService {
 
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
 
 
-    @Autowired
-    public ItemService(ItemMapper itemMapper, ItemRepository itemRepository) {
-        this.itemMapper = itemMapper;
-        this.itemRepository = itemRepository;
-    }
 
 
     public ItemInfo getItem(String itemName) {
-        if (!StringUtils.hasText(itemName))
+        if (!hasText(itemName))
             throw new IllegalArgumentException("Item name must be valid");
 
         return itemRepository.findByUniqueName(itemName).map(itemMapper::toItemInfo)

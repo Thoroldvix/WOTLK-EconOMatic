@@ -1,16 +1,35 @@
 package com.thoroldvix.pricepal.common.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
+@Schema(description = "Search criteria for filtering")
 public record SearchCriteria(
+        @Schema(description = "Column name for the search criteria")
         String column,
+        @Schema(description = "Value to compare against")
         String value,
-        Operation operation,
+
+        @Schema(description = "Name of table to perform join on")
         String joinTable,
-        boolean joinOperation
+
+
+
+        @Schema(description = "Operation to perform for the search criteria")
+        Operation operation
 ) {
+
     public enum Operation {
-        EQUALS, NOT_EQUALS, LIKE, GREATER_THAN, LESS_THAN, IN, BETWEEN, NOT_LIKE, EQUALS_IGNORE_CASE
+        EQUALS,
+        LIKE,
+        GREATER_THAN,
+        GREATER_THAN_OR_EQUALS,
+        LESS_THAN_OR_EQUALS,
+        LESS_THAN,
+        IN,
+        BETWEEN,
+        EQUALS_IGNORE_CASE
     }
 }
+

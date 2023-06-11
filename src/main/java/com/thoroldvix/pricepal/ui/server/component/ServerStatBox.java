@@ -1,11 +1,10 @@
 package com.thoroldvix.pricepal.ui.server.component;
 
-import com.thoroldvix.pricepal.common.RequestDto;
-import com.thoroldvix.pricepal.common.SearchCriteria;
+import com.thoroldvix.pricepal.common.dto.SearchCriteria;
 import com.thoroldvix.pricepal.server.api.ServerPriceController;
 import com.thoroldvix.pricepal.server.dto.ServerPriceResponse;
 import com.thoroldvix.pricepal.server.dto.ServerResponse;
-import com.thoroldvix.pricepal.server.dto.StatisticsResponse;
+import com.thoroldvix.pricepal.server.dto.StatsResponse;
 import com.thoroldvix.pricepal.ui.server.renderer.ServerPriceRenderer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
@@ -13,11 +12,11 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 public class ServerStatBox extends VerticalLayout {
@@ -87,19 +86,22 @@ public class ServerStatBox extends VerticalLayout {
     }
 
     private ServerPriceRenderer getAvgPriceValue() {
-        BigDecimal averagePrice =  getStatisticsForServer(server).average();
+        BigDecimal averagePrice = (BigDecimal) getStatisticsForServer(server).average();
         ServerPriceResponse serverPriceResponse = ServerPriceResponse.builder()
                 .price(averagePrice)
                 .build();
         return new ServerPriceRenderer(serverPriceResponse);
     }
 
-    private StatisticsResponse getStatisticsForServer(ServerResponse server) {
-       return serverPriceController.getStatisticsForServer(server.uniqueName()).getBody();
+    private StatsResponse getStatisticsForServer(ServerResponse server) {
+        return Objects.requireNonNull(serverPriceController.getStatsForServer(server.uniqueName())
+                        .getBody());
     }
+
     private ServerPriceResponse getMostRecentPriceForServer(ServerResponse server) {
-        return serverPriceController.getPricesForServer(server.uniqueName(), 0, 1, "updatedAt,desc")
-                .getBody()
+        return Objects.requireNonNull(serverPriceController.getPricesForServer(server.uniqueName(),
+                              Pageable.unpaged())
+                        .getBody())
                 .get(0);
     }
 
@@ -108,15 +110,15 @@ public class ServerStatBox extends VerticalLayout {
         SearchCriteria searchCriteria = SearchCriteria.builder()
                 .column("region")
                 .operation(SearchCriteria.Operation.EQUALS)
-                .joinTable("server")
-                .joinOperation(true)
                 .value(server.region().name())
                 .build();
 
-        BigDecimal regionAveragePrice = Objects.requireNonNull(serverPriceController
-                .getStatistics(new RequestDto(List.of(searchCriteria))).getBody()).average();
+//        BigDecimal regionAveragePrice = (BigDecimal) Objects.requireNonNull(serverPriceController
+//                .searchForPrices(new RequestDto(List.of(searchCriteria)),
+//                        Pageable.unpaged()).getBody()).statistics().getAverage();
+
         ServerPriceResponse serverPriceResponse = ServerPriceResponse.builder()
-                .price(regionAveragePrice)
+                .price(null)
                 .build();
         return new ServerPriceRenderer(serverPriceResponse);
     }

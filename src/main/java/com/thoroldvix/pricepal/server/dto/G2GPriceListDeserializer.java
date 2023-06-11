@@ -38,8 +38,6 @@ public class G2GPriceListDeserializer extends StdDeserializer<List<ServerPriceRe
 
     private ServerPriceResponse getServerPrice(JsonNode resultNode) {
         String serverName = formatServerName(resultNode.get("title").asText());
-
-
         BigDecimal price = resultNode.get("converted_unit_price").decimalValue();
 
         return ServerPriceResponse.builder()

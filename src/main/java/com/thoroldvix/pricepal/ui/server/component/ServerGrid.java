@@ -21,6 +21,9 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Objects;
 
 
 @SpringComponent
@@ -124,11 +127,13 @@ public class ServerGrid extends VerticalLayout {
             col.setSortable(true);
         });
     }
+
     private ServerPriceResponse getRecentServerPrice(ServerResponse server) {
-        return serverPriceController.getPricesForServer(server.uniqueName(), 0, 1, "updatedAt,desc")
-                .getBody()
+        return Objects.requireNonNull(serverPriceController.getPricesForServer(server.uniqueName(),  Pageable.unpaged())
+                        .getBody())
                 .get(0);
     }
+
     private void navigateToServer(ServerResponse server) {
         serverSelectionField.setValue(server);
         getUI().flatMap(ui ->
@@ -143,8 +148,9 @@ public class ServerGrid extends VerticalLayout {
         content.setSizeFull();
         return content;
     }
+
     private String formatServerName(ServerResponse server) {
         return server.name().replaceAll("'", "").replaceAll(" ", "-")
-                .toLowerCase() + "-" + server.faction().name().toLowerCase();
+                       .toLowerCase() + "-" + server.faction().name().toLowerCase();
     }
 }

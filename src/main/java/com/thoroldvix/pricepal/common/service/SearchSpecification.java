@@ -21,15 +21,6 @@ import static com.thoroldvix.pricepal.common.util.ValidationUtils.*;
 public class SearchSpecification<T> {
 
 
-    public Specification<T> getSearchSpecification(List<SearchCriteria> searchCriteria, RequestDto.GlobalOperator globalOperator) {
-        return createSearchSpecification(searchCriteria, globalOperator, null);
-    }
-
-    public Specification<T> getJoinSearchSpecification(List<SearchCriteria> searchCriteria, RequestDto.GlobalOperator globalOperator, String joinTable) {
-        return createSearchSpecification(searchCriteria, globalOperator, joinTable);
-    }
-
-
     public Specification<T> getJoinSpecForServerIdentifier(String serverIdentifier) {
         if (isNumber(serverIdentifier)) {
             int serverId = Integer.parseInt(serverIdentifier);
@@ -40,55 +31,116 @@ public class SearchSpecification<T> {
         }
     }
 
-    public Specification<T> getJoinSpecForServerId(int serverId) {
-        SearchCriteria searchCriteria = SearchCriteria.builder()
+    public Specification<T> getSpecForTimeRange(int timeRangeInDays) {
+        SearchCriteria betweenCriteria = getBetweenCriteriaForDays(timeRangeInDays);
+        return createSearchSpecification(List.of(betweenCriteria), RequestDto.GlobalOperator.AND);
+    }
+
+    public Specification<T> getJoinSpecForServerIdentifier(String serverIdentifier, int timeRangeInDays) {
+        SearchCriteria betweenCriteria = getBetweenCriteriaForDays(timeRangeInDays);
+        if (isNumber(serverIdentifier)) {
+            int serverId = Integer.parseInt(serverIdentifier);
+            validatePositiveInt(serverId, "Server id must be positive");
+            return getJoinSpecForServer(serverId, betweenCriteria);
+        } else {
+            return getJoinSpecForServer(serverIdentifier, betweenCriteria);
+        }
+    }
+
+    private SearchCriteria getBetweenCriteriaForDays(int timeRangeInDays) {
+        LocalDateTime startDate = LocalDateTime.now().minusDays(timeRangeInDays);
+        LocalDateTime endDate = LocalDateTime.now();
+
+        String timeRangeString = startDate + "," + endDate;
+
+        return SearchCriteria.builder()
+                .column("updatedAt")
+                .value(timeRangeString)
+                .operation(SearchCriteria.Operation.BETWEEN)
+                .build();
+    }
+
+
+    public Specification<T> getJoinSpecForServer(int serverId, SearchCriteria betweenCriteria) {
+        SearchCriteria serverIdCriteria = SearchCriteria.builder()
                 .column("id")
+                .joinTable("server")
                 .value(String.valueOf(serverId))
                 .operation(SearchCriteria.Operation.EQUALS)
                 .build();
 
-        return getJoinSearchSpecification(Collections.singletonList(searchCriteria),
-                RequestDto.GlobalOperator.AND,
-                "server");
+        return createSearchSpecification(List.of(serverIdCriteria, betweenCriteria), RequestDto.GlobalOperator.AND);
     }
 
-    public Specification<T> getJoinSpecForServerUniqueName(String uniqueName) {
-        SearchCriteria searchCriteria = SearchCriteria.builder()
+
+    public Specification<T> getJoinSpecForServer(String uniqueName, SearchCriteria betweenCriteria) {
+        SearchCriteria serverUniqueNameCriteria = SearchCriteria.builder()
                 .column("uniqueName")
+                .joinTable("server")
                 .value(uniqueName)
                 .operation(SearchCriteria.Operation.EQUALS)
                 .build();
 
-        return getJoinSearchSpecification(Collections.singletonList(searchCriteria), RequestDto.GlobalOperator.AND, "server");
+        return createSearchSpecification(List.of(serverUniqueNameCriteria, betweenCriteria), RequestDto.GlobalOperator.AND);
     }
 
-    private Specification<T> createSearchSpecification(List<SearchCriteria> searchCriteria, RequestDto.GlobalOperator globalOperator, String joinTable) {
+    public Specification<T> getJoinSpecForServerId(int serverId) {
+        SearchCriteria serverIdCriteria = SearchCriteria.builder()
+                .column("id")
+                .joinTable("server")
+                .value(String.valueOf(serverId))
+                .operation(SearchCriteria.Operation.EQUALS)
+                .build();
+
+        return createSearchSpecification(Collections.singletonList(serverIdCriteria), RequestDto.GlobalOperator.AND);
+    }
+
+    public Specification<T> getJoinSpecForServerUniqueName(String uniqueName) {
+        SearchCriteria serverUniqueNameCriteria = SearchCriteria.builder()
+                .column("uniqueName")
+                .joinTable("server")
+
+                .value(uniqueName)
+                .operation(SearchCriteria.Operation.EQUALS)
+                .build();
+
+        return createSearchSpecification(Collections.singletonList(serverUniqueNameCriteria), RequestDto.GlobalOperator.AND);
+    }
+
+    public Specification<T> createSearchSpecification(List<SearchCriteria> searchCriteria,
+                                                      RequestDto.GlobalOperator globalOperator) {
         if (searchCriteria == null || searchCriteria.isEmpty()) {
             return (root, query, cb) -> cb.isTrue(cb.literal(true));
         }
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             for (SearchCriteria criteria : searchCriteria) {
-                Path<?> columnPath = getColumnPath(root, criteria, joinTable);
+                Path<?> columnPath = getColumnPath(root, criteria);
                 Predicate predicate = getPredicateFromOperation(cb, criteria, columnPath);
                 predicates.add(predicate);
             }
-            if (globalOperator.equals(RequestDto.GlobalOperator.OR)) {
-                return cb.or(predicates.toArray(new Predicate[0]));
-            } else {
-                return cb.and(predicates.toArray(new Predicate[0]));
-            }
+            return getSpecFromPredicates(globalOperator, cb, predicates);
         };
+    }
+
+    private Predicate getSpecFromPredicates(RequestDto.GlobalOperator globalOperator, CriteriaBuilder cb, List<Predicate> predicates) {
+        if (globalOperator.equals(RequestDto.GlobalOperator.OR)) {
+            return cb.or(predicates.toArray(new Predicate[0]));
+        } else if (globalOperator.equals(RequestDto.GlobalOperator.NOT)) {
+            return cb.not(cb.or(predicates.toArray(new Predicate[0])));
+        } else {
+            return cb.and(predicates.toArray(new Predicate[0]));
+        }
     }
 
     private Predicate getPredicateFromOperation(CriteriaBuilder cb, SearchCriteria searchCriteria, Path<?> columnPath) {
         String value = searchCriteria.value();
         return switch (searchCriteria.operation()) {
             case EQUALS -> getEqualsPredicate(cb, columnPath, value);
-            case NOT_EQUALS -> getNotEqualsPredicate(cb, columnPath, value);
             case LIKE -> cb.like(columnPath.as(String.class), "%" + value + "%");
-            case NOT_LIKE -> cb.notLike(columnPath.as(String.class), "%" + value + "%");
             case GREATER_THAN -> getGreaterThanPredicate(cb, columnPath, value);
+            case GREATER_THAN_OR_EQUALS -> getGreaterThanOrEqualsPredicate(cb, columnPath, value);
+            case LESS_THAN_OR_EQUALS -> getLessThanOrEqualsPredicate(cb, columnPath, value);
             case LESS_THAN -> getLessThanPredicate(cb, columnPath, value);
             case IN -> getInPredicate(searchCriteria, columnPath);
             case BETWEEN -> getBetweenPredicate(cb, columnPath, value);
@@ -96,6 +148,32 @@ public class SearchSpecification<T> {
         };
     }
 
+    private Predicate getLessThanOrEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
+        Class<?> columnType = columnPath.getJavaType();
+        return switch (columnType.getSimpleName()) {
+            case "Integer" -> cb.lessThanOrEqualTo(columnPath.as(Integer.class), Integer.parseInt(value));
+            case "Long" -> cb.lessThanOrEqualTo(columnPath.as(Long.class), Long.parseLong(value));
+            case "Double" -> cb.lessThanOrEqualTo(columnPath.as(Double.class), Double.parseDouble(value));
+            case "LocalDateTime" ->
+                    cb.lessThanOrEqualTo(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value));
+            default ->
+                    throw new IllegalArgumentException("Invalid operation: LESS_THAN_OR_EQUALS is only applicable to numeric and date-time column types.");
+        };
+    }
+
+    private Predicate getGreaterThanOrEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
+        Class<?> columnType = columnPath.getJavaType();
+        return switch (columnType.getSimpleName()) {
+            case "Integer" -> cb.greaterThanOrEqualTo(columnPath.as(Integer.class), Integer.parseInt(value));
+            case "Long" -> cb.greaterThanOrEqualTo(columnPath.as(Long.class), Long.parseLong(value));
+            case "Double" -> cb.greaterThanOrEqualTo(columnPath.as(Double.class), Double.parseDouble(value));
+            case "LocalDateTime" ->
+                    cb.greaterThanOrEqualTo(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value));
+            default ->
+                    throw new IllegalArgumentException("Invalid operation: GREATER_THAN is only applicable to numeric and date-time column types.");
+        };
+
+    }
 
     private Predicate getBetweenPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         String[] split = value.split(",");
@@ -132,14 +210,6 @@ public class SearchSpecification<T> {
         return cb.equal(columnPath, value);
     }
 
-    private Predicate getNotEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
-        Class<?> columnType = columnPath.getJavaType();
-        if (columnType.isEnum()) {
-            Enum<?> searchValue = Enum.valueOf((Class<Enum>) columnType, value.toUpperCase());
-            return cb.notEqual(columnPath, searchValue);
-        }
-        return cb.notEqual(columnPath, value);
-    }
 
     private Predicate getInPredicate(SearchCriteria searchCriteria, Path<?> columnPath) {
         String[] split = searchCriteria.value().split(",");
@@ -171,12 +241,12 @@ public class SearchSpecification<T> {
         };
     }
 
-    private Path<?> getColumnPath(Root<T> root, SearchCriteria searchCriteria, String joinTable) {
+    private Path<?> getColumnPath(Root<T> root, SearchCriteria searchCriteria) {
         if (searchCriteria == null) {
             throw new IllegalArgumentException("You must provide valid search criteria");
         }
-        if (hasText(joinTable)) {
-            return root.join(joinTable).get(searchCriteria.column());
+        if (hasText(searchCriteria.joinTable())) {
+            return root.join(searchCriteria.joinTable()).get(searchCriteria.column());
         }
         return root.get(searchCriteria.column());
     }

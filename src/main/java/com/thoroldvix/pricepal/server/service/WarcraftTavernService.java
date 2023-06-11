@@ -6,8 +6,7 @@ import com.thoroldvix.pricepal.server.entity.Faction;
 import com.thoroldvix.pricepal.server.entity.Population;
 import com.thoroldvix.pricepal.server.entity.Region;
 import com.thoroldvix.pricepal.server.entity.Server;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.thoroldvix.pricepal.server.repository.ServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -26,12 +25,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @EnableScheduling
 public class WarcraftTavernService {
-    @PersistenceContext
-    private final EntityManager entityManager;
+
     private final WarcraftTavernClient warcraftTavernClient;
-
+    private final ServerRepository serverRepository;
     private final ServerService serverService;
-
     private final PopulationService populationService;
 
     @Scheduled(fixedRate = 7, timeUnit = TimeUnit.DAYS)
@@ -74,7 +71,7 @@ public class WarcraftTavernService {
         int populationSize = Integer.parseInt(server.faction().equals(Faction.HORDE)
                 ? population.getOrDefault("popHorde", "0")
                 : population.getOrDefault("popAlliance", "0"));
-        Server serverEntity = entityManager.getReference(Server.class, server.id());
+        Server serverEntity = serverRepository.getReferenceById(server.id());
 
         return Population.builder()
                 .population(populationSize)
