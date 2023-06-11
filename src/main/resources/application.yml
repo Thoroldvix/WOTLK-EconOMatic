@@ -7,12 +7,6 @@ spring:
     scheduling:
       pool:
         size: 3
-  devtools:
-    restart:
-      poll-interval: 2s
-      quiet-period: 1s
-  mustache:
-    check-template-location: false
   application:
     name: PricePal
   datasource:
@@ -37,10 +31,3 @@ server:
   error:
     include-stacktrace: never
     include-message: never
-logging:
-  level:
-   org:
-    atmosphere: warn
-vaadin:
-  whitelisted-packages: com.vaadin,org.vaadin,dev.hilla,com.example.application,com.vaadin,org.vaadin,com.github.appreciated.apexcharts,com.thoroldvix.pricepal.ui
-  exclude-urls: /swagger-ui/**
