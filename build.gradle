@@ -3,7 +3,6 @@ plugins {
     id 'org.springframework.boot' version '3.0.4'
     id 'io.spring.dependency-management' version '1.1.0'
     id "com.google.cloud.tools.jib" version "3.3.1"
-    id "com.vaadin" version "24.0.2"
 }
 
 group = 'com.thoroldvix'
@@ -18,7 +17,6 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven { url "https://maven.vaadin.com/vaadin-addons" }
 }
 jib {
     to {
@@ -30,14 +28,11 @@ ext {
     mapStruct = "1.5.3.Final"
     springCloudVersion = "2022.0.0"
     vaadinVersion = "24.0.2"
-    apexCharts = "23.0.1"
-    gridPagination = "4.0.0"
     caffeineCache = "3.1.6"
 }
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-        mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
     }
 }
 
@@ -48,11 +43,8 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation 'com.vaadin:vaadin-spring-boot-starter'
     implementation 'org.liquibase:liquibase-core'
     implementation "org.mapstruct:mapstruct:${mapStruct}"
-    implementation "com.github.appreciated:apexcharts:${apexCharts}"
-    implementation "org.vaadin.klaudeta:grid-pagination:${gridPagination}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineCache}"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3"
 
