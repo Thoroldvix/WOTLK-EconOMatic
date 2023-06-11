@@ -15,14 +15,12 @@ public interface ServerPriceMapper {
     @Mapping(target = "serverName", source = "server", qualifiedByName = "serverName")
     ServerPriceResponse toPriceResponse(ServerPrice serverPrice);
 
-
     @Mapping(target = "server", ignore = true)
     @Mapping(target = "id", ignore = true)
     ServerPrice toServerPrice(ServerPriceResponse serverPriceResponse);
 
-
-
     List<ServerPriceResponse> toPriceResponseList(List<ServerPrice> serverPrices);
+
     @Named("serverName")
     default String serverName(Server server) {
         return server.getUniqueName();

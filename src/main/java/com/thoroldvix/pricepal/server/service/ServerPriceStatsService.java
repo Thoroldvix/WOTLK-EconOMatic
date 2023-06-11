@@ -10,6 +10,7 @@ import com.thoroldvix.pricepal.server.repository.StatisticsDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import static com.thoroldvix.pricepal.common.util.ValidationUtils.validateNonNullOrEmptyString;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ServerPriceStatsService {
     private final StatisticsDao<ServerPrice> statisticsDao;

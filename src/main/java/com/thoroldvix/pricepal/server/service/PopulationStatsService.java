@@ -9,6 +9,7 @@ import com.thoroldvix.pricepal.server.repository.StatisticsDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.Objects;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import static com.thoroldvix.pricepal.common.util.ValidationUtils.validateNonNullOrEmptyString;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PopulationStatsService {
     private final PopulationMapper populationMapper;
