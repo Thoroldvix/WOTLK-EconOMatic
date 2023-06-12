@@ -43,7 +43,6 @@ CREATE TABLE item
     unique_name    VARCHAR(64)  NOT NULL
 );
 
-
 -- CREATE EXTENSION pg_trgm;
 -- CREATE INDEX idx_item_unique_name ON item USING gin (unique_name gin_trgm_ops);
 -- CREATE INDEX idx_server_unique_name ON server USING gin (unique_name gin_trgm_ops);

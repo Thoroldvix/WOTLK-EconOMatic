@@ -46,7 +46,6 @@ public class Server {
     @ToString.Exclude
     private List<Population> populations;
 
-
     public void setPrice(ServerPrice serverPrice) {
         serverPrices.add(serverPrice);
         serverPrice.setServer(this);

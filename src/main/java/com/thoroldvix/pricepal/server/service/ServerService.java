@@ -41,7 +41,6 @@ public class ServerService {
                 .orElseThrow(() -> new ServerNotFoundException("No server found with for identifier: " + serverIdentifier));
     }
 
-
     public List<ServerResponse> searchServers(RequestDto requestDto) {
         Objects.requireNonNull(requestDto, "RequestDto cannot be null");
         Specification<Server> spec =

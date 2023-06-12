@@ -17,7 +17,6 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
     @Query("select p from Population p where p.population = ?1 order by p.updatedAt desc limit 1")
     Optional<Population> findByPopulationSize(int populationSize);
 
-
     @Query(value = """
             WITH populations AS (
               SELECT

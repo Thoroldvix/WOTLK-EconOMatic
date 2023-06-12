@@ -27,7 +27,6 @@ public class ServerPrice {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "server_id")
     @ToString.Exclude

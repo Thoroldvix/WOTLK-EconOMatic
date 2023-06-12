@@ -15,5 +15,4 @@ public interface ServerRepository extends JpaRepository<Server, Integer>, JpaSpe
     Optional<Server> findByUniqueName(String uniqueServerName);
 
     List<Server> findAllByRegion(Region region);
-
 }

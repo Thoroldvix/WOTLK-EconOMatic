@@ -5,5 +5,4 @@ public interface TotalPopProjection {
     int getHordePop();
     int getAlliancePop();
     String getServerName();
-
 }

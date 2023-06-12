@@ -131,8 +131,6 @@ public class ServerPriceController {
         return ResponseEntity.ok(responseDto);
     }
 
-
-
     @Operation(summary = "Retrieves basic price statistics for all servers",
             description = "The statistics are based on all server price scans and the time range in days")
     @ApiResponses(value = {
@@ -163,7 +161,7 @@ public class ServerPriceController {
             @ApiResponse(responseCode = "404", description = "No statistics found for server identifier", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
     })
-    @GetMapping(value = "/servers/{serverIdentifier}/stats",
+    @GetMapping(value = "/stats/servers/{serverIdentifier}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatsResponse<ServerPriceResponse>> getStatsForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
@@ -185,7 +183,7 @@ public class ServerPriceController {
             @ApiResponse(responseCode = "404", description = "No statistics found for search criteria", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
     })
-    @PostMapping(value = "/search/stats",
+    @PostMapping(value = "/stats/search",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatsResponse<ServerPriceResponse>> getStatsForSearch(

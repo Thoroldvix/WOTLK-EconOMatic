@@ -45,7 +45,6 @@ public class StatisticsDao<T> {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> query = getMainQuery(spec, entityClass, attribute, numberClass, cb);
 
-
         TypedQuery<Tuple> typedQuery = entityManager.createQuery(query);
         Tuple result = typedQuery.getSingleResult();
         Double average = result.get("average", Double.class);
@@ -90,7 +89,6 @@ public class StatisticsDao<T> {
         return typedQuery.getSingleResult();
     }
 
-
     private <E> E getMax(Specification<E> spec,
                          Class<E> entityClass,
                          String attribute,
@@ -125,7 +123,6 @@ public class StatisticsDao<T> {
 
         return query;
     }
-
 
     private <E, N extends Number> Map<String, Object> createStatistics(N average,
                                                                        E min,

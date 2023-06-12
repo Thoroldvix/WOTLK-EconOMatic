@@ -10,7 +10,7 @@ spring:
   application:
     name: PricePal
   datasource:
-    url: jdbc:postgresql://localhost:5433/g2g_calculator?currentSchema=wow
+    url: jdbc:postgresql://localhost:5433/pricepal?currentSchema=wow
     username: postgres
     password: pass
     driver-class-name: org.postgresql.Driver

@@ -66,7 +66,6 @@ public class WarcraftTavernService {
                 .collect(Collectors.toList());
     }
 
-
     private Population getPopulation(ServerResponse server, Map<String, String> population) {
         int populationSize = Integer.parseInt(server.faction().equals(Faction.HORDE)
                 ? population.getOrDefault("popHorde", "0")
@@ -84,7 +83,6 @@ public class WarcraftTavernService {
                 .map(ServerResponse::name)
                 .collect(Collectors.toSet());
     }
-
 
     private String formatServerName(String serverName) {
         Objects.requireNonNull(serverName, "Server name cannot be null");

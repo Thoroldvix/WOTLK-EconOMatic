@@ -16,37 +16,32 @@ public class ControllerAdvice {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiError> handleNotFoundException(NotFoundException e, HttpServletRequest request) {
-        ApiError apiError = getApiError(e, HttpStatus.NOT_FOUND, request);
+        ApiError apiError = getApiError("Not found", HttpStatus.NOT_FOUND, request);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
     @ExceptionHandler(FeignException.NotFound.class)
     public ResponseEntity<ApiError> handleFeignNotFoundException(FeignException.NotFound e, HttpServletRequest  request) {
-        ApiError apiError = getApiError(e, HttpStatus.NOT_FOUND, request);
+        ApiError apiError = getApiError("Not found", HttpStatus.NOT_FOUND, request);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
     @ExceptionHandler(NoResultException.class)
     public ResponseEntity<ApiError> handleNoResultException(NoResultException e, HttpServletRequest request) {
-        ApiError apiError = getApiError(e, HttpStatus.NOT_FOUND, request);
+        ApiError apiError = getApiError("Not found", HttpStatus.NOT_FOUND, request);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-        ApiError apiError = ApiError.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error("Bad request")
-                .timestamp(LocalDateTime.now())
-                .path(request.getRequestURI())
-                .build();
+        ApiError apiError = getApiError("Bad request", HttpStatus.BAD_REQUEST, request);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
-    private ApiError getApiError(RuntimeException e, HttpStatus status, HttpServletRequest request) {
+    private ApiError getApiError(String errorMessage, HttpStatus status, HttpServletRequest request) {
         return ApiError.builder()
                 .status(status.value())
-                .error(e.getLocalizedMessage())
+                .error(errorMessage)
                 .timestamp(LocalDateTime.now())
                 .path(request.getRequestURI())
                 .build();

@@ -135,8 +135,6 @@ public class PopulationController {
         return ResponseEntity.ok(responseForSearch);
     }
 
-
-
     @Operation(summary = "Retrieves basic population statistics for all servers",
             description = "The statistics are based on all server population scans and the time range in days")
     @ApiResponses(value = {
@@ -168,7 +166,7 @@ public class PopulationController {
             @ApiResponse(responseCode = "404", description = "No statistics found for server identifier", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
     })
-    @GetMapping(value = "/servers/{serverIdentifier}/stats",
+    @GetMapping(value = "/stats/servers/{serverIdentifier}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
@@ -179,7 +177,6 @@ public class PopulationController {
         StatsResponse<PopulationResponse> statsForServer = populationStatsService.getStatsForServer(serverIdentifier);
         return ResponseEntity.ok(statsForServer);
     }
-
 
     @Operation(summary = "Retrieves population of both factions for given server name",
             description = "Returns populations of both factions as well as total population for given server name")
@@ -203,7 +200,6 @@ public class PopulationController {
         return ResponseEntity.ok(totalPopulationForServerName);
     }
 
-
     @Operation(summary = "Retrieves basic population statistics for a specified search criteria",
             description = "The statistics are based on the provided search criteria and the time range in days")
     @ApiResponses(value = {
@@ -214,7 +210,7 @@ public class PopulationController {
             @ApiResponse(responseCode = "404", description = "No statistics found for search criteria", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected error occurred", content = @Content)
     })
-    @PostMapping(value = "/search/stats",
+    @PostMapping(value = "/stats/search",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForSearch(

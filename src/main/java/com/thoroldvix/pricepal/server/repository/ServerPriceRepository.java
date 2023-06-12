@@ -30,7 +30,6 @@ public interface ServerPriceRepository extends JpaRepository<ServerPrice, Long>,
             """, nativeQuery = true)
     Page<ServerPrice> findAllRecent(Pageable pageable);
 
-
     @Query("select sp from ServerPrice sp where sp.updatedAt >= ?1 and sp.updatedAt <= ?2")
     Page<ServerPrice> findAllForTimeRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
 

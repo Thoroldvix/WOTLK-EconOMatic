@@ -27,7 +27,6 @@ public class ServerPriceService {
     private final ServerPriceMapper serverPriceMapper;
     private final SearchSpecification<ServerPrice> searchSpecification;
 
-
     public List<ServerPriceResponse> getAllPrices(int timeRangeInDays, Pageable pageable) {
         Objects.requireNonNull(pageable, "Pageable must not be null");
         Specification<ServerPrice> spec = searchSpecification.getSpecForTimeRange(timeRangeInDays);

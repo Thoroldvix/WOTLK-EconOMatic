@@ -12,6 +12,4 @@ public interface WarcraftTavernClient {
 
     @GetMapping("{region}/{server}")
     Map<String, String> getPopulationForServer(@PathVariable Region region, @PathVariable String server);
-
-
 }

@@ -1,7 +1,6 @@
-package com.thoroldvix.pricepal.common;
+package com.thoroldvix.pricepal.common.util;
 
 import com.thoroldvix.pricepal.common.error.NotFoundException;
-import com.thoroldvix.pricepal.common.util.StringEnumConverter;
 import com.thoroldvix.pricepal.server.entity.Faction;
 import org.junit.jupiter.api.Test;
 
@@ -9,8 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StringEnumConverterTest {
-
-
 
     @Test
     void fromString_whenCorrectString_thenReturnEnum() {
