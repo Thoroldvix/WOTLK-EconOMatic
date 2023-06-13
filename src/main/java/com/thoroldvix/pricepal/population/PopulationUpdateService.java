@@ -43,7 +43,7 @@ public class PopulationUpdateService {
         List<ServerResponse> servers = serverService.getAllServersForRegion(region);
         Set<String> serverNames = getServerNames(servers);
 
-        List<Population> populations = serverNames.stream()
+        List<Population> populations = serverNames.parallelStream()
                 .flatMap(serverName -> {
                     String formattedServerName = formatServerName(serverName);
                     Map<String, String> warcraftTavernResponse = warcraftTavernClient.getPopulationForServer(region, formattedServerName);

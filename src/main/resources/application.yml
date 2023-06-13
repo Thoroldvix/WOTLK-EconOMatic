@@ -18,6 +18,7 @@ spring:
   liquibase:
     change-log: db/changelog/db.changelog-master.yml
     enabled: true
+    contexts: dev
   jpa:
     hibernate:
       ddl-auto: validate

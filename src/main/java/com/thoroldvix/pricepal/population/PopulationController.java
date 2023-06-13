@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 
@@ -42,9 +43,10 @@ public class PopulationController {
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PopulationResponse>> getAllPopulations(@Parameter(description = "Range of days to retrieve populations for")
-                                                                      @RequestParam(defaultValue = "7") int timeRangeInDays,
+                                                                      @RequestParam(defaultValue = "7") int timerange,
                                                                       @ParameterObject Pageable pageable) {
-        List<PopulationResponse> allPopulations = populationService.getAllPopulations(timeRangeInDays, pageable);
+
+        List<PopulationResponse> allPopulations = populationService.getAllPopulations(timerange, pageable);
         return ResponseEntity.ok(allPopulations);
     }
 
@@ -144,11 +146,11 @@ public class PopulationController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForAll(
             @Parameter(description = "Range of days to retrieve statistics for")
-            @RequestParam(defaultValue = "7") int timeRangeInDays) {
-        if (timeRangeInDays < 1) {
+            @RequestParam(defaultValue = "7") int timerange) {
+        if (timerange < 1) {
             return ResponseEntity.badRequest().build();
         }
-        StatsResponse<PopulationResponse> statsForAll = populationStatsService.getStatsForAll(timeRangeInDays);
+        StatsResponse<PopulationResponse> statsForAll = populationStatsService.getStatsForAll(timerange);
         return ResponseEntity.ok(statsForAll);
     }
 

@@ -24,6 +24,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - SPRING_LIQUIBASE_CONTEXTS=docker
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-price-pal:5433/price_pal
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
