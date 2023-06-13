@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset thorold:wow.server.1
+--changeset server:1
 INSERT INTO wow.server (id, name, region, locale, faction, type)
 VALUES (41074, 'Nethergarde Keep', 'EU', 'en_GB', 'HORDE', 'PVE');
 INSERT INTO wow.server (id, name, region, locale, faction, type)

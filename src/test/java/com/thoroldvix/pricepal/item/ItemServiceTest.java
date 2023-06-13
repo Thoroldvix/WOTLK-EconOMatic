@@ -1,11 +1,5 @@
 package com.thoroldvix.pricepal.item;
 
-import com.thoroldvix.pricepal.item.dto.ItemInfo;
-import com.thoroldvix.pricepal.item.entity.Item;
-import com.thoroldvix.pricepal.item.entity.ItemQuality;
-import com.thoroldvix.pricepal.item.entity.ItemType;
-import com.thoroldvix.pricepal.item.repository.ItemRepository;
-import com.thoroldvix.pricepal.item.service.ItemService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

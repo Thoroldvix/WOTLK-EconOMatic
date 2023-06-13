@@ -27,7 +27,6 @@ ext {
     testContainers = "1.17.5"
     mapStruct = "1.5.3.Final"
     springCloudVersion = "2022.0.0"
-    vaadinVersion = "24.0.2"
     caffeineCache = "3.1.6"
 }
 dependencyManagement {

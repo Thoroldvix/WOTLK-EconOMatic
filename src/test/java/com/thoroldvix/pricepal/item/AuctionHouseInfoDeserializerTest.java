@@ -3,9 +3,9 @@ package com.thoroldvix.pricepal.item;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.pricepal.item.dto.AuctionHouseInfo;
-import com.thoroldvix.pricepal.item.dto.AuctionHouseInfoDeserializer;
-import com.thoroldvix.pricepal.item.dto.ItemPrice;
+import com.thoroldvix.pricepal.auctionhouse.AuctionHouseInfo;
+import com.thoroldvix.pricepal.auctionhouse.AuctionHouseInfoDeserializer;
+import com.thoroldvix.pricepal.auctionhouse.ItemPrice;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
