@@ -49,16 +49,16 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
     Page<Population> findAllRecent(Pageable pageable);
 
     @Query(value = """
-            select sp
-            from ServerPrice sp where sp.server.id = ?1
-            and sp.updatedAt = (select max(sp2.updatedAt) from ServerPrice sp2 where sp2.server.id = ?1)
+            select p
+            from Population p where p.server.id = ?1
+            and p.updatedAt = (select max(p2.updatedAt) from Population p2 where p2.server.id = ?1)
             """)
     Optional<Population> findRecentByServerId(int serverId);
 
     @Query(value = """
-            select sp
-            from ServerPrice sp where sp.server.uniqueName = ?1
-            and sp.updatedAt = (select max(sp2.updatedAt) from ServerPrice sp2 where sp2.server.uniqueName = ?1)
+            select p
+            from Population p where p.server.uniqueName = ?1
+            and p.updatedAt = (select max(p2.updatedAt) from Population p2 where p2.server.uniqueName = ?1)
             """)
     Optional<Population> findRecentByServerUniqueName(String uniqueServerName);
 

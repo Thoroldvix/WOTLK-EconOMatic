@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "server_price")
+@Table(name = "gold_price")
 public class GoldPrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
