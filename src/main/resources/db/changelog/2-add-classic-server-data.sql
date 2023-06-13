@@ -1,4 +1,7 @@
 --liquibase formatted sql
 
 --changeset thoroldvix:1
-copy server(id, name, region, faction, type, unique_name, locale) from '/server.csv' delimiter ',' csv;
+COPY server (id, name, region, faction, type, unique_name, locale)
+    FROM '/docker-entrypoint-initdb.d/server-data.csv'
+    DELIMITER ','
+    CSV;

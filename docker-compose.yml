@@ -3,15 +3,15 @@ version: '3.8'
 services:
   postgres-price-pal:
     image: postgres
-    container_name: postgres-price-pal
+    container_name: postgres-db
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_SCHEMA=wow
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=price_pal
       - PGDATA=/data/postgres
     volumes:
-        - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./server-data.csv:/docker-entrypoint-initdb.d/server-data.csv
+      - ./item-data.csv:/docker-entrypoint-initdb.d/item-data.csv
     expose:
         - "5433"
     ports:
@@ -24,7 +24,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-price-pal:5433/price_pal?currentSchema=wow
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-price-pal:5433/price_pal
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver

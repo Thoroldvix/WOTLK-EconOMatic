@@ -11,14 +11,13 @@ spring:
   application:
     name: PricePal
   datasource:
-    url: jdbc:postgresql://localhost:5433/pricepal?currentSchema=wow
+    url: jdbc:postgresql://localhost:5433/pricepal
     username: postgres
     password: pass
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: db/changelog/db.changelog-master.yml
     enabled: true
-    default-schema: wow
   jpa:
     hibernate:
       ddl-auto: validate
