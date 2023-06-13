@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset ddl:1
+--changeset thoroldvix:1
 CREATE TABLE server
 (
     id          INT PRIMARY KEY,
@@ -8,8 +8,7 @@ CREATE TABLE server
     region      VARCHAR(3)  NOT NULL,
     faction     VARCHAR(32) NOT NULL,
     type        VARCHAR(6)  NOT NULL,
-    unique_name VARCHAR(64) GENERATED ALWAYS AS ( REPLACE(REPLACE(LOWER(name), ' ', '-'), '''', '') || '-' ||
-                                                  LOWER(faction)) STORED,
+    unique_name VARCHAR(64),
     locale      VARCHAR(16) NOT NULL
 );
 
@@ -44,7 +43,7 @@ CREATE TABLE item
     unique_name    VARCHAR(64)  NOT NULL,
     wowhead_link   VARCHAR(255) NOT NULL
 );
-
+create index on item USING btree(unique_name);
 -- CREATE EXTENSION pg_trgm;
 -- CREATE INDEX idx_item_unique_name ON item USING gin (unique_name gin_trgm_ops);
 -- CREATE INDEX idx_server_unique_name ON server USING gin (unique_name gin_trgm_ops);

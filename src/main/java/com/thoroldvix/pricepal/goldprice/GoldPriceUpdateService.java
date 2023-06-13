@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -35,12 +36,12 @@ public class GoldPriceUpdateService {
     private final GoldPriceService goldPriceServiceImpl;
 
     @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.HOURS)
-    public void updateAllServerPrices() throws IOException {
+    public void updateAllServerPrices()  {
         updateEuPrices();
         updateUsPrices();
     }
 
-    public void updateUsPrices() throws IOException {
+    public void updateUsPrices()  {
         log.info("Updating US prices");
         List<ServerResponse> usServers = serverServiceImpl.getAllServersForRegion(Region.US);
 
@@ -51,7 +52,7 @@ public class GoldPriceUpdateService {
         log.info("Finished updating US prices");
     }
 
-    public void updateEuPrices() throws IOException {
+    public void updateEuPrices() {
         log.info("Updating EU prices");
         List<ServerResponse> euServers = serverServiceImpl.getAllServersForRegion(Region.EU);
 
@@ -93,12 +94,16 @@ public class GoldPriceUpdateService {
                 .orElseThrow(() -> new G2GPriceNotFoundException("Price not found for server: " + uniqueServerName));
     }
 
-    private List<GoldPriceResponse> extractPricesFromJson(String json) throws IOException {
+    private List<GoldPriceResponse> extractPricesFromJson(String json) {
         G2GPriceListDeserializer deserializer = new G2GPriceListDeserializer();
         ObjectMapper mapper = new ObjectMapper();
         DeserializationContext context = mapper.getDeserializationContext();
-        JsonParser parser = mapper.getFactory().createParser(json);
-
-        return deserializer.deserialize(parser, context);
+        JsonParser parser;
+        try {
+            parser = mapper.getFactory().createParser(json);
+            return deserializer.deserialize(parser, context);
+        } catch (IOException e) {
+            throw new GoldPriceParsingException("Error while parsing gold price json", e);
+        }
     }
 }

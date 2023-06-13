@@ -12,14 +12,5 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 public class AuctionHouseController {
 
     private final AuctionHouseService auctionHouseService;
-    @GetMapping("/{serverName}")
-    public ResponseEntity<?> getAuctionHouseInfo(@PathVariable String serverName, @RequestParam(required = false) boolean detailed) {
-        if (!hasText(serverName)) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (detailed) {
-            return ResponseEntity.ok(auctionHouseService.getFullAuctionHouseInfo(serverName));
-        }
-        return ResponseEntity.ok(auctionHouseService.getAuctionHouseInfo(serverName));
-    }
+
 }

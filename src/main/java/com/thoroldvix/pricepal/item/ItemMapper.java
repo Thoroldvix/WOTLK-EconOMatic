@@ -11,8 +11,8 @@ import java.util.List;
 public interface ItemMapper {
 
     @Mapping(target = "iconLink", source = "iconLink")
-    ItemInfo toItemInfo(Item item);
+    ItemResponse toItemResponse(Item item);
 
 
-    List<ItemInfo> toitemInfoList(List<Item> items);
+    List<ItemResponse> toitemResponseList(List<Item> items);
 }

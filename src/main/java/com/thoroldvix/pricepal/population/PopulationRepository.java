@@ -13,9 +13,6 @@ import java.util.Optional;
 @Repository
 public interface PopulationRepository extends JpaRepository<Population, Long>, JpaSpecificationExecutor<Population> {
 
-    @Query("select p from Population p where p.population = ?1 order by p.updatedAt desc limit 1")
-    Optional<Population> findByPopulationSize(int populationSize);
-
     @Query(value = """
             WITH populations AS (
               SELECT
@@ -62,7 +59,5 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
             """)
     Optional<Population> findRecentByServerUniqueName(String uniqueServerName);
 
-    @Query("select p from Population p where p.updatedAt >= ?1 and p.updatedAt <= ?2")
-    Page<Population> findAllForTimeRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
 }
 

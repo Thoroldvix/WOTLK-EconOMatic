@@ -18,6 +18,22 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.*;
 @Service
 public class SearchSpecification<E> {
 
+    public Specification<E> createSearchSpecification(List<SearchCriteria> searchCriteria,
+                                                      RequestDto.GlobalOperator globalOperator) {
+        if (searchCriteria == null || searchCriteria.isEmpty()) {
+            return (root, query, cb) -> cb.isTrue(cb.literal(true));
+        }
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            for (SearchCriteria criteria : searchCriteria) {
+                Path<?> columnPath = getColumnPath(root, criteria);
+                Predicate predicate = getPredicateFromOperation(cb, criteria, columnPath);
+                predicates.add(predicate);
+            }
+            return getSpecFromPredicates(globalOperator, cb, predicates);
+        };
+    }
+
     public Specification<E> getJoinSpecForServerIdentifier(String serverIdentifier) {
         if (isNumber(serverIdentifier)) {
             int serverId = Integer.parseInt(serverIdentifier);
@@ -31,19 +47,6 @@ public class SearchSpecification<E> {
     public Specification<E> getSpecForTimeRange(int timeRangeInDays) {
         SearchCriteria betweenCriteria = getBetweenCriteriaForDays(timeRangeInDays);
         return createSearchSpecification(List.of(betweenCriteria), RequestDto.GlobalOperator.AND);
-    }
-
-    private SearchCriteria getBetweenCriteriaForDays(int timeRangeInDays) {
-        LocalDateTime startDate = LocalDateTime.now().minusDays(timeRangeInDays);
-        LocalDateTime endDate = LocalDateTime.now();
-
-        String timeRangeString = startDate + "," + endDate;
-
-        return SearchCriteria.builder()
-                .column("updatedAt")
-                .value(timeRangeString)
-                .operation(SearchCriteria.Operation.BETWEEN)
-                .build();
     }
 
     public Specification<E> getJoinSpecForServerId(int serverId) {
@@ -68,20 +71,17 @@ public class SearchSpecification<E> {
         return createSearchSpecification(Collections.singletonList(serverUniqueNameCriteria), RequestDto.GlobalOperator.AND);
     }
 
-    public Specification<E> createSearchSpecification(List<SearchCriteria> searchCriteria,
-                                                      RequestDto.GlobalOperator globalOperator) {
-        if (searchCriteria == null || searchCriteria.isEmpty()) {
-            return (root, query, cb) -> cb.isTrue(cb.literal(true));
-        }
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            for (SearchCriteria criteria : searchCriteria) {
-                Path<?> columnPath = getColumnPath(root, criteria);
-                Predicate predicate = getPredicateFromOperation(cb, criteria, columnPath);
-                predicates.add(predicate);
-            }
-            return getSpecFromPredicates(globalOperator, cb, predicates);
-        };
+    private SearchCriteria getBetweenCriteriaForDays(int timeRangeInDays) {
+        LocalDateTime startDate = LocalDateTime.now().minusDays(timeRangeInDays);
+        LocalDateTime endDate = LocalDateTime.now();
+
+        String timeRangeString = startDate + "," + endDate;
+
+        return SearchCriteria.builder()
+                .column("updatedAt")
+                .value(timeRangeString)
+                .operation(SearchCriteria.Operation.BETWEEN)
+                .build();
     }
 
     private Predicate getSpecFromPredicates(RequestDto.GlobalOperator globalOperator, CriteriaBuilder cb, List<Predicate> predicates) {

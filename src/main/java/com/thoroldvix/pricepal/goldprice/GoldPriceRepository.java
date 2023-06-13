@@ -14,9 +14,6 @@ import java.util.Optional;
 @Repository
 public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, JpaSpecificationExecutor<GoldPrice> {
 
-    @Query("select gp from GoldPrice gp where gp.price = ?1 order by gp.updatedAt desc limit 1")
-    Optional<GoldPrice> findByPrice(BigDecimal price);
-
     @Query(value = """
             SELECT  gp.*
             FROM gold_price gp
@@ -29,8 +26,6 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             """, nativeQuery = true)
     Page<GoldPrice> findAllRecent(Pageable pageable);
 
-    @Query("select gp from GoldPrice gp where gp.updatedAt >= ?1 and gp.updatedAt <= ?2")
-    Page<GoldPrice> findAllForTimeRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     @Query(value = """
             select gp

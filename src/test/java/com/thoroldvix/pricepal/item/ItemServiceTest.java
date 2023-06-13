@@ -31,7 +31,7 @@ class ItemServiceTest {
                 .type(ItemType.WEAPON)
                 .build();
 
-        ItemInfo expectedItemInfo = ItemInfo.builder()
+        ItemResponse expectedItemResponse = ItemResponse.builder()
                 .name("test")
                 .id(1)
                 .quality(ItemQuality.EPIC)
@@ -42,9 +42,9 @@ class ItemServiceTest {
 
         when(itemRepository.findByName(itemName)).thenReturn(Optional.of(item));
 
-        ItemInfo actualItemInfo = itemService.getItem(itemName);
+        ItemResponse actualItemResponse = itemService.getItem(itemName);
 
-        assertThat(actualItemInfo).isEqualTo(expectedItemInfo);
+        assertThat(actualItemResponse).isEqualTo(expectedItemResponse);
     }
 
     @Test
@@ -79,7 +79,7 @@ class ItemServiceTest {
                 .quality(ItemQuality.EPIC)
                 .type(ItemType.WEAPON)
                 .build();
-        ItemInfo expectedItemInfo = ItemInfo.builder()
+        ItemResponse expectedItemResponse = ItemResponse.builder()
                 .name("test")
                 .id(1)
                 .quality(ItemQuality.EPIC)
@@ -87,13 +87,13 @@ class ItemServiceTest {
                 .build();
 
 
-        int itemId = expectedItemInfo.id();
+        int itemId = expectedItemResponse.id();
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
-        ItemInfo actualItemInfo = itemService.getItem(itemId);
+        ItemResponse actualItemResponse = itemService.getItem(itemId);
 
-        assertThat(actualItemInfo).isEqualTo(expectedItemInfo);
+        assertThat(actualItemResponse).isEqualTo(expectedItemResponse);
     }
 
     @Test
