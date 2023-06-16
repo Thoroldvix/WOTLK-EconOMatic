@@ -9,9 +9,9 @@ import java.util.List;
 @Schema(description = "Request body for filtering")
 public record RequestDto(
         @Schema(description = "Search criteria")
-        List<SearchCriteria> searchCriteria,
+        SearchCriteria[] searchCriteria,
 
-        @Schema(description = "Global operator for combining search criteria", allowableValues = {"AND", "OR"})
+        @Schema(description = "Global operator for combining search criteria", allowableValues = {"AND", "OR", "NOT"})
         GlobalOperator globalOperator
 
 ) {

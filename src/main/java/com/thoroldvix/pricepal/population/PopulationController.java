@@ -18,9 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 
 
 @RestController
@@ -42,11 +39,10 @@ public class PopulationController {
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PopulationResponse>> getAllPopulations(@Parameter(description = "Range of days to retrieve populations for")
-                                                                      @RequestParam(defaultValue = "7") int timerange,
-                                                                      @ParameterObject Pageable pageable) {
-
-        List<PopulationResponse> allPopulations = populationService.getAllPopulations(timerange, pageable);
+    public ResponseEntity<List<PopulationResponse>> getAll(@Parameter(description = "Range of days to retrieve populations for")
+                                                                      @RequestParam(defaultValue = "7") int timeRange,
+                                                           @ParameterObject Pageable pageable) {
+        List<PopulationResponse> allPopulations = populationService.getAll(timeRange, pageable);
         return ResponseEntity.ok(allPopulations);
     }
 
@@ -61,8 +57,8 @@ public class PopulationController {
     })
     @GetMapping(value = "/recent",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PopulationResponse>> getAllRecentPopulations(@ParameterObject Pageable pageable) {
-        List<PopulationResponse> allPopulations = populationService.getAllRecentPopulations(pageable);
+    public ResponseEntity<List<PopulationResponse>> getAllRecent(@ParameterObject Pageable pageable) {
+        List<PopulationResponse> allPopulations = populationService.getAllRecent(pageable);
         return ResponseEntity.ok(allPopulations);
     }
 
@@ -78,15 +74,11 @@ public class PopulationController {
     })
     @GetMapping(value = "/servers/{serverIdentifier}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PopulationResponse>> getPopulationForServer(
+    public ResponseEntity<List<PopulationResponse>> getForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier,
-
             @ParameterObject Pageable pageable) {
-        if (!hasText(serverIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
-        List<PopulationResponse> populationForServer = populationService.getPopulationForServer(serverIdentifier,  pageable);
+        List<PopulationResponse> populationForServer = populationService.getForServer(serverIdentifier,  pageable);
         return ResponseEntity.ok(populationForServer);
     }
 
@@ -105,9 +97,6 @@ public class PopulationController {
     public ResponseEntity<PopulationResponse> getRecentForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier) {
-        if (!hasText(serverIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
         PopulationResponse population = populationService.getRecentForServer(serverIdentifier);
         return ResponseEntity.ok(population);
     }
@@ -125,11 +114,11 @@ public class PopulationController {
     @PostMapping(value = "/search",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PopulationResponse>> searchForPopulation(
+    public ResponseEntity<List<PopulationResponse>> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria for filtering populations. Based on population properties")
             @RequestBody RequestDto requestDto,
             @ParameterObject Pageable pageable) {
-        List<PopulationResponse> responseForSearch = populationService.searchForPopulation(requestDto, pageable);
+        List<PopulationResponse> responseForSearch = populationService.search(requestDto, pageable);
         return ResponseEntity.ok(responseForSearch);
     }
 
@@ -146,11 +135,8 @@ public class PopulationController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForAll(
             @Parameter(description = "Range of days to retrieve statistics for")
-            @RequestParam(defaultValue = "7") int timerange) {
-        if (timerange < 1) {
-            return ResponseEntity.badRequest().build();
-        }
-        StatsResponse<PopulationResponse> statsForAll = populationStatsService.getStatsForAll(timerange);
+            @RequestParam(defaultValue = "7") int timeRange) {
+        StatsResponse<PopulationResponse> statsForAll = populationStatsService.getForAll(timeRange);
         return ResponseEntity.ok(statsForAll);
     }
 
@@ -169,10 +155,7 @@ public class PopulationController {
     public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier) {
-        if (!hasText(serverIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
-        StatsResponse<PopulationResponse> statsForServer = populationStatsService.getStatsForServer(serverIdentifier);
+        StatsResponse<PopulationResponse> statsForServer = populationStatsService.getForServer(serverIdentifier);
         return ResponseEntity.ok(statsForServer);
     }
 
@@ -188,13 +171,10 @@ public class PopulationController {
     })
     @GetMapping(value = "/servers/{serverName}/total",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TotalPopResponse> getTotalPopulationForServerName(
+    public ResponseEntity<TotalPopResponse> getTotalPopulation(
             @Parameter(description = "Server name (e.g. 'Everlook') case insensitive")
             @PathVariable String serverName) {
-        if (!hasText(serverName)) {
-            return ResponseEntity.badRequest().build();
-        }
-        TotalPopResponse totalPopulationForServerName = populationService.getTotalPopulationForServerName(serverName);
+        TotalPopResponse totalPopulationForServerName = populationService.getTotalPopulation(serverName);
         return ResponseEntity.ok(totalPopulationForServerName);
     }
 
@@ -215,7 +195,7 @@ public class PopulationController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria to retrieve statistics for Based on population properties")
             @RequestBody RequestDto requestDto) {
 
-        StatsResponse<PopulationResponse> statsForSearch = populationStatsService.getStatsForSearch(requestDto);
+        StatsResponse<PopulationResponse> statsForSearch = populationStatsService.getForSearch(requestDto);
         return ResponseEntity.ok(statsForSearch);
     }
 

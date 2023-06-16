@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -26,7 +24,6 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             """, nativeQuery = true)
     Page<GoldPrice> findAllRecent(Pageable pageable);
 
-
     @Query(value = """
             select gp
             from GoldPrice gp where gp.server.id = ?1
@@ -39,5 +36,5 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             from GoldPrice gp where gp.server.uniqueName = ?1
             and gp.updatedAt = (select max(gp2.updatedAt) from GoldPrice gp2 where gp2.server.uniqueName = ?1)
             """)
-    Optional<GoldPrice> findRecentByServerUniqueName(String uniqueServerName);
+    Optional<GoldPrice> findRecentByServerUniqueName(String uniqueName);
 }

@@ -1,7 +1,7 @@
 package com.thoroldvix.pricepal.goldprice.server.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.pricepal.server.ServerService;
+import com.thoroldvix.pricepal.server.ServerServiceImpl;
 import com.thoroldvix.pricepal.goldprice.G2GPriceClient;
 import com.thoroldvix.pricepal.goldprice.GoldPriceUpdateService;
 import com.thoroldvix.pricepal.goldprice.GoldPriceService;
@@ -17,7 +17,7 @@ class GoldPriceUpdateServiceTest {
     G2GPriceClient g2GPriceClient;
 
     @Mock
-    ServerService serverServiceImpl;
+    ServerServiceImpl serverServiceImpl;
 
     @Mock
     GoldPriceService goldPriceServiceImpl;

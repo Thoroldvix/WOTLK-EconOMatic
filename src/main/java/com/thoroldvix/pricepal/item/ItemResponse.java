@@ -7,9 +7,7 @@ public record ItemResponse(
         int id,
         ItemType type,
         ItemQuality quality,
-        String iconLink,
         ItemSlot slot,
-        String wowheadLink,
         String name,
         String uniqueName
 ) {

@@ -1,9 +1,6 @@
 package com.thoroldvix.pricepal.population;
 
-import com.thoroldvix.pricepal.shared.RequestDto;
-import com.thoroldvix.pricepal.shared.SearchSpecification;
-import com.thoroldvix.pricepal.shared.StatsResponse;
-import com.thoroldvix.pricepal.shared.StatisticsDao;
+import com.thoroldvix.pricepal.shared.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -12,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.thoroldvix.pricepal.shared.ServerSearchCriteriaBuilder.getJoinCriteria;
 import static com.thoroldvix.pricepal.shared.ValidationUtils.validateNonNullOrEmptyString;
 
 @Service
@@ -20,12 +18,13 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.validateNonNullOrEm
 public class PopulationStatsService {
     private final PopulationMapper populationMapper;
     private final SearchSpecification<Population> searchSpecification;
-    private final StatisticsDao<Population> statisticsDao;
+    private final StatisticsRepository<Population> statisticsRepositoryImpl;
 
-    public StatsResponse<PopulationResponse> getStatsForServer(String serverIdentifier) {
+    public StatsResponse<PopulationResponse> getForServer(String serverIdentifier) {
         validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
-        Specification<Population> spec = searchSpecification.getJoinSpecForServerIdentifier(serverIdentifier);
-        Map<String, Object> statisticsResponse = statisticsDao.getStatsForSpec(spec, Population.class);
+        SearchCriteria joinCriteria = getJoinCriteria(serverIdentifier);
+        Specification<Population> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, joinCriteria);
+        Map<String, Object> statisticsResponse = statisticsRepositoryImpl.getStats(spec, Population.class);
         return createStatsResponse(statisticsResponse);
     }
 
@@ -49,18 +48,18 @@ public class PopulationStatsService {
                 .build();
     }
 
-    public StatsResponse<PopulationResponse> getStatsForAll(int timeRangeInDays) {
+    public StatsResponse<PopulationResponse> getForAll(int timeRangeInDays) {
         Specification<Population> spec = searchSpecification.getSpecForTimeRange(timeRangeInDays);
-        Map<String, Object> statisticsResponse = statisticsDao.getStatsForSpec(spec, Population.class);
+        Map<String, Object> statisticsResponse = statisticsRepositoryImpl.getStats(spec, Population.class);
         return createStatsResponse(statisticsResponse);
     }
 
-    public StatsResponse<PopulationResponse> getStatsForSearch(RequestDto requestDto) {
+    public StatsResponse<PopulationResponse> getForSearch(RequestDto requestDto) {
         Objects.requireNonNull(requestDto, "RequestDto cannot be null");
-        Specification<Population> spec = searchSpecification.createSearchSpecification(requestDto.searchCriteria(),
-                requestDto.globalOperator());
+        Specification<Population> spec = searchSpecification.createSearchSpecification(requestDto.globalOperator(),
+                requestDto.searchCriteria());
 
-        Map<String, Object> statisticsResponse = statisticsDao.getStatsForSpec(spec, Population.class);
+        Map<String, Object> statisticsResponse = statisticsRepositoryImpl.getStats(spec, Population.class);
         return createStatsResponse(statisticsResponse);
     }
 }

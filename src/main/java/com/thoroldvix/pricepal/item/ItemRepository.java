@@ -1,6 +1,5 @@
 package com.thoroldvix.pricepal.item;
 
-import feign.ResponseMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +17,6 @@ public interface ItemRepository extends JpaRepository<Item, Integer>, JpaSpecifi
     Optional<Item> findByUniqueName(String uniqueName);
 
     @Query("select i from Item i where i.name like %?1%")
-    Page<ItemResponse> searchItemsByName(String query, Pageable pageable);
+    Page<Item> searchItemsByName(String query, Pageable pageable);
 
 }

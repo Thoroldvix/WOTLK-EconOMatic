@@ -2,6 +2,11 @@ databaseChangeLog:
   - include:
       file: db/changelog/1-database-ddl.sql
   - include:
-      file: db/changelog/2-add-server-data.sql
+      file: db/changelog/2-create-triggers.sql
   - include:
-      file: db/changelog/3-add-item-data.sql
+      file: db/changelog/3-add-indexes.sql
+  - include:
+      file: db/changelog/4-add-server-data.sql
+  - include:
+      file: db/changelog/5-add-item-data.sql
+

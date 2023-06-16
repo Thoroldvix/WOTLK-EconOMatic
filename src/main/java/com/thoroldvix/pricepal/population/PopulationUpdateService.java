@@ -1,17 +1,14 @@
 package com.thoroldvix.pricepal.population;
 
-import com.thoroldvix.pricepal.server.ServerResponse;
-import com.thoroldvix.pricepal.server.Faction;
-import com.thoroldvix.pricepal.server.Region;
-import com.thoroldvix.pricepal.server.Server;
-import com.thoroldvix.pricepal.server.ServerRepository;
-import com.thoroldvix.pricepal.server.ServerService;
+import com.thoroldvix.pricepal.server.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,42 +19,45 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@EnableScheduling
 public class PopulationUpdateService {
 
     private final WarcraftTavernClient warcraftTavernClient;
     private final ServerRepository serverRepository;
-    private final ServerService serverService;
+    private final ServerService serverServiceImpl;
     private final PopulationService populationService;
 
     @Scheduled(fixedRate = 7, timeUnit = TimeUnit.DAYS)
-    protected void updatePopulation() {
-        updatePopulationForRegion(Region.EU);
-        updatePopulationForRegion(Region.US);
+    protected void update() {
+        updateForRegion(Region.EU);
+        updateForRegion(Region.US);
     }
 
-    private void updatePopulationForRegion(Region region) {
+    private void updateForRegion(Region region) {
         Objects.requireNonNull(region, "Region cannot be null");
-        log.info(String.format("Updating %s population", region.name()));
+        log.info("Updating {} population", region.name());
+        Instant start = Instant.now();
 
-        List<ServerResponse> servers = serverService.getAllServersForRegion(region);
+        List<ServerResponse> servers = serverServiceImpl.getAllForRegion(region);
         Set<String> serverNames = getServerNames(servers);
+        List<Population> populations = retrievePopulations(region, servers, serverNames);
 
-        List<Population> populations = serverNames.parallelStream()
+        populationService.saveAll(populations);
+        log.info("Updated {} population in {} ms", region.name(), Duration.between(start, Instant.now()).toMillis());
+    }
+
+    private List<Population> retrievePopulations(Region region, List<ServerResponse> servers, Set<String> serverNames) {
+        return serverNames.parallelStream()
                 .flatMap(serverName -> {
                     String formattedServerName = formatServerName(serverName);
                     Map<String, String> warcraftTavernResponse = warcraftTavernClient.getPopulationForServer(region, formattedServerName);
-                    return getPopulationForBothFactions(serverName, servers, warcraftTavernResponse).stream();
+                    return getForBothFactions(serverName, servers, warcraftTavernResponse).stream();
                 })
                 .collect(Collectors.toList());
-
-        populationService.saveAllPopulations(populations);
-        log.info(String.format("Updated %s population", region.name()));
     }
 
-    private List<Population> getPopulationForBothFactions(String serverName,
-                                                          List<ServerResponse> servers,
-                                                          Map<String, String> warcraftTavernResponse) {
+    private List<Population> getForBothFactions(String serverName,
+                                                List<ServerResponse> servers,
+                                                Map<String, String> warcraftTavernResponse) {
 
         return servers.stream()
                 .filter(server -> server.name().equals(serverName))
@@ -85,7 +85,6 @@ public class PopulationUpdateService {
 
     private String formatServerName(String serverName) {
         Objects.requireNonNull(serverName, "Server name cannot be null");
-
         return serverName.replaceAll(" ", "-")
                 .replaceAll("'", "").toLowerCase();
     }

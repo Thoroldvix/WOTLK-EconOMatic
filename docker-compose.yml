@@ -9,9 +9,6 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=price_pal
       - PGDATA=/data/postgres
-    volumes:
-      - ./server-data.csv:/docker-entrypoint-initdb.d/server-data.csv
-      - ./item-data.csv:/docker-entrypoint-initdb.d/item-data.csv
     expose:
         - "5433"
     ports:

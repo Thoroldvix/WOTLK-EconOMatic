@@ -1,12 +1,11 @@
 package com.thoroldvix.pricepal.server;
 
-import com.thoroldvix.pricepal.population.Population;
-import com.thoroldvix.pricepal.goldprice.GoldPrice;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 
-import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -23,38 +22,34 @@ public class Server {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
     private Region region;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
     private Faction faction;
 
     @Column(nullable = false)
     private Locale locale;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
-    private String type;
-
-    @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<GoldPrice> goldPrices;
+    private ServerType type;
 
     @Column(nullable = false, updatable = false)
     private String uniqueName;
 
-    @OneToMany(mappedBy = "server", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Population> populations;
-
-    public void setPrice(GoldPrice goldPrice) {
-        goldPrices.add(goldPrice);
-        goldPrice.setServer(this);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Server server = (Server) o;
+        return getId() != null && Objects.equals(getId(), server.getId());
     }
 
-    public void addPopulation(Population population) {
-        populations.add(population);
-        population.setServer(this);
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

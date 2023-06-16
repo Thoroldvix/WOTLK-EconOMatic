@@ -1,29 +1,41 @@
 package com.thoroldvix.pricepal.item;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum ItemSlot {
-    MAIN_HAND,
-    OFF_HAND,
-    THROWN,
-    TABARD,
-    AMMO,
-    HEAD,
     NON_EQUIPPABLE,
-    RANGED,
+    HEAD,
+    NECK,
     SHOULDER,
     SHIRT,
     CHEST,
-    NECK,
-    BAG,
     WAIST,
-    TRINKET,
     LEGS,
-    RELIC,
+    FEET,
+    WRISTS,
     HANDS,
     FINGER,
+    TRINKET,
+    WEAPON,
+    SHIELD,
+    RANGED,
     BACK,
-    FEET,
-    WRIST,
-    ONE_HAND,
     TWO_HAND,
-    HELD_IN_OFF_HAND
+    BAG,
+    TABARD,
+    ROBE,
+    MAIN_HAND,
+    OFF_HAND,
+    HOLDABLE,
+    AMMO,
+    THROWN,
+    RANGED_RIGHT,
+    QUIVER,
+    RELIC;
+
+    @Override
+    @JsonValue
+    public String toString() {
+        return name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
+    }
 }

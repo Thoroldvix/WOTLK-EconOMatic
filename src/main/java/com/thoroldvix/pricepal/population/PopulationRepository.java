@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -18,11 +17,11 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
               SELECT
                 (SELECT p.population
                  FROM population p JOIN server s ON s.id = p.server_id
-                 WHERE LOWER(s.name) = LOWER(?1) AND s.faction = 'HORDE'
+                 WHERE LOWER(s.name) = LOWER(?1) AND s.faction = 1
                  ORDER BY p.updated_at DESC LIMIT 1) AS hordePop,
                 (SELECT p.population
                  FROM population p JOIN server s ON s.id = p.server_id
-                 WHERE LOWER(s.name) = LOWER(?1) AND s.faction = 'ALLIANCE'
+                 WHERE LOWER(s.name) = LOWER(?1) AND s.faction = 0
                  ORDER BY p.updated_at DESC LIMIT 1) AS alliancePop
             )
             SELECT
@@ -57,7 +56,7 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
             from Population p where p.server.uniqueName = ?1
             and p.updatedAt = (select max(p2.updatedAt) from Population p2 where p2.server.uniqueName = ?1)
             """)
-    Optional<Population> findRecentByServerUniqueName(String uniqueServerName);
+    Optional<Population> findRecentByServerUniqueName(String uniqueName);
 
 }
 

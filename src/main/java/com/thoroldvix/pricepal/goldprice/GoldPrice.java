@@ -25,7 +25,6 @@ public class GoldPrice {
     private BigDecimal price;
 
     @Column(nullable = false)
-    @CreationTimestamp
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,8 +32,4 @@ public class GoldPrice {
     @ToString.Exclude
     private Server server;
 
-    public void setServer(Server server) {
-        server.getGoldPrices().add(this);
-        this.server = server;
-    }
 }

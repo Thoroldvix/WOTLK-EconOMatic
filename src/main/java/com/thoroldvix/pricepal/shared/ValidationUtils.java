@@ -2,6 +2,7 @@ package com.thoroldvix.pricepal.shared;
 
 import org.springframework.lang.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -35,7 +36,7 @@ public final class ValidationUtils {
         }
     }
 
-    public static <T, E extends RuntimeException> void validateListNotNullOrEmpty(List<T> list, Supplier<E> exceptionSupplier) {
+    public static <T, E extends RuntimeException> void validateCollectionNotNullOrEmpty(Collection<T> list, Supplier<E> exceptionSupplier) {
         Objects.requireNonNull(list, "List cannot be null");
         Objects.requireNonNull(exceptionSupplier, "Exception supplier cannot be null");
         if (list.isEmpty()) {

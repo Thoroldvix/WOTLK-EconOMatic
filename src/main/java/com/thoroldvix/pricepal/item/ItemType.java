@@ -1,24 +1,26 @@
 package com.thoroldvix.pricepal.item;
 
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum ItemType {
+    CONSUMABLE,
+    CONTAINER,
+    WEAPON,
+    GEM,
     ARMOR,
     REAGENT,
-    MONEY,
-    QUIVER,
-    MISCELLANEOUS,
-    GLYPH,
-    CONTAINER,
-    KEY,
     PROJECTILE,
-    WEAPON,
-    CONSUMABLE,
     TRADE_GOODS,
     RECIPE,
+    QUIVER,
     QUEST,
-    GEM;
+    KEY,
+    MISCELLANEOUS,
+    GLYPH;
 
     @Override
+    @JsonValue
     public String toString() {
         return name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
     }

@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
-
 @RestController
 @Tag(name = "Prices API", description = "API for retrieving server gold prices")
 @RequestMapping("/wow-classic/api/v1/prices")
@@ -40,10 +38,10 @@ public class GoldPriceController {
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GoldPriceResponse>> getAllPrices(@Parameter(description = "Range of days to retrieve prices for")
-                                                                  @RequestParam(defaultValue = "7") int timeRangeInDays,
-                                                                @ParameterObject Pageable pageable) {
-        List<GoldPriceResponse> prices = goldPriceService.getAllPrices(timeRangeInDays, pageable);
+    public ResponseEntity<List<GoldPriceResponse>> getAll(@Parameter(description = "Range of days to retrieve prices for")
+                                                                  @RequestParam(defaultValue = "7") int timeRange,
+                                                          @ParameterObject Pageable pageable) {
+        List<GoldPriceResponse> prices = goldPriceService.getAll(timeRange, pageable);
         return ResponseEntity.ok(prices);
     }
 
@@ -57,8 +55,8 @@ public class GoldPriceController {
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(value = "/recent", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GoldPriceResponse>> getAllRecentPrices(@ParameterObject Pageable pageable) {
-        List<GoldPriceResponse> prices = goldPriceService.getAllPricesRecent(pageable);
+    public ResponseEntity<List<GoldPriceResponse>> getAllRecent(@ParameterObject Pageable pageable) {
+        List<GoldPriceResponse> prices = goldPriceService.getAllRecent(pageable);
         return ResponseEntity.ok(prices);
     }
 
@@ -74,14 +72,11 @@ public class GoldPriceController {
     })
     @GetMapping(value = "/servers/{serverIdentifier}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GoldPriceResponse>> getPricesForServer(
+    public ResponseEntity<List<GoldPriceResponse>> getForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier,
             @ParameterObject Pageable pageable) {
-        if (!hasText(serverIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
-        List<GoldPriceResponse> prices = goldPriceService.getPricesForServer(serverIdentifier,  pageable);
+        List<GoldPriceResponse> prices = goldPriceService.getForServer(serverIdentifier,  pageable);
         return ResponseEntity.ok(prices);
     }
 
@@ -100,9 +95,6 @@ public class GoldPriceController {
     public ResponseEntity<GoldPriceResponse> getRecentForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier) {
-        if (!hasText(serverIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
         GoldPriceResponse price = goldPriceService.getRecentForServer(serverIdentifier);
         return ResponseEntity.ok(price);
     }
@@ -120,11 +112,11 @@ public class GoldPriceController {
     @PostMapping(value = "/search",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GoldPriceResponse>> searchForPrices(
+    public ResponseEntity<List<GoldPriceResponse>> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria for filtering prices")
             @RequestBody RequestDto requestDto,
             @ParameterObject Pageable pageable) {
-        List<GoldPriceResponse> responseDto = goldPriceService.searchForPrices(requestDto, pageable);
+        List<GoldPriceResponse> responseDto = goldPriceService.search(requestDto, pageable);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -138,13 +130,10 @@ public class GoldPriceController {
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(value = "/stats")
-    public ResponseEntity<StatsResponse<GoldPriceResponse>> getStatsForAllPrices(
+    public ResponseEntity<StatsResponse<GoldPriceResponse>> getStatsForAll(
             @Parameter(description = "Range of days to retrieve statistics for")
             @RequestParam(defaultValue = "7") int timeRange) {
-        if (timeRange < 1) {
-            return ResponseEntity.badRequest().build();
-        }
-        StatsResponse<GoldPriceResponse> statsForAllPrices = goldPriceStatsService.getStatsForAll(timeRange);
+        StatsResponse<GoldPriceResponse> statsForAllPrices = goldPriceStatsService.getForAll(timeRange);
         return ResponseEntity.ok(statsForAllPrices);
     }
 
@@ -163,10 +152,7 @@ public class GoldPriceController {
     public ResponseEntity<StatsResponse<GoldPriceResponse>> getStatsForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier) {
-        if (!hasText(serverIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
-        StatsResponse<GoldPriceResponse> statsForServer = goldPriceStatsService.getStatsForServer(serverIdentifier);
+        StatsResponse<GoldPriceResponse> statsForServer = goldPriceStatsService.getForServer(serverIdentifier);
         return ResponseEntity.ok(statsForServer);
     }
 
@@ -187,7 +173,7 @@ public class GoldPriceController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria to retrieve statistics for. Based on price properties")
             @RequestBody RequestDto requestDto) {
 
-        StatsResponse<GoldPriceResponse> statsForSearch = goldPriceStatsService.getStatsForSearch(requestDto);
+        StatsResponse<GoldPriceResponse> statsForSearch = goldPriceStatsService.getForSearch(requestDto);
         return ResponseEntity.ok(statsForSearch);
     }
 }

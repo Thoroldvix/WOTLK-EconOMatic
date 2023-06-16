@@ -17,24 +17,24 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 @RequiredArgsConstructor
 public class ItemsController {
 
-    private final ItemService itemService;
+    private final ItemServiceImpl itemServiceImpl;
 
     @GetMapping
-    public ResponseEntity<List<ItemResponse>> getAllItems(Pageable pageable) {
-        return ResponseEntity.ok(itemService.getAllItems(pageable));
+    public ResponseEntity<List<ItemResponse>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(itemServiceImpl.getAll(pageable));
     }
 
     @GetMapping("/itemIdentifier")
-    public ResponseEntity<ItemResponse> getItemByItemIdentifier(@RequestParam String itemIdentifier) {
+    public ResponseEntity<ItemResponse> getItem(@RequestParam String itemIdentifier) {
         if (!hasText(itemIdentifier)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(itemService.getItemByItemIdentifier(itemIdentifier));
+        return ResponseEntity.ok(itemServiceImpl.getItem(itemIdentifier));
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<ItemResponse>> searchItems(@RequestBody RequestDto requestDto,
-                                                          Pageable pageable) {
-        return ResponseEntity.ok(itemService.searchItems(requestDto, pageable));
+    public ResponseEntity<List<ItemResponse>> search(@RequestBody RequestDto requestDto,
+                                                     Pageable pageable) {
+        return ResponseEntity.ok(itemServiceImpl.search(requestDto, pageable));
     }
 }

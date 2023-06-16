@@ -25,7 +25,7 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 @RequiredArgsConstructor
 public class ServerController {
 
-    private final ServerService serverService;
+    private final ServerService serverServiceImpl;
 
     @Operation(summary = "Retrieves basic server info for given server identifier",
             description = "Returns basic server info for given server identifier. Server identifier can be server unique name or server ID")
@@ -45,7 +45,7 @@ public class ServerController {
         if (!hasText(serverIdentifier)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(serverService.getServer(serverIdentifier));
+        return ResponseEntity.ok(serverServiceImpl.getServer(serverIdentifier));
     }
 
     @Operation(summary = "Retrieves basic server info for a specified search criteria",
@@ -60,10 +60,10 @@ public class ServerController {
     @PostMapping(value = "/search",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ServerResponse>> searchServers(
+    public ResponseEntity<List<ServerResponse>> search(
             @RequestBody(description = "Search criteria for filtering servers. Based on server properties")
             RequestDto requestDto) {
-        return ResponseEntity.ok(serverService.searchServers(requestDto));
+        return ResponseEntity.ok(serverServiceImpl.search(requestDto));
     }
 
     @Operation(summary = "Retrieves all servers",
@@ -76,7 +76,7 @@ public class ServerController {
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ServerResponse>> getAllServers() {
-        return ResponseEntity.ok(serverService.getAllServers());
+    public ResponseEntity<List<ServerResponse>> getAll() {
+        return ResponseEntity.ok(serverServiceImpl.getAll());
     }
 }

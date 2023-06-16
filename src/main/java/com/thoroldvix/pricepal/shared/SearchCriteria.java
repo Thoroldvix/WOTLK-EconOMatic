@@ -14,8 +14,6 @@ public record SearchCriteria(
         @Schema(description = "Name of table to perform join on")
         String joinTable,
 
-
-
         @Schema(description = "Operation to perform for the search criteria")
         Operation operation
 ) {

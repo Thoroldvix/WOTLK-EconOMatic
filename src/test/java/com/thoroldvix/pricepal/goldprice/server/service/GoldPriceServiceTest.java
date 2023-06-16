@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.goldprice.server.service;
 
-import com.thoroldvix.pricepal.server.ServerService;
+import com.thoroldvix.pricepal.server.ServerServiceImpl;
 import com.thoroldvix.pricepal.goldprice.GoldPriceResponse;
 import com.thoroldvix.pricepal.goldprice.GoldPrice;
 import com.thoroldvix.pricepal.goldprice.GoldPriceRepository;
@@ -29,7 +29,7 @@ class GoldPriceServiceTest {
     @Mock
     private GoldPriceRepository goldPriceRepository;
     @Mock
-    private ServerService serverService;
+    private ServerServiceImpl serverServiceImpl;
     @Mock
     private GoldPriceMapper goldPriceMapper;
     @InjectMocks

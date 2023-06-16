@@ -1,6 +1,7 @@
 package com.thoroldvix.pricepal.goldprice;
 
 import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchCriteria;
 import com.thoroldvix.pricepal.shared.SearchSpecification;
 import com.thoroldvix.pricepal.population.PopulationNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import static com.thoroldvix.pricepal.shared.ServerSearchCriteriaBuilder.getJoinCriteria;
 import static com.thoroldvix.pricepal.shared.ValidationUtils.*;
 
 @Service
@@ -23,59 +26,65 @@ public class GoldPriceService {
     private final GoldPriceMapper goldPriceMapper;
     private final SearchSpecification<GoldPrice> searchSpecification;
 
-    public List<GoldPriceResponse> getAllPrices(int timeRangeInDays, Pageable pageable) {
+
+    public List<GoldPriceResponse> getAll(int timeRangeInDays, Pageable pageable) {
         Objects.requireNonNull(pageable, "Pageable must not be null");
         Specification<GoldPrice> spec = searchSpecification.getSpecForTimeRange(timeRangeInDays);
         List<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable).getContent();
-        validateListNotNullOrEmpty(prices,
+        validateCollectionNotNullOrEmpty(prices,
                 () -> new GoldPriceNotFoundException("No prices found"));
-        return goldPriceMapper.toPriceResponseList(prices);
+        return goldPriceMapper.toGoldPriceResponseList(prices);
     }
 
-    public List<GoldPriceResponse> getAllPricesRecent(Pageable pageable) {
+    public List<GoldPriceResponse> getAllRecent(Pageable pageable) {
         Objects.requireNonNull(pageable, "Pageable must not be null");
         List<GoldPrice> prices = goldPriceRepository.findAllRecent(pageable).getContent();
-        validateListNotNullOrEmpty(prices,
+        validateCollectionNotNullOrEmpty(prices,
                 () -> new GoldPriceNotFoundException("No prices found"));
-        return goldPriceMapper.toPriceResponseList(prices);
+        return goldPriceMapper.toGoldPriceResponseList(prices);
     }
 
-    public List<GoldPriceResponse> searchForPrices(RequestDto requestDto,
-                                                   Pageable pageable) {
+    public List<GoldPriceResponse> search(RequestDto requestDto,
+                                          Pageable pageable) {
         Objects.requireNonNull(requestDto, "RequestDto must not be null");
         Objects.requireNonNull(pageable, "Pageable must not be null");
-        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(requestDto.searchCriteria(), requestDto.globalOperator());
+        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(requestDto.globalOperator(), requestDto.searchCriteria());
         List<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable).getContent();
-        validateListNotNullOrEmpty(prices,
+        validateCollectionNotNullOrEmpty(prices,
                 () -> new GoldPriceNotFoundException("No prices found"));
-        return goldPriceMapper.toPriceResponseList(prices);
+        return goldPriceMapper.toGoldPriceResponseList(prices);
     }
-    public List<GoldPriceResponse> getPricesForServer(String serverIdentifier,
-                                                      Pageable pageable) {
+
+    public List<GoldPriceResponse> getForServer(String serverIdentifier,
+                                                Pageable pageable) {
         validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
-        Specification<GoldPrice> spec = searchSpecification.getJoinSpecForServerIdentifier(serverIdentifier);
+        SearchCriteria joinCriteria = getJoinCriteria(serverIdentifier);
+        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, joinCriteria);
         List<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable).getContent();
-        validateListNotNullOrEmpty(prices,
+        validateCollectionNotNullOrEmpty(prices,
                 () -> new PopulationNotFoundException("No prices found for server identifier: " + serverIdentifier));
-        return goldPriceMapper.toPriceResponseList(prices);
+        return goldPriceMapper.toGoldPriceResponseList(prices);
     }
+
     public GoldPriceResponse getRecentForServer(String serverIdentifier) {
         validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
-        GoldPrice goldPrice;
-        if (isNumber(serverIdentifier)) {
+        Optional<GoldPrice> goldPrice = findRecentForServer(serverIdentifier);
+        return goldPrice.map(goldPriceMapper::toGoldPriceResponse)
+                .orElseThrow(() -> new GoldPriceNotFoundException("No recent price found for server identifier: " + serverIdentifier));
+    }
+
+    private Optional<GoldPrice> findRecentForServer(String serverIdentifier) {
+        try {
             int serverId = Integer.parseInt(serverIdentifier);
-            goldPrice = goldPriceRepository.findRecentByServerId(serverId)
-                    .orElseThrow(() -> new GoldPriceNotFoundException("No recent price found for server identifier: " + serverIdentifier));
-        } else {
-            goldPrice = goldPriceRepository.findRecentByServerUniqueName(serverIdentifier)
-                    .orElseThrow(() -> new GoldPriceNotFoundException("No recent price found for server identifier: " + serverIdentifier));
+            return goldPriceRepository.findRecentByServerId(serverId);
+        } catch (NumberFormatException e) {
+            return goldPriceRepository.findRecentByServerUniqueName(serverIdentifier);
         }
-        return goldPriceMapper.toPriceResponse(goldPrice);
     }
 
     @Transactional
-    public void saveAllPrices(List<GoldPrice> pricesToSave) {
-        validateListNotNullOrEmpty(pricesToSave,
+    public void saveAll(List<GoldPrice> pricesToSave) {
+        validateCollectionNotNullOrEmpty(pricesToSave,
                 () -> new IllegalArgumentException("Prices cannot be null or empty"));
         goldPriceRepository.saveAll(pricesToSave);
     }

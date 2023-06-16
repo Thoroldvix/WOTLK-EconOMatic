@@ -2,6 +2,9 @@ package com.thoroldvix.pricepal.item;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
+
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -18,36 +21,34 @@ public class Item {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String iconLink;
-
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private ItemType type;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private ItemQuality quality;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private ItemSlot slot;
 
     @Column(nullable = false)
     private String uniqueName;
 
     @Column(nullable = false)
-    private int itemLevel;
-
-    @Column(nullable = false)
-    private int requiredLevel;
-
-    @Column(nullable = false)
     private long sellPrice;
 
-    @Column(nullable = false)
-    private String wowheadLink;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Item item = (Item) o;
+        return getId() != null && Objects.equals(getId(), item.getId());
+    }
 
-    @Column(nullable = false)
-    private String itemLink;
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

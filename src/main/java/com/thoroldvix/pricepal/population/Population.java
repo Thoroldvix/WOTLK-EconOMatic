@@ -3,9 +3,11 @@ package com.thoroldvix.pricepal.population;
 import com.thoroldvix.pricepal.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -24,7 +26,6 @@ public class Population {
     private int population;
 
     @Column(nullable = false)
-    @CreationTimestamp
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,8 +33,16 @@ public class Population {
     @ToString.Exclude
     private Server server;
 
-    public void setServer(Server server) {
-        server.getPopulations().add(this);
-        this.server = server;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Population that = (Population) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

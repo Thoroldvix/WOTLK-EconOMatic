@@ -11,13 +11,9 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface GoldPriceMapper {
     @Mapping(target = "serverName", source = "server", qualifiedByName = "serverName")
-    GoldPriceResponse toPriceResponse(GoldPrice goldPrice);
+    GoldPriceResponse toGoldPriceResponse(GoldPrice goldPrice);
 
-    @Mapping(target = "server", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    GoldPrice toServerPrice(GoldPriceResponse goldPriceResponse);
-
-    List<GoldPriceResponse> toPriceResponseList(List<GoldPrice> goldPrices);
+    List<GoldPriceResponse> toGoldPriceResponseList(List<GoldPrice> goldPrices);
 
     @Named("serverName")
     default String serverName(Server server) {

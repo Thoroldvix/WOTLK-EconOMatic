@@ -2,7 +2,7 @@ package com.thoroldvix.pricepal.goldprice.server.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.pricepal.server.ServerController;
-import com.thoroldvix.pricepal.server.ServerService;
+import com.thoroldvix.pricepal.server.ServerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,7 +18,7 @@ class ServerControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private ServerService serverServiceImpl;
+    private ServerServiceImpl serverServiceImpl;
 
 
 
