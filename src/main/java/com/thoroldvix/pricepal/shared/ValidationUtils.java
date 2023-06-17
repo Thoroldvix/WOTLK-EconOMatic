@@ -3,7 +3,6 @@ package com.thoroldvix.pricepal.shared;
 import org.springframework.lang.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -20,7 +19,7 @@ public final class ValidationUtils {
         }
     }
 
-    public static void validateNonNullOrEmptyString(String value, String errorMessage) {
+    public static void validateStringNonNullOrEmpty(String value, String errorMessage) {
         Objects.requireNonNull(errorMessage, "Error message cannot be null");
         if (!hasText(value)) {
             throw new IllegalArgumentException(errorMessage);

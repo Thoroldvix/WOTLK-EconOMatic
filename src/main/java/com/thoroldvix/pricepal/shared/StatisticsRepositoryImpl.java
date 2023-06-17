@@ -40,11 +40,6 @@ public class StatisticsRepositoryImpl<E> implements StatisticsRepository<E>{
         throw new IllegalArgumentException("Unsupported entity class");
     }
 
-    @Override
-    public Map<String, Object> getStats(Class<E> entityClass, SearchCriteria... searchCriteria) {
-        return null;
-    }
-
 
     private <E, N extends Number> Map<String, Object> getStatisticsForEntity(
             Specification<E> spec,

@@ -54,9 +54,7 @@ public class G2GPriceListDeserializer extends StdDeserializer<List<GoldPriceResp
             String server = matcher.group(1).toLowerCase().replaceAll("\\s+", "-");
             String faction = matcher.group(2).toLowerCase();
 
-
-
-           return server + "-" + faction;
+            return server + "-" + faction;
         }
         return serverName;
     }

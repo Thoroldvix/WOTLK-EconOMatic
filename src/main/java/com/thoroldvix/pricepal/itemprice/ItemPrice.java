@@ -5,13 +5,12 @@ import com.thoroldvix.pricepal.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Getter
-@Setter
 @ToString
 @RequiredArgsConstructor
 @Entity

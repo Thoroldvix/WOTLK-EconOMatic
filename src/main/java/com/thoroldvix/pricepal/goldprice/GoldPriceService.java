@@ -33,7 +33,7 @@ public class GoldPriceService {
         List<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(prices,
                 () -> new GoldPriceNotFoundException("No prices found"));
-        return goldPriceMapper.toGoldPriceResponseList(prices);
+        return goldPriceMapper.toResponseList(prices);
     }
 
     public List<GoldPriceResponse> getAllRecent(Pageable pageable) {
@@ -41,7 +41,7 @@ public class GoldPriceService {
         List<GoldPrice> prices = goldPriceRepository.findAllRecent(pageable).getContent();
         validateCollectionNotNullOrEmpty(prices,
                 () -> new GoldPriceNotFoundException("No prices found"));
-        return goldPriceMapper.toGoldPriceResponseList(prices);
+        return goldPriceMapper.toResponseList(prices);
     }
 
     public List<GoldPriceResponse> search(RequestDto requestDto,
@@ -52,24 +52,24 @@ public class GoldPriceService {
         List<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(prices,
                 () -> new GoldPriceNotFoundException("No prices found"));
-        return goldPriceMapper.toGoldPriceResponseList(prices);
+        return goldPriceMapper.toResponseList(prices);
     }
 
     public List<GoldPriceResponse> getForServer(String serverIdentifier,
                                                 Pageable pageable) {
-        validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
-        SearchCriteria joinCriteria = getJoinCriteria(serverIdentifier);
-        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, joinCriteria);
+        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
+        SearchCriteria serverCriteria = getJoinCriteria(serverIdentifier);
+        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, serverCriteria);
         List<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(prices,
                 () -> new PopulationNotFoundException("No prices found for server identifier: " + serverIdentifier));
-        return goldPriceMapper.toGoldPriceResponseList(prices);
+        return goldPriceMapper.toResponseList(prices);
     }
 
     public GoldPriceResponse getRecentForServer(String serverIdentifier) {
-        validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
+        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         Optional<GoldPrice> goldPrice = findRecentForServer(serverIdentifier);
-        return goldPrice.map(goldPriceMapper::toGoldPriceResponse)
+        return goldPrice.map(goldPriceMapper::toResponse)
                 .orElseThrow(() -> new GoldPriceNotFoundException("No recent price found for server identifier: " + serverIdentifier));
     }
 

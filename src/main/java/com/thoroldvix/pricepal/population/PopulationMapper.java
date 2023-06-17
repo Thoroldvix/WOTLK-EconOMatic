@@ -11,13 +11,13 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PopulationMapper {
 
-    @Mapping(target = "serverName", source = "server", qualifiedByName = "serverName")
-    PopulationResponse toPopulationResponse(Population population);
+    @Mapping(target = "serverName", source = "server", qualifiedByName = "name")
+    PopulationResponse toResponse(Population population);
 
-    List<PopulationResponse> toPopulationResponseList(List<Population>
+    List<PopulationResponse> toResponseList(List<Population>
                                                               population);
 
-    @Named("serverName")
+    @Named("name")
     default String serverName(Server server) {
         return server.getUniqueName();
     }

@@ -2,6 +2,8 @@ package com.thoroldvix.pricepal.itemprice;
 
 import com.thoroldvix.pricepal.shared.RequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,19 +18,28 @@ public class ItemPriceController {
 
 
     @GetMapping("/{serverIdentifier}")
-    public ResponseEntity<List<ItemPrice>> getAllRecentForServer(@PathVariable String serverIdentifier) {
-       return null;
+    public ResponseEntity<AuctionHouseInfo> getRecentForServer(@PathVariable String serverIdentifier) {
+        AuctionHouseInfo auctionHouseInfo = itemPriceService.getRecentForServer(serverIdentifier);
+        return ResponseEntity.ok(auctionHouseInfo);
     }
 
     @GetMapping("/{serverIdentifier}/{itemIdentifier}")
-    public ResponseEntity<ItemPrice> getForServerAndItem(@PathVariable String serverIdentifier,
-                                                         @PathVariable String itemIdentifier,
-                                                         @RequestParam int timerange) {
+    public ResponseEntity<AuctionHouseInfo> getRecentForServerAndItem(@PathVariable String serverIdentifier,
+                                                                 @PathVariable String itemIdentifier) {
+        AuctionHouseInfo auctionHouseInfo = itemPriceService.getRecentForServer(serverIdentifier, itemIdentifier);
+        return ResponseEntity.ok(auctionHouseInfo);
+    }
+     @GetMapping("/{serverIdentifier}/{itemIdentifier}/scans")
+    public ResponseEntity<ItemPriceResponse> getRecentForServerAndItem(@PathVariable String serverIdentifier,
+                                                                 @PathVariable String itemIdentifier,
+                                                                 @RequestParam int timeRange,
+                                                                 @ParameterObject Pageable pageable) {
         return null;
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<ItemPrice>> search(@RequestBody RequestDto requestDto) {
+    public ResponseEntity<List<ItemPriceResponse>> search(@RequestBody RequestDto requestDto,
+                                                          @ParameterObject Pageable pageable) {
         return null;
     }
 

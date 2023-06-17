@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.thoroldvix.pricepal.shared.ServerSearchCriteriaBuilder.getJoinCriteria;
-import static com.thoroldvix.pricepal.shared.ValidationUtils.validateNonNullOrEmptyString;
+import static com.thoroldvix.pricepal.shared.ValidationUtils.validateStringNonNullOrEmpty;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,8 +43,8 @@ public class GoldPriceStatsService {
         GoldPrice maxPrice = (GoldPrice) statisticsResponse.get("max");
         GoldPrice minPrice = (GoldPrice) statisticsResponse.get("min");
 
-        GoldPriceResponse min = goldPriceMapper.toGoldPriceResponse(minPrice);
-        GoldPriceResponse max = goldPriceMapper.toGoldPriceResponse(maxPrice);
+        GoldPriceResponse min = goldPriceMapper.toResponse(minPrice);
+        GoldPriceResponse max = goldPriceMapper.toResponse(maxPrice);
 
 
         long count = (long) statisticsResponse.get("count");
@@ -58,7 +58,7 @@ public class GoldPriceStatsService {
     }
 
     public StatsResponse<GoldPriceResponse> getForServer(String serverIdentifier) {
-        validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
+        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         SearchCriteria joinCriteria = getJoinCriteria(serverIdentifier);
         Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, joinCriteria);
         Map<String, Object> statisticsResponse = statisticsRepositoryImpl.getStats(spec, GoldPrice.class);

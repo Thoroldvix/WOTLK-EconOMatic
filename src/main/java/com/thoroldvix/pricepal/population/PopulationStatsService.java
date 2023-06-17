@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.thoroldvix.pricepal.shared.ServerSearchCriteriaBuilder.getJoinCriteria;
-import static com.thoroldvix.pricepal.shared.ValidationUtils.validateNonNullOrEmptyString;
+import static com.thoroldvix.pricepal.shared.ValidationUtils.validateStringNonNullOrEmpty;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,7 +21,7 @@ public class PopulationStatsService {
     private final StatisticsRepository<Population> statisticsRepositoryImpl;
 
     public StatsResponse<PopulationResponse> getForServer(String serverIdentifier) {
-        validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
+        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         SearchCriteria joinCriteria = getJoinCriteria(serverIdentifier);
         Specification<Population> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, joinCriteria);
         Map<String, Object> statisticsResponse = statisticsRepositoryImpl.getStats(spec, Population.class);
@@ -34,8 +34,8 @@ public class PopulationStatsService {
         Population maxPopulationSize = (Population) statisticsResponse.get("max");
         Population minPopulationSize = (Population) statisticsResponse.get("min");
 
-        PopulationResponse min = populationMapper.toPopulationResponse(minPopulationSize);
-        PopulationResponse max = populationMapper.toPopulationResponse(maxPopulationSize);
+        PopulationResponse min = populationMapper.toResponse(minPopulationSize);
+        PopulationResponse max = populationMapper.toResponse(maxPopulationSize);
 
 
         long count = (long) statisticsResponse.get("count");

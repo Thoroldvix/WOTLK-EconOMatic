@@ -4,9 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record TotalPopResponse(
-        int hordePop,
-        int alliancePop,
-        int totalPop,
-        String serverName
+        int popAlliance,
+        int popHorde,
+        int popTotal,
+        String name
 ) {
 }

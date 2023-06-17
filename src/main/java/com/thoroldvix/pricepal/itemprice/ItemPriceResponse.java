@@ -1,12 +1,15 @@
 package com.thoroldvix.pricepal.itemprice;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.thoroldvix.pricepal.item.ItemResponse;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 
 @Builder
 public record ItemPriceResponse(
-        int itemId,
+        String server,
+        ItemResponse itemInfo,
         long minBuyout,
         long historicalValue,
         long marketValue,

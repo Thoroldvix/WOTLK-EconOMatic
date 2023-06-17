@@ -32,18 +32,18 @@ public class PopulationService {
         List<Population> populations = populationRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(populations,
                 () -> new PopulationNotFoundException("No populations found"));
-        return populationMapper.toPopulationResponseList(populations);
+        return populationMapper.toResponseList(populations);
     }
 
     public List<PopulationResponse> getForServer(String serverIdentifier,
                                                  Pageable pageable) {
-        validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
-        SearchCriteria joinCriteria = getJoinCriteria(serverIdentifier);
-        Specification<Population> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, joinCriteria);
+        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
+        SearchCriteria serverCriteria = getJoinCriteria(serverIdentifier);
+        Specification<Population> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, serverCriteria);
         List<Population> populations = populationRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(populations,
                 () -> new PopulationNotFoundException("No populations found for server identifier: " + serverIdentifier));
-        return populationMapper.toPopulationResponseList(populations);
+        return populationMapper.toResponseList(populations);
     }
     @Transactional
     public void saveAll(List<Population> populations) {
@@ -53,15 +53,15 @@ public class PopulationService {
     }
 
     public TotalPopResponse getTotalPopulation(String serverName) {
-        validateNonNullOrEmptyString(serverName, "Server name cannot be null or empty");
+        validateStringNonNullOrEmpty(serverName, "Server name cannot be null or empty");
         TotalPopProjection totalPopProjection = populationRepository.findTotalPopulationForServerName(serverName)
                 .orElseThrow(() -> new PopulationNotFoundException("No population found for server name " + serverName));
 
         return TotalPopResponse.builder()
-                .alliancePop(totalPopProjection.getAlliancePop())
-                .hordePop(totalPopProjection.getHordePop())
-                .totalPop(totalPopProjection.getTotalPop())
-                .serverName(totalPopProjection.getServerName())
+                .popAlliance(totalPopProjection.getPopAlliance())
+                .popHorde(totalPopProjection.getPopHorde())
+                .popTotal(totalPopProjection.getPopTotal())
+                .name(totalPopProjection.getServerName())
                 .build();
     }
 
@@ -75,7 +75,7 @@ public class PopulationService {
         validateCollectionNotNullOrEmpty(populations,
                 () -> new PopulationNotFoundException("No populations found"));
 
-        return populationMapper.toPopulationResponseList(populations);
+        return populationMapper.toResponseList(populations);
     }
 
     public List<PopulationResponse> getAllRecent(Pageable pageable) {
@@ -83,13 +83,13 @@ public class PopulationService {
         List<Population> populations = populationRepository.findAllRecent(pageable).getContent();
         validateCollectionNotNullOrEmpty(populations,
                 () -> new PopulationNotFoundException("No populations found"));
-        return populationMapper.toPopulationResponseList(populations);
+        return populationMapper.toResponseList(populations);
     }
 
     public PopulationResponse getRecentForServer(String serverIdentifier) {
-        validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
+        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         Optional<Population> population = findRecentForServer(serverIdentifier);
-        return population.map(populationMapper::toPopulationResponse)
+        return population.map(populationMapper::toResponse)
                         .orElseThrow(() -> new PopulationNotFoundException("No recent population found for server identifier: " + serverIdentifier));
     }
 

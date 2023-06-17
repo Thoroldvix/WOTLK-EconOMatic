@@ -9,31 +9,13 @@ public final class ServerSearchCriteriaBuilder {
     }
 
     public static SearchCriteria getJoinCriteria(String serverIdentifier) {
-        try {
-            int serverId = Integer.parseInt(serverIdentifier);
-            validatePositiveInt(serverId, "Server id must be positive");
-            return getJoinCriteriaForServerId(serverId);
-        } catch (NumberFormatException e){
-            return getJoinCriteriaForServerUniqueName(serverIdentifier);
-        }
-    }
-
-    private static SearchCriteria getJoinCriteriaForServerId(int serverId) {
+       boolean isNumber = isNumber(serverIdentifier);
        return SearchCriteria.builder()
-                .column("id")
-                .joinTable("server")
-                .value(String.valueOf(serverId))
-                .operation(SearchCriteria.Operation.EQUALS)
-                .build();
+               .column(isNumber ? "id" : "uniqueName")
+               .operation(SearchCriteria.Operation.EQUALS)
+               .value(serverIdentifier)
+               .joinTable("server")
+               .build();
     }
 
-    private static SearchCriteria getJoinCriteriaForServerUniqueName(String uniqueName) {
-        return SearchCriteria.builder()
-                .column("uniqueName")
-                .joinTable("server")
-                .value(uniqueName)
-                .operation(SearchCriteria.Operation.EQUALS)
-                .build();
-
-    }
 }

@@ -4,8 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record ItemResponse(
-        int id,
+        int itemId,
         ItemType type,
+        long vendorPrice,
         ItemQuality quality,
         ItemSlot slot,
         String name,

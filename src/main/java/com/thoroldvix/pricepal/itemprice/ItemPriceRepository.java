@@ -1,13 +1,31 @@
 package com.thoroldvix.pricepal.itemprice;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 
 @Repository
-public interface ItemPriceRepository extends JpaRepository<ItemPrice, Long> {
+public interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, JpaSpecificationExecutor<ItemPrice> {
+
+    @Query("select ip" +
+           " from ItemPrice ip join fetch ip.item " +
+           "where ip.server.id = ?1" +
+           " and ip.updatedAt = (select max(ip2.updatedAt) from ItemPrice ip2 where ip2.server.id = ?1)")
+    List<ItemPrice> findAllRecentByServerId(int serverId);
+
+
+    @Query("select ip" +
+           " from ItemPrice ip join fetch ip.item " +
+           " where ip.server.uniqueName = ?1" +
+           " and ip.updatedAt = (select max(ip2.updatedAt) from ItemPrice ip2 where ip2.server.uniqueName = ?1)")
+    List<ItemPrice> findAllRecentByUniqueServerName(String uniqueName);
 
 
 

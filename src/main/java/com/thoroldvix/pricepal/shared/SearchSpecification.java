@@ -6,15 +6,13 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.thoroldvix.pricepal.shared.PredicateUtils.getPredicateFromOperation;
-import static com.thoroldvix.pricepal.shared.ValidationUtils.*;
+import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 
 @Component
 public class SearchSpecification<E> {
@@ -57,13 +55,11 @@ public class SearchSpecification<E> {
     }
 
     private Predicate getSpecFromPredicates(RequestDto.GlobalOperator globalOperator, CriteriaBuilder cb, List<Predicate> predicates) {
-        if (globalOperator.equals(RequestDto.GlobalOperator.OR)) {
-            return cb.or(predicates.toArray(new Predicate[0]));
-        } else if (globalOperator.equals(RequestDto.GlobalOperator.NOT)) {
-            return cb.not(cb.or(predicates.toArray(new Predicate[0])));
-        } else {
-            return cb.and(predicates.toArray(new Predicate[0]));
-        }
+        return switch (globalOperator) {
+            case OR -> cb.or(predicates.toArray(new Predicate[0]));
+            case NOT -> cb.not(cb.or(predicates.toArray(new Predicate[0])));
+            default -> cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     private Path<?> getColumnPath(Root<E> root, SearchCriteria searchCriteria) {

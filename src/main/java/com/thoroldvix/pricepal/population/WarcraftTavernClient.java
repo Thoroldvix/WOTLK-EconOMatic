@@ -5,11 +5,12 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Map;
-
-@FeignClient(name = "population", url = "https://api.warcrafttavern.com/armory/server/wotlk/")
+@FeignClient(name = "population", url = "https://api.warcrafttavern.com/armory")
 public interface WarcraftTavernClient {
 
-    @GetMapping("{region}/{server}")
-    Map<String, String> getPopulationForServer(@PathVariable Region region, @PathVariable String server);
+    @GetMapping("/server/wotlk/{region}/{server}")
+    String getForServerAndRegion(@PathVariable Region region, @PathVariable String server);
+
+    @GetMapping("/servers/wotlk")
+    String getAll();
 }

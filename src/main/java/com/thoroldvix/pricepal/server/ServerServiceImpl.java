@@ -3,6 +3,7 @@ package com.thoroldvix.pricepal.server;
 import com.thoroldvix.pricepal.shared.RequestDto;
 import com.thoroldvix.pricepal.shared.SearchSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +26,9 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public ServerResponse getServer(String serverIdentifier) {
-        validateNonNullOrEmptyString(serverIdentifier, "Server identifier cannot be null or empty");
+        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         Optional<Server> server = findServer(serverIdentifier);
-        return server.map(serverMapper::toServerResponse)
+        return server.map(serverMapper::toResponse)
                 .orElseThrow(() -> new ServerNotFoundException("No server found for identifier: " + serverIdentifier));
     }
 
@@ -38,14 +39,15 @@ public class ServerServiceImpl implements ServerService {
                 searchSpecification.createSearchSpecification(requestDto.globalOperator(), requestDto.searchCriteria());
         List<Server> servers = serverRepository.findAll(spec);
         validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found"));
-        return serverMapper.toServerResponseList(servers);
+        return serverMapper.toResponseList(servers);
     }
 
     @Override
+    @Cacheable(value= "server-cache")
     public List<ServerResponse> getAll() {
         List<Server> servers = serverRepository.findAll();
         validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found"));
-        return serverMapper.toServerResponseList(servers);
+        return serverMapper.toResponseList(servers);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class ServerServiceImpl implements ServerService {
         Objects.requireNonNull(region, "Region cannot be null");
         List<Server> servers = serverRepository.findAllByRegion(region);
         validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + region.name()));
-        return serverMapper.toServerResponseList(servers);
+        return serverMapper.toResponseList(servers);
     }
 
     private Optional<Server> findServer(String serverIdentifier) {

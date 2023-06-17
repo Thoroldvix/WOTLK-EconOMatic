@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.thoroldvix.pricepal.item.ItemResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class AuctionHouseInfoDeserializer extends StdDeserializer<AuctionHouseIn
     public AuctionHouseInfo deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         List<ItemPriceResponse> items = new ArrayList<>();
-        String slug = node.get("slug").asText();
+        String slug = node.get("server").asText();
         JsonNode resultNode = node.get("data");
         if (resultNode.isArray()) {
             for (JsonNode item : resultNode) {
@@ -43,8 +44,11 @@ public class AuctionHouseInfoDeserializer extends StdDeserializer<AuctionHouseIn
         int numAuctions = item.get("numAuctions").asInt();
         int quantity = item.get("quantity").asInt();
 
-        return ItemPriceResponse.builder()
+        ItemResponse itemInfo = ItemResponse.builder()
                 .itemId(itemId)
+                .build();
+        return ItemPriceResponse.builder()
+                .itemInfo(itemInfo)
                 .historicalValue(historicalValue)
                 .marketValue(marketValue)
                 .minBuyout(minBuyout)

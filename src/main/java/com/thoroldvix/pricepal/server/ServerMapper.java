@@ -11,8 +11,8 @@ import java.util.List;
         uses = {GoldPriceMapper.class, PopulationMapper.class})
 public interface ServerMapper {
 
-    ServerResponse toServerResponse(Server server);
+    ServerResponse toResponse(Server server);
 
-    List<ServerResponse> toServerResponseList(List<Server> servers);
+    List<ServerResponse> toResponseList(List<Server> servers);
 
 }

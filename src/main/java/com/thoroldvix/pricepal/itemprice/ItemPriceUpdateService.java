@@ -10,21 +10,18 @@ import com.thoroldvix.pricepal.server.ServerService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ItemPriceUpdateService {
+public final class ItemPriceUpdateService {
     @PersistenceContext
     private final EntityManager entityManager;
     private final NexusHubClient nexusHubClient;
@@ -34,7 +31,7 @@ public class ItemPriceUpdateService {
     private final RateLimiter rateLimiter = RateLimiter.create(4);
 
 
-    public ItemPriceUpdateService(EntityManager entityManager,
+    private ItemPriceUpdateService(EntityManager entityManager,
                                   NexusHubClient nexusHubClient,
                                   ServerService serverServiceImpl,
                                   ItemService itemServiceImpl,
@@ -44,11 +41,10 @@ public class ItemPriceUpdateService {
         this.itemPriceService = itemPriceService;
         this.SERVER_IDENTIFIERS = getServerIds(serverServiceImpl);
         this.ITEM_IDS = getItemIds(itemServiceImpl);
-
     }
 
-    @Scheduled(fixedRate = 3, timeUnit = TimeUnit.HOURS)
-    protected void updateItemPrices() {
+//    @Scheduled(fixedRate = 3, timeUnit = TimeUnit.HOURS)
+    private void update() {
         log.info("Updating item prices");
         Instant start = Instant.now();
         SERVER_IDENTIFIERS.keySet().parallelStream()
@@ -57,24 +53,27 @@ public class ItemPriceUpdateService {
                     itemPriceService.saveAll(itemPrices);
                 });
         Instant finish = Instant.now();
-        log.info("Finished updating item prices in {} ms", Duration.between(start, finish).toSeconds());
+        log.info("Finished updating item prices in {} ms", Duration.between(start, finish).toMillis());
     }
 
     private List<ItemPrice> retrieveItemPrices(String serverName) {
         rateLimiter.acquire();
-        AuctionHouseInfo auctionHouseInfo = nexusHubClient.getAllItemPricesForServer(serverName);
-        Server server = getServer(SERVER_IDENTIFIERS, auctionHouseInfo.slug());
-        return getItemPrices(auctionHouseInfo.items(), server, ITEM_IDS);
+        AuctionHouseInfo auctionHouseInfo = nexusHubClient.fetchAllItemPricesForServer(serverName);
+        Server server = getServer(auctionHouseInfo.server());
+        List<ItemPriceResponse> filteredPrices = filterPrices(auctionHouseInfo.items());
+        return getItemPrices(server, filteredPrices);
     }
+
 
     private Set<Integer> getItemIds(ItemService itemService) {
         return itemService.getAll().stream()
-                .map(ItemResponse::id)
+                .map(ItemResponse::itemId)
                 .collect(Collectors.toSet());
     }
 
-    private Server getServer(Map<String, Integer> serverIds, String uniqueServerName) {
-        return entityManager.getReference(Server.class, (serverIds.get(uniqueServerName)));
+    private Server getServer(String uniqueServerName) {
+        int serverId = SERVER_IDENTIFIERS.get(uniqueServerName);
+        return entityManager.getReference(Server.class, serverId);
     }
 
     private Map<String, Integer> getServerIds(ServerService serverService) {
@@ -82,15 +81,22 @@ public class ItemPriceUpdateService {
                 .collect(Collectors.toMap(ServerResponse::uniqueName, ServerResponse::id, (id1, id2) -> id1));
     }
 
-    private List<ItemPrice> getItemPrices(List<ItemPriceResponse> items, Server server, Set<Integer> itemIds) {
+    private List<ItemPriceResponse> filterPrices(List<ItemPriceResponse> items) {
         return items.stream()
-                .filter(itemPriceResponse -> itemIds.contains(itemPriceResponse.itemId()))
-                .map(itemResponse -> getItemPrice(server, itemResponse))
+                .filter(itemPriceResponse -> ITEM_IDS.contains(itemPriceResponse.itemInfo().itemId()))
+                .filter(itemPriceResponse -> itemPriceResponse.quantity() > 0)
+                .filter(itemPriceResponse -> itemPriceResponse.numAuctions() > 0)
                 .collect(Collectors.toList());
     }
 
+    private List<ItemPrice> getItemPrices(Server server, List<ItemPriceResponse> filteredPrices) {
+        return filteredPrices.stream()
+                .map(itemResponse -> getItemPrice(server, itemResponse))
+                .toList();
+    }
+
     private ItemPrice getItemPrice(Server server, ItemPriceResponse itemResponse) {
-        Item item = entityManager.getReference(Item.class, itemResponse.itemId());
+        Item item = entityManager.getReference(Item.class, itemResponse.itemInfo().itemId());
         return ItemPrice.builder()
                 .item(item)
                 .marketValue(itemResponse.marketValue())
