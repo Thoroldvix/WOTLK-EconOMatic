@@ -4,7 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record StatsResponse<T>(
-        Number average,
+        Number mean,
+        Number median,
         T minimum,
         T maximum,
         long count

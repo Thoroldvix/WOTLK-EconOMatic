@@ -3,7 +3,7 @@ package com.thoroldvix.pricepal.goldprice.server;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.pricepal.goldprice.G2GPriceListDeserializer;
+import com.thoroldvix.pricepal.goldprice.GoldPriceDeserializer;
 import com.thoroldvix.pricepal.goldprice.GoldPriceResponse;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ class G2GGoldPriceListDeserializerTest {
 
         JsonParser jp = new ObjectMapper().getFactory().createParser(json);
         DeserializationContext ctxt = new ObjectMapper().getDeserializationContext();
-        List<GoldPriceResponse> prices = new G2GPriceListDeserializer().deserialize(jp, ctxt);
+        List<GoldPriceResponse> prices = new GoldPriceDeserializer().deserialize(jp, ctxt);
 
         assertThat(prices).hasSize(2);
         assertThat(prices.get(0).serverName()).isEqualTo("giantstalker-horde");

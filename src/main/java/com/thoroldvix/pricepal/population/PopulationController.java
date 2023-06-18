@@ -2,6 +2,7 @@ package com.thoroldvix.pricepal.population;
 
 import com.thoroldvix.pricepal.shared.RequestDto;
 import com.thoroldvix.pricepal.shared.StatsResponse;
+import com.thoroldvix.pricepal.shared.StatsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -27,7 +28,7 @@ import java.util.List;
 public class PopulationController {
 
     private final PopulationService populationService;
-    private final PopulationStatsService populationStatsService;
+    private final StatsService<PopulationResponse> populationStatsService;
 
     @Operation(summary = "Retrieves all populations",
             description = "Return all population scans for given time range in days")
@@ -94,11 +95,29 @@ public class PopulationController {
     })
     @GetMapping(value = "/servers/{serverIdentifier}/recent",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PopulationResponse> getRecentForServer(
+    public ResponseEntity<?> getRecentForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
-            @PathVariable String serverIdentifier) {
+            @PathVariable String serverIdentifier,
+            @Parameter(description = "Whether to return population for both factions or not, if true then server identifier is treated as server name without faction (e.g. everlook)")
+            @RequestParam (defaultValue = "false") boolean totalPop) {
+        if (totalPop) {
+            TotalPopResponse totalPopulation = populationService.getTotalPopulation(serverIdentifier);
+            return ResponseEntity.ok(totalPopulation);
+        }
         PopulationResponse population = populationService.getRecentForServer(serverIdentifier);
         return ResponseEntity.ok(population);
+    }
+
+    @GetMapping("/regions/{regionName}")
+    public ResponseEntity<List<PopulationResponse>> getForRegion(@PathVariable String regionName) {
+        List<PopulationResponse> populationForRegion = populationService.getRecentForRegion(regionName);
+        return ResponseEntity.ok(populationForRegion);
+    }
+
+    @GetMapping("/factions/{factionName}")
+    public ResponseEntity<List<PopulationResponse>> getForFaction(@PathVariable String factionName) {
+        List<PopulationResponse> populationForFaction = populationService.getRecentForFaction(factionName);
+        return ResponseEntity.ok(populationForFaction);
     }
 
     @Operation(summary = "Retrieves populations for specified search criteria",
@@ -159,45 +178,15 @@ public class PopulationController {
         return ResponseEntity.ok(statsForServer);
     }
 
-    @Operation(summary = "Retrieves population of both factions for given server name",
-            description = "Returns populations of both factions as well as total population for given server name")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval of population",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = TotalPopResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Incorrect server name", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No population found for server name", content = @Content),
-            @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
-    })
-    @GetMapping(value = "/servers/{serverName}/total",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TotalPopResponse> getTotalPopulation(
-            @Parameter(description = "Server name (e.g. 'Everlook') case insensitive")
-            @PathVariable String serverName) {
-        TotalPopResponse totalPopulationForServerName = populationService.getTotalPopulation(serverName);
-        return ResponseEntity.ok(totalPopulationForServerName);
+    @GetMapping("/stats/regions/{regionName}")
+    public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForRegion(@PathVariable String regionName) {
+        StatsResponse<PopulationResponse> statsForRegion = populationStatsService.getForRegion(regionName);
+        return ResponseEntity.ok(statsForRegion);
     }
-
-    @Operation(summary = "Retrieves basic population statistics for a specified search criteria",
-            description = "The statistics are based on the provided search criteria and the time range in days")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = StatsResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Incorrect search criteria", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No statistics found for search criteria", content = @Content),
-            @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
-    })
-    @PostMapping(value = "/stats/search",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForSearch(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria to retrieve statistics for Based on population properties")
-            @RequestBody RequestDto requestDto) {
-
-        StatsResponse<PopulationResponse> statsForSearch = populationStatsService.getForSearch(requestDto);
-        return ResponseEntity.ok(statsForSearch);
+     @GetMapping("/stats/factions/{factionName}")
+    public ResponseEntity<StatsResponse<PopulationResponse>> getStatsForFaction(@PathVariable String factionName) {
+        StatsResponse<PopulationResponse> statsForFaction = populationStatsService.getForFaction(factionName);
+        return ResponseEntity.ok(statsForFaction);
     }
-
 
 }

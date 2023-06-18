@@ -1,10 +1,8 @@
 package com.thoroldvix.pricepal.goldprice;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.thoroldvix.pricepal.server.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +66,7 @@ public final class GoldPriceUpdateService {
     }
 
      private List<GoldPriceResponse> extractFromJson(String goldPricesJson) {
-        G2GPriceListDeserializer deserializer = new G2GPriceListDeserializer();
+        GoldPriceDeserializer deserializer = new GoldPriceDeserializer();
         ObjectMapper mapper = new ObjectMapper();
         DeserializationContext context = mapper.getDeserializationContext();
         JsonParser parser;

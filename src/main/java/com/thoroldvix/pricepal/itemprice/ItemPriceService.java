@@ -4,6 +4,7 @@ import com.thoroldvix.pricepal.item.ItemService;
 import com.thoroldvix.pricepal.shared.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,11 @@ public class ItemPriceService {
     private final JdbcTemplate jdbcTemplate;
 
 
-    @Transactional
-    public void saveAll(List<ItemPrice> itemPricesToSave) {
-        Objects.requireNonNull(itemPricesToSave, "Item prices cannot be null");
-        itemPriceRepository.saveAll(itemPricesToSave, jdbcTemplate);
-    }
-
     public AuctionHouseInfo getRecentForServer(String serverIdentifier) {
         validateStringNonNullOrEmpty(serverIdentifier, "Server identifier must not be null or empty");
+
         List<ItemPrice> itemPrices = findAllRecentForServer(serverIdentifier);
+
         validateCollectionNotNullOrEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for server identifier " + serverIdentifier));
 
@@ -45,23 +42,57 @@ public class ItemPriceService {
     public AuctionHouseInfo getRecentForServer(String serverIdentifier, String itemIdentifier) {
         validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         validateStringNonNullOrEmpty(itemIdentifier, "Item identifier cannot be null or empty");
-        SearchCriteria[] searchCriteria = getSearchCriteria(serverIdentifier, itemIdentifier);
-        Specification<ItemPrice> specification = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, searchCriteria);
+
+        Specification<ItemPrice> specification = getServerItemSpec(serverIdentifier, itemIdentifier);
         List<ItemPrice> itemPrices = itemPriceRepository.findAll(specification);
+
         validateCollectionNotNullOrEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException(String.format("No item prices found for server identifier %s and item identifier %s", serverIdentifier, itemIdentifier)));
 
         return createAuctionHouseInfo(itemPrices);
     }
 
+    public AuctionHouseInfo getForTimeRange(String serverIdentifier, String itemIdentifier, int timeRange, Pageable pageable) {
+        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
+        validateStringNonNullOrEmpty(itemIdentifier, "Item identifier cannot be null or empty");
+        validatePositiveInt(timeRange, "Time range must be a positive integer");
+        Objects.requireNonNull(pageable, "Pageable cannot be null");
+
+        Specification<ItemPrice> timeRangeSpec = searchSpecification.getSpecForTimeRange(timeRange);
+        Specification<ItemPrice> combinedSpec = getServerItemSpec(serverIdentifier, itemIdentifier).and(timeRangeSpec);
+        List<ItemPrice> itemPrices = itemPriceRepository.findAll(combinedSpec, pageable).getContent();
+
+        validateCollectionNotNullOrEmpty(itemPrices,
+                () -> new ItemPriceNotFoundException(
+                        String.format("No item prices found for time range %s for server identifier %s and item identifier %s",
+                                timeRange, serverIdentifier, itemIdentifier)));
+
+        return createAuctionHouseInfo(itemPrices);
+    }
+
+    @Transactional
+    public void saveAll(List<ItemPrice> itemPricesToSave) {
+        Objects.requireNonNull(itemPricesToSave, "Item prices cannot be null");
+
+        itemPriceRepository.saveAll(itemPricesToSave, jdbcTemplate);
+    }
+
     private SearchCriteria[] getSearchCriteria(String serverIdentifier, String itemIdentifier) {
         SearchCriteria serverCriteria = ServerSearchCriteriaBuilder.getJoinCriteria(serverIdentifier);
         SearchCriteria itemCriteria = getItemCriteria(itemIdentifier);
+
         return new SearchCriteria[]{serverCriteria, itemCriteria};
+    }
+
+     private Specification<ItemPrice> getServerItemSpec(String serverIdentifier, String itemIdentifier) {
+        SearchCriteria[] searchCriteria = getSearchCriteria(serverIdentifier, itemIdentifier);
+
+        return searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, searchCriteria);
     }
 
     private SearchCriteria getItemCriteria(String itemIdentifier) {
         boolean isNumber = isNumber(itemIdentifier);
+
         return SearchCriteria.builder()
                 .column(isNumber ? "id" : "uniqueName")
                 .joinTable("item")
@@ -72,6 +103,7 @@ public class ItemPriceService {
 
     private AuctionHouseInfo createAuctionHouseInfo(List<ItemPrice> itemPrices) {
         List<ItemPriceResponse> items = itemPriceMapper.toResponseList(itemPrices);
+
         return AuctionHouseInfo.builder()
                 .items(items)
                 .build();

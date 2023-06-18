@@ -1,8 +1,11 @@
 package com.thoroldvix.pricepal.population;
 
+import com.thoroldvix.pricepal.server.Faction;
+import com.thoroldvix.pricepal.server.Region;
 import com.thoroldvix.pricepal.shared.RequestDto;
 import com.thoroldvix.pricepal.shared.SearchCriteria;
 import com.thoroldvix.pricepal.shared.SearchSpecification;
+import com.thoroldvix.pricepal.shared.StringEnumConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -45,6 +48,7 @@ public class PopulationService {
                 () -> new PopulationNotFoundException("No populations found for server identifier: " + serverIdentifier));
         return populationMapper.toResponseList(populations);
     }
+
     @Transactional
     public void saveAll(List<Population> populations) {
         validateCollectionNotNullOrEmpty(populations,
@@ -90,7 +94,23 @@ public class PopulationService {
         validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         Optional<Population> population = findRecentForServer(serverIdentifier);
         return population.map(populationMapper::toResponse)
-                        .orElseThrow(() -> new PopulationNotFoundException("No recent population found for server identifier: " + serverIdentifier));
+                .orElseThrow(() -> new PopulationNotFoundException("No recent population found for server identifier: " + serverIdentifier));
+    }
+
+    public List<PopulationResponse> getRecentForRegion(String regionName) {
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        List<Population> population = populationRepository.findRecentForRegion(region);
+        List<PopulationResponse> populations = populationMapper.toResponseList(population);
+        validateCollectionNotNullOrEmpty(populations, () -> new PopulationNotFoundException("No recent populations found for region: " + regionName));
+        return populations;
+    }
+
+    public List<PopulationResponse> getRecentForFaction(String factionName) {
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        List<Population> population = populationRepository.findRecentForFaction(faction);
+        List<PopulationResponse> populations = populationMapper.toResponseList(population);
+        validateCollectionNotNullOrEmpty(populations, () -> new PopulationNotFoundException("No recent populations found for faction: " + factionName));
+        return populations;
     }
 
     private Optional<Population> findRecentForServer(String serverIdentifier) {

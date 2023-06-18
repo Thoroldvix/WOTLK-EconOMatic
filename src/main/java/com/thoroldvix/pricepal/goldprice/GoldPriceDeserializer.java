@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class G2GPriceListDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
+public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
 
-    public G2GPriceListDeserializer() {
+    public GoldPriceDeserializer() {
         this(null);
     }
 
-    public G2GPriceListDeserializer(Class<?> vc) {
+    public GoldPriceDeserializer(Class<?> vc) {
         super(vc);
     }
 

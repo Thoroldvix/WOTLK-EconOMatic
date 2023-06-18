@@ -1,7 +1,9 @@
 package com.thoroldvix.pricepal.goldprice;
 
+import com.thoroldvix.pricepal.population.PopulationResponse;
 import com.thoroldvix.pricepal.shared.RequestDto;
 import com.thoroldvix.pricepal.shared.StatsResponse;
+import com.thoroldvix.pricepal.shared.StatsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -26,7 +28,7 @@ import java.util.List;
 public class GoldPriceController {
 
     private final GoldPriceService goldPriceService;
-    private final GoldPriceStatsService goldPriceStatsService;
+    private final StatsService<GoldPriceResponse> goldPriceStatsService;
 
     @Operation(summary = "Retrieves all prices",
             description = "Returns all price scans for given time range in days")
@@ -39,7 +41,7 @@ public class GoldPriceController {
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GoldPriceResponse>> getAll(@Parameter(description = "Range of days to retrieve prices for")
-                                                                  @RequestParam(defaultValue = "7") int timeRange,
+                                                          @RequestParam(defaultValue = "7") int timeRange,
                                                           @ParameterObject Pageable pageable) {
         List<GoldPriceResponse> prices = goldPriceService.getAll(timeRange, pageable);
         return ResponseEntity.ok(prices);
@@ -76,7 +78,7 @@ public class GoldPriceController {
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier,
             @ParameterObject Pageable pageable) {
-        List<GoldPriceResponse> prices = goldPriceService.getForServer(serverIdentifier,  pageable);
+        List<GoldPriceResponse> prices = goldPriceService.getForServer(serverIdentifier, pageable);
         return ResponseEntity.ok(prices);
     }
 
@@ -156,24 +158,17 @@ public class GoldPriceController {
         return ResponseEntity.ok(statsForServer);
     }
 
-    @Operation(summary = "Retrieves basic price statistics for a specified search criteria",
-            description = "The statistics are based on the provided search criteria and the time range in days")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval of  statistics",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = StatsResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Incorrect search criteria", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No statistics found for search criteria", content = @Content),
-            @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
-    })
-    @PostMapping(value = "/stats/search",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StatsResponse<GoldPriceResponse>> getStatsForSearch(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria to retrieve statistics for. Based on price properties")
-            @RequestBody RequestDto requestDto) {
-
-        StatsResponse<GoldPriceResponse> statsForSearch = goldPriceStatsService.getForSearch(requestDto);
-        return ResponseEntity.ok(statsForSearch);
+    @GetMapping("/stats/regions/{regionName}")
+    public ResponseEntity<StatsResponse<GoldPriceResponse>> getStatsForRegion(@PathVariable String regionName) {
+        StatsResponse<GoldPriceResponse> statsForRegion = goldPriceStatsService.getForRegion(regionName);
+        return ResponseEntity.ok(statsForRegion);
     }
+
+    @GetMapping("/stats/factions/{factionName}")
+    public ResponseEntity<StatsResponse<GoldPriceResponse>> getStatsForFaction(@PathVariable String factionName) {
+        StatsResponse<GoldPriceResponse> statsForFaction = goldPriceStatsService.getForFaction(factionName);
+        return ResponseEntity.ok(statsForFaction);
+    }
+
+
 }
