@@ -4,10 +4,29 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoField;
 import java.util.Arrays;
 
 public final class PredicateUtils {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER;
+
+    static {
+        DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+                .appendPattern("dd-MM-yyyy")
+                .optionalStart()
+                .appendPattern(" HH:mm")
+                .optionalEnd()
+                .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                .toFormatter();
+    }
 
     private PredicateUtils() {
     }
@@ -27,6 +46,7 @@ public final class PredicateUtils {
         };
     }
 
+
     public static Predicate getLessThanOrEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
         return switch (columnType.getSimpleName()) {
@@ -34,7 +54,7 @@ public final class PredicateUtils {
             case "Long" -> cb.lessThanOrEqualTo(columnPath.as(Long.class), Long.parseLong(value));
             case "Double" -> cb.lessThanOrEqualTo(columnPath.as(Double.class), Double.parseDouble(value));
             case "LocalDateTime" ->
-                    cb.lessThanOrEqualTo(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value));
+                    cb.lessThanOrEqualTo(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
             default ->
                     throw new IllegalArgumentException("Invalid operation: LESS_THAN_OR_EQUALS is only applicable to numeric and date-time column types.");
         };
@@ -47,7 +67,7 @@ public final class PredicateUtils {
             case "Long" -> cb.greaterThanOrEqualTo(columnPath.as(Long.class), Long.parseLong(value));
             case "Double" -> cb.greaterThanOrEqualTo(columnPath.as(Double.class), Double.parseDouble(value));
             case "LocalDateTime" ->
-                    cb.greaterThanOrEqualTo(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value));
+                    cb.greaterThanOrEqualTo(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
             default ->
                     throw new IllegalArgumentException("Invalid operation: GREATER_THAN is only applicable to numeric and date-time column types.");
         };
@@ -100,7 +120,8 @@ public final class PredicateUtils {
             case "Integer" -> cb.lessThan(columnPath.as(Integer.class), Integer.parseInt(value));
             case "Long" -> cb.lessThan(columnPath.as(Long.class), Long.parseLong(value));
             case "Double" -> cb.lessThan(columnPath.as(Double.class), Double.parseDouble(value));
-            case "LocalDateTime" -> cb.lessThan(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value));
+            case "LocalDateTime" ->
+                    cb.lessThan(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
             default ->
                     throw new IllegalArgumentException("Invalid operation: LESS_THAN is only applicable to numeric and date-time column types.");
         };
@@ -112,15 +133,22 @@ public final class PredicateUtils {
             case "Integer" -> cb.greaterThan(columnPath.as(Integer.class), Integer.parseInt(value));
             case "Long" -> cb.greaterThan(columnPath.as(Long.class), Long.parseLong(value));
             case "Double" -> cb.greaterThan(columnPath.as(Double.class), Double.parseDouble(value));
-            case "LocalDateTime" -> cb.greaterThan(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value));
+            case "LocalDateTime" ->
+                    cb.greaterThan(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
             default ->
                     throw new IllegalArgumentException("Invalid operation: GREATER_THAN is only applicable to numeric and date-time column types.");
         };
     }
 
     private static Predicate getLocalDateTimeBetweenPredicate(CriteriaBuilder cb, Path<?> columnPath, String lowerBound, String upperBound) {
-        return cb.between(columnPath.as(LocalDateTime.class), LocalDateTime.parse(lowerBound), LocalDateTime.parse(upperBound));
+        LocalDateTime start = LocalDateTime.parse(lowerBound, DATE_TIME_FORMATTER);
+        LocalDateTime end = LocalDateTime.parse(upperBound, DATE_TIME_FORMATTER);
+        if (end.getHour() == 0 && end.getMinute() == 0 && end.getSecond() == 0) {
+            end = end.with(LocalTime.MAX);
+        }
+        return cb.between(columnPath.as(LocalDateTime.class), start, end);
     }
+
 
     private static Predicate getDoubleBetweenPredicate(CriteriaBuilder cb, Path<?> columnPath, String lowerBound, String upperBound) {
         return cb.between(columnPath.as(Double.class), Double.parseDouble(lowerBound), Double.parseDouble(upperBound));
