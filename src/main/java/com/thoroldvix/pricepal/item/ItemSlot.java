@@ -3,7 +3,7 @@ package com.thoroldvix.pricepal.item;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ItemSlot {
-    NON_EQUIPPABLE,
+    NON_EQUIPABLE,
     HEAD,
     NECK,
     SHOULDER,

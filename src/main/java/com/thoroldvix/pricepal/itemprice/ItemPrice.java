@@ -4,10 +4,11 @@ import com.thoroldvix.pricepal.item.Item;
 import com.thoroldvix.pricepal.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Builder
 @Getter
@@ -45,4 +46,16 @@ public class ItemPrice {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        ItemPrice itemPrice = (ItemPrice) o;
+        return getId() != null && Objects.equals(getId(), itemPrice.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

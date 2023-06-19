@@ -6,6 +6,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -34,6 +35,11 @@ public class ControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
+        ApiError apiError = getApiError("Bad request", HttpStatus.BAD_REQUEST, request);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
         ApiError apiError = getApiError("Bad request", HttpStatus.BAD_REQUEST, request);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }

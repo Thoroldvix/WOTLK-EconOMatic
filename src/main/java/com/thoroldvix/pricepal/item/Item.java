@@ -3,6 +3,9 @@ package com.thoroldvix.pricepal.item;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GeneratedColumn;
+import org.hibernate.annotations.GenerationTime;
 
 import java.util.Objects;
 
@@ -34,6 +37,7 @@ public class Item {
     private ItemSlot slot;
 
     @Column(nullable = false)
+    @Generated(GenerationTime.INSERT)
     private String uniqueName;
 
     @Column(nullable = false)

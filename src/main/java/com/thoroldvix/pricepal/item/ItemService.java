@@ -13,4 +13,8 @@ public interface ItemService {
     List<ItemResponse> getAll();
 
     ItemResponse getItem(String itemIdentifier);
+
+    ItemSummaryResponse getSummary();
+
+    ItemResponse addItem(ItemRequest itemRequest);
 }

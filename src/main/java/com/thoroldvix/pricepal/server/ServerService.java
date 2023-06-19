@@ -13,4 +13,6 @@ public interface ServerService {
     List<ServerResponse> getAll();
 
     List<ServerResponse> getAllForRegion(Region region);
+
+    ServerSummaryResponse getSummary();
 }

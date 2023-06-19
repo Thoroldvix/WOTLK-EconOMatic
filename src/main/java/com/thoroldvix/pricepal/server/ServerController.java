@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 
@@ -78,5 +79,12 @@ public class ServerController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ServerResponse>> getAll() {
         return ResponseEntity.ok(serverServiceImpl.getAll());
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<Map<String, ServerSummaryResponse>> getSummary() {
+        ServerSummaryResponse serverSummaryResponse = serverServiceImpl.getSummary();
+
+        return ResponseEntity.ok(Map.of("summary", serverSummaryResponse));
     }
 }

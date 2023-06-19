@@ -20,6 +20,7 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.*;
 public class ServerServiceImpl implements ServerService {
 
     private final ServerRepository serverRepository;
+    private final ServerSummaryMapper serverSummaryMapper;
     private final ServerMapper serverMapper;
     private final SearchSpecification<Server> searchSpecification;
 
@@ -57,6 +58,13 @@ public class ServerServiceImpl implements ServerService {
         validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + region.name()));
         return serverMapper.toResponseList(servers);
     }
+
+    @Override
+    public ServerSummaryResponse getSummary() {
+        ServerSummaryProjection summaryProjection = serverRepository.getSummary();
+        return serverSummaryMapper.toResponse(summaryProjection);
+    }
+
 
     private Optional<Server> findServer(String serverIdentifier) {
         try {
