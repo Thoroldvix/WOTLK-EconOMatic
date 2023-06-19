@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.population;
 
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import com.thoroldvix.pricepal.shared.StatsResponse;
 import com.thoroldvix.pricepal.shared.StatsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -135,9 +135,9 @@ public class PopulationController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PopulationResponse>> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria for filtering populations. Based on population properties")
-            @RequestBody RequestDto requestDto,
+            @RequestBody SearchRequest searchRequest,
             @ParameterObject Pageable pageable) {
-        List<PopulationResponse> responseForSearch = populationService.search(requestDto, pageable);
+        List<PopulationResponse> responseForSearch = populationService.search(searchRequest, pageable);
         return ResponseEntity.ok(responseForSearch);
     }
 

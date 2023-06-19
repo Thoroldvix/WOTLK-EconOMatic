@@ -1,7 +1,6 @@
 package com.thoroldvix.pricepal.goldprice;
 
-import com.thoroldvix.pricepal.population.PopulationResponse;
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import com.thoroldvix.pricepal.shared.StatsResponse;
 import com.thoroldvix.pricepal.shared.StatsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -115,10 +114,10 @@ public class GoldPriceController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<GoldPriceResponse>> search(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search criteria for filtering prices")
-            @RequestBody RequestDto requestDto,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering prices")
+            @RequestBody SearchRequest searchRequest,
             @ParameterObject Pageable pageable) {
-        List<GoldPriceResponse> responseDto = goldPriceService.search(requestDto, pageable);
+        List<GoldPriceResponse> responseDto = goldPriceService.search(searchRequest, pageable);
         return ResponseEntity.ok(responseDto);
     }
 

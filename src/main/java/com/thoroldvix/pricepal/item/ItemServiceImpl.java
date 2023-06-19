@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.item;
 
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import com.thoroldvix.pricepal.shared.SearchSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +27,11 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
 
     @Override
-    public List<ItemResponse> search(RequestDto requestDto, Pageable pageable) {
-        Objects.requireNonNull(requestDto, "RequestDto cannot be null");
+    public List<ItemResponse> search(SearchRequest searchRequest, Pageable pageable) {
+        Objects.requireNonNull(searchRequest, "SearchRequest cannot be null");
         Objects.requireNonNull(pageable,  "Pageable cannot be null");
-        Specification<Item> spec = searchSpecification.createSearchSpecification(requestDto.globalOperator(),
-                requestDto.searchCriteria());
+        Specification<Item> spec = searchSpecification.createSearchSpecification(searchRequest.globalOperator(),
+                searchRequest.searchCriteria());
         List<Item> items = itemRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(items, () -> new ItemNotFoundException("Items not found"));
         return itemMapper.toResponseList(items);

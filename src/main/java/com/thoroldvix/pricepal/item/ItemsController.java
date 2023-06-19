@@ -1,9 +1,8 @@
 package com.thoroldvix.pricepal.item;
 
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +37,9 @@ public class ItemsController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<ItemResponse>> search(@RequestBody  RequestDto requestDto,
+    public ResponseEntity<List<ItemResponse>> search(@RequestBody SearchRequest searchRequest,
                                                      Pageable pageable) {
-        return ResponseEntity.ok(itemServiceImpl.search(requestDto, pageable));
+        return ResponseEntity.ok(itemServiceImpl.search(searchRequest, pageable));
     }
     @GetMapping("/summary")
     public ResponseEntity<Map<String,  ItemSummaryResponse>> getItemSummary() {

@@ -1,13 +1,11 @@
 package com.thoroldvix.pricepal.itemprice;
 
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequestMapping("/wow-classic/api/v1/items/prices")
 @RestController
@@ -30,7 +28,7 @@ public class ItemPriceController {
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
-    @GetMapping("/servers/{serverIdentifier}/{itemIdentifier}/scans")
+    @GetMapping("/servers/{serverIdentifier}/{itemIdentifier}/all")
     public ResponseEntity<AuctionHouseInfo> getRecentForServerAndItem(@PathVariable String serverIdentifier,
                                                                        @PathVariable String itemIdentifier,
                                                                        @RequestParam(defaultValue = "7") int timeRange,
@@ -40,10 +38,9 @@ public class ItemPriceController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<ItemPriceResponse>> search(@RequestBody RequestDto requestDto,
+    public ResponseEntity<AuctionHouseInfo> search(@RequestBody SearchRequest searchRequest,
                                                           @ParameterObject Pageable pageable) {
-        return null;
+        AuctionHouseInfo auctionHouseInfo = itemPriceService.search(searchRequest, pageable);
+        return ResponseEntity.ok(auctionHouseInfo);
     }
-
-
 }

@@ -3,11 +3,9 @@ package com.thoroldvix.pricepal.shared;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-import java.util.List;
-
 @Builder
 @Schema(description = "Request body for filtering")
-public record RequestDto(
+public record SearchRequest(
         @Schema(description = "Search criteria")
         SearchCriteria[] searchCriteria,
 

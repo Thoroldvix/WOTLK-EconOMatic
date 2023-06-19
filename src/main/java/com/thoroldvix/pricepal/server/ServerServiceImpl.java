@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.server;
 
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import com.thoroldvix.pricepal.shared.SearchSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,12 +34,12 @@ public class ServerServiceImpl implements ServerService {
     }
 
     @Override
-    public List<ServerResponse> search(RequestDto requestDto) {
-        Objects.requireNonNull(requestDto, "RequestDto cannot be null");
+    public List<ServerResponse> search(SearchRequest searchRequest) {
+        Objects.requireNonNull(searchRequest, "Search request cannot be null");
         Specification<Server> spec =
-                searchSpecification.createSearchSpecification(requestDto.globalOperator(), requestDto.searchCriteria());
+                searchSpecification.createSearchSpecification(searchRequest.globalOperator(), searchRequest.searchCriteria());
         List<Server> servers = serverRepository.findAll(spec);
-        validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found"));
+        validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
         return serverMapper.toResponseList(servers);
     }
 

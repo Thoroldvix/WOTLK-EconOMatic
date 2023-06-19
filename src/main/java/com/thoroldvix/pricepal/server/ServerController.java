@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.server;
 
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -62,9 +62,9 @@ public class ServerController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ServerResponse>> search(
-            @RequestBody(description = "Search criteria for filtering servers. Based on server properties")
-            RequestDto requestDto) {
-        return ResponseEntity.ok(serverServiceImpl.search(requestDto));
+            @RequestBody(description = "Search request for filtering servers")
+            SearchRequest searchRequest) {
+        return ResponseEntity.ok(serverServiceImpl.search(searchRequest));
     }
 
     @Operation(summary = "Retrieves all servers",

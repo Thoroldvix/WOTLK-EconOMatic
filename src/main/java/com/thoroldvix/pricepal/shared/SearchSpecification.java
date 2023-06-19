@@ -17,7 +17,7 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 @Component
 public class SearchSpecification<E> {
 
-    public Specification<E> createSearchSpecification(RequestDto.GlobalOperator globalOperator,
+    public Specification<E> createSearchSpecification(SearchRequest.GlobalOperator globalOperator,
                                                       SearchCriteria... searchCriteria) {
         if (searchCriteria == null || searchCriteria.length  == 0) {
             return (root, query, cb) -> cb.isTrue(cb.literal(true));
@@ -37,7 +37,7 @@ public class SearchSpecification<E> {
         if (timeRangeInDays < 0) {
             throw new IllegalArgumentException("Time range must be positive");
         }
-        return createSearchSpecification(RequestDto.GlobalOperator.AND,
+        return createSearchSpecification(SearchRequest.GlobalOperator.AND,
                 getBetweenCriteriaForDays(timeRangeInDays));
     }
 
@@ -54,7 +54,7 @@ public class SearchSpecification<E> {
                 .build();
     }
 
-    private Predicate getSpecFromPredicates(RequestDto.GlobalOperator globalOperator, CriteriaBuilder cb, List<Predicate> predicates) {
+    private Predicate getSpecFromPredicates(SearchRequest.GlobalOperator globalOperator, CriteriaBuilder cb, List<Predicate> predicates) {
         return switch (globalOperator) {
             case OR -> cb.or(predicates.toArray(new Predicate[0]));
             case NOT -> cb.not(cb.or(predicates.toArray(new Predicate[0])));

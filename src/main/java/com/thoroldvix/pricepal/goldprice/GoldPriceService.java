@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.goldprice;
 
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import com.thoroldvix.pricepal.shared.SearchCriteria;
 import com.thoroldvix.pricepal.shared.SearchSpecification;
 import com.thoroldvix.pricepal.population.PopulationNotFoundException;
@@ -44,11 +44,11 @@ public class GoldPriceService {
         return goldPriceMapper.toResponseList(prices);
     }
 
-    public List<GoldPriceResponse> search(RequestDto requestDto,
+    public List<GoldPriceResponse> search(SearchRequest searchRequest,
                                           Pageable pageable) {
-        Objects.requireNonNull(requestDto, "RequestDto must not be null");
+        Objects.requireNonNull(searchRequest, "SearchRequest must not be null");
         Objects.requireNonNull(pageable, "Pageable must not be null");
-        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(requestDto.globalOperator(), requestDto.searchCriteria());
+        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(searchRequest.globalOperator(), searchRequest.searchCriteria());
         List<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(prices,
                 () -> new GoldPriceNotFoundException("No prices found"));
@@ -59,7 +59,7 @@ public class GoldPriceService {
                                                 Pageable pageable) {
         validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         SearchCriteria serverCriteria = getJoinCriteria(serverIdentifier);
-        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, serverCriteria);
+        Specification<GoldPrice> spec = searchSpecification.createSearchSpecification(SearchRequest.GlobalOperator.AND, serverCriteria);
         List<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(prices,
                 () -> new PopulationNotFoundException("No prices found for server identifier: " + serverIdentifier));
