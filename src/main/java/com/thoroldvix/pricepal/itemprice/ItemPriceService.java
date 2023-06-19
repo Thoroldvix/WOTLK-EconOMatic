@@ -52,6 +52,16 @@ public class ItemPriceService {
         return createAuctionHouseInfo(itemPrices);
     }
 
+    public AuctionHouseInfo search(SearchRequest searchRequest, Pageable pageable) {
+        Objects.requireNonNull(searchRequest, "Search request cannot be null");
+        Objects.requireNonNull(pageable, "Pageable cannot be null");
+
+        Specification<ItemPrice> specification = searchSpecification.createSearchSpecification(searchRequest.globalOperator(), searchRequest.searchCriteria());
+        List<ItemPrice> itemPrices = itemPriceRepository.findAll(specification, pageable).getContent();
+        validateCollectionNotNullOrEmpty(itemPrices, () -> new ItemPriceNotFoundException("No item prices found for search request"));
+        return createAuctionHouseInfo(itemPrices);
+    }
+
     public AuctionHouseInfo getForTimeRange(String serverIdentifier, String itemIdentifier, int timeRange, Pageable pageable) {
         validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         validateStringNonNullOrEmpty(itemIdentifier, "Item identifier cannot be null or empty");
@@ -87,7 +97,7 @@ public class ItemPriceService {
      private Specification<ItemPrice> getServerItemSpec(String serverIdentifier, String itemIdentifier) {
         SearchCriteria[] searchCriteria = getSearchCriteria(serverIdentifier, itemIdentifier);
 
-        return searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, searchCriteria);
+        return searchSpecification.createSearchSpecification(SearchRequest.GlobalOperator.AND, searchCriteria);
     }
 
     private SearchCriteria getItemCriteria(String itemIdentifier) {
@@ -102,6 +112,8 @@ public class ItemPriceService {
     }
 
     private AuctionHouseInfo createAuctionHouseInfo(List<ItemPrice> itemPrices) {
+        Objects.requireNonNull(itemPrices, "Item price cannot be null");
+
         List<ItemPriceResponse> items = itemPriceMapper.toResponseList(itemPrices);
 
         return AuctionHouseInfo.builder()
@@ -117,4 +129,6 @@ public class ItemPriceService {
             return itemPriceRepository.findAllRecentByUniqueServerName(serverIdentifier);
         }
     }
+
+
 }

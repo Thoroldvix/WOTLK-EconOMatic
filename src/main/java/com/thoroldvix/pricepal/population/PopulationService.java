@@ -2,7 +2,7 @@ package com.thoroldvix.pricepal.population;
 
 import com.thoroldvix.pricepal.server.Faction;
 import com.thoroldvix.pricepal.server.Region;
-import com.thoroldvix.pricepal.shared.RequestDto;
+import com.thoroldvix.pricepal.shared.SearchRequest;
 import com.thoroldvix.pricepal.shared.SearchCriteria;
 import com.thoroldvix.pricepal.shared.SearchSpecification;
 import com.thoroldvix.pricepal.shared.StringEnumConverter;
@@ -42,7 +42,7 @@ public class PopulationService {
                                                  Pageable pageable) {
         validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
         SearchCriteria serverCriteria = getJoinCriteria(serverIdentifier);
-        Specification<Population> spec = searchSpecification.createSearchSpecification(RequestDto.GlobalOperator.AND, serverCriteria);
+        Specification<Population> spec = searchSpecification.createSearchSpecification(SearchRequest.GlobalOperator.AND, serverCriteria);
         List<Population> populations = populationRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(populations,
                 () -> new PopulationNotFoundException("No populations found for server identifier: " + serverIdentifier));
@@ -69,15 +69,15 @@ public class PopulationService {
                 .build();
     }
 
-    public List<PopulationResponse> search(RequestDto requestDto, Pageable pageable) {
-        Objects.requireNonNull(requestDto, "RequestDto cannot be null");
+    public List<PopulationResponse> search(SearchRequest searchRequest, Pageable pageable) {
+        Objects.requireNonNull(searchRequest, "Search request cannot be null");
         Objects.requireNonNull(pageable, "Pageable cannot be null");
-        Specification<Population> spec = searchSpecification.createSearchSpecification(requestDto.globalOperator(),
-                requestDto.searchCriteria());
+        Specification<Population> spec = searchSpecification.createSearchSpecification(searchRequest.globalOperator(),
+                searchRequest.searchCriteria());
 
         List<Population> populations = populationRepository.findAll(spec, pageable).getContent();
         validateCollectionNotNullOrEmpty(populations,
-                () -> new PopulationNotFoundException("No populations found"));
+                () -> new PopulationNotFoundException("No populations found for search request"));
 
         return populationMapper.toResponseList(populations);
     }
