@@ -1,9 +1,13 @@
 package com.thoroldvix.pricepal.itemprice;
 
 import com.thoroldvix.pricepal.item.ItemService;
+import com.thoroldvix.pricepal.server.Faction;
+import com.thoroldvix.pricepal.server.Region;
+import com.thoroldvix.pricepal.server.ServerService;
 import com.thoroldvix.pricepal.shared.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
+import static com.thoroldvix.pricepal.server.ServerErrorMessages.*;
+import static com.thoroldvix.pricepal.shared.ErrorMessages.*;
 import static com.thoroldvix.pricepal.shared.ValidationUtils.*;
 
 @Service
@@ -21,114 +27,123 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.*;
 @RequiredArgsConstructor
 public class ItemPriceService {
 
+    public static final String ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY = "Item identifier cannot be null or empty";
     private final ItemService itemServiceImpl;
+    private final ServerService serverServiceImpl;
     private final ItemPriceRepository itemPriceRepository;
     private final ItemPriceMapper itemPriceMapper;
+    private final AuctionHouseMapper auctionHouseMapper;
     private final SearchSpecification<ItemPrice> searchSpecification;
     private final JdbcTemplate jdbcTemplate;
 
+    public PagedAuctionHouseInfo getRecentForServer(String serverIdentifier, Pageable pageable) {
+        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        Page<ItemPrice> page = findRecentForServer(serverIdentifier, pageable);
 
-    public AuctionHouseInfo getRecentForServer(String serverIdentifier) {
-        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier must not be null or empty");
+        validateCollectionNotNullOrEmpty(page.getContent(),
+                () -> new ItemPriceNotFoundException("No recent item prices found for server identifier " + serverIdentifier));
 
-        List<ItemPrice> itemPrices = findAllRecentForServer(serverIdentifier);
+        return auctionHouseMapper.toPagedWithServer(page);
+    }
 
+    public AuctionHouseInfo getRecentForRegion(String regionName, String itemIdentifier) {
+        validateStringNonNullOrEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        validateStringNonNullOrEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+
+        List<ItemPrice> itemPrices = findRecentForRegionAndItem(regionName, itemIdentifier);
         validateCollectionNotNullOrEmpty(itemPrices,
-                () -> new ItemPriceNotFoundException("No item prices found for server identifier " + serverIdentifier));
+                () -> new ItemPriceNotFoundException("No item prices found for region and item identifier " + regionName + " " + itemIdentifier));
 
-        return createAuctionHouseInfo(itemPrices);
+        return auctionHouseMapper.toInfoWithRegionAndItem(itemPrices);
+    }
+
+    public AuctionHouseInfo getRecentForFaction(String factionName, String itemIdentifier) {
+        validateStringNonNullOrEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        validateStringNonNullOrEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+
+        List<ItemPrice> itemPrices = findRecentForFactionAndItem(factionName, itemIdentifier);
+        validateCollectionNotNullOrEmpty(itemPrices,
+                () -> new ItemPriceNotFoundException("No item prices found for faction and item identifier " + factionName + " " + itemIdentifier));
+
+        return auctionHouseMapper.toInfoWithFactionAndItem(itemPrices);
     }
 
     public AuctionHouseInfo getRecentForServer(String serverIdentifier, String itemIdentifier) {
-        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
-        validateStringNonNullOrEmpty(itemIdentifier, "Item identifier cannot be null or empty");
+        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        validateStringNonNullOrEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
 
-        Specification<ItemPrice> specification = getServerItemSpec(serverIdentifier, itemIdentifier);
-        List<ItemPrice> itemPrices = itemPriceRepository.findAll(specification);
+        List<ItemPrice> itemPrices = findRecentForServerAndItem(serverIdentifier, itemIdentifier);
 
         validateCollectionNotNullOrEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException(String.format("No item prices found for server identifier %s and item identifier %s", serverIdentifier, itemIdentifier)));
 
-        return createAuctionHouseInfo(itemPrices);
+        return auctionHouseMapper.toInfoWithServerAndItem(itemPrices);
     }
 
-    public AuctionHouseInfo search(SearchRequest searchRequest, Pageable pageable) {
-        Objects.requireNonNull(searchRequest, "Search request cannot be null");
-        Objects.requireNonNull(pageable, "Pageable cannot be null");
+    public ItemPricePagedResponse search(SearchRequest searchRequest, Pageable pageable) {
+        Objects.requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
+        Objects.requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
 
-        Specification<ItemPrice> specification = searchSpecification.createSearchSpecification(searchRequest.globalOperator(), searchRequest.searchCriteria());
-        List<ItemPrice> itemPrices = itemPriceRepository.findAll(specification, pageable).getContent();
-        validateCollectionNotNullOrEmpty(itemPrices, () -> new ItemPriceNotFoundException("No item prices found for search request"));
-        return createAuctionHouseInfo(itemPrices);
+        Page<ItemPrice> page = findAllForSearch(searchRequest, pageable);
+        validateCollectionNotNullOrEmpty(page.getContent(), () -> new ItemPriceNotFoundException("No item prices found for search request"));
+
+        return itemPriceMapper.toPagedResponse(page);
     }
 
-    public AuctionHouseInfo getForTimeRange(String serverIdentifier, String itemIdentifier, int timeRange, Pageable pageable) {
-        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
-        validateStringNonNullOrEmpty(itemIdentifier, "Item identifier cannot be null or empty");
-        validatePositiveInt(timeRange, "Time range must be a positive integer");
-        Objects.requireNonNull(pageable, "Pageable cannot be null");
+    public PagedAuctionHouseInfo getForServer(String serverIdentifier, String itemIdentifier, TimeRange timeRange, Pageable pageable) {
+        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        validateStringNonNullOrEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        Objects.requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        Page<ItemPrice> page = findForServerAndTimeRange(serverIdentifier, itemIdentifier, timeRange, pageable);
 
-        Specification<ItemPrice> timeRangeSpec = searchSpecification.getSpecForTimeRange(timeRange);
-        Specification<ItemPrice> combinedSpec = getServerItemSpec(serverIdentifier, itemIdentifier).and(timeRangeSpec);
-        List<ItemPrice> itemPrices = itemPriceRepository.findAll(combinedSpec, pageable).getContent();
-
-        validateCollectionNotNullOrEmpty(itemPrices,
+        validateCollectionNotNullOrEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException(
                         String.format("No item prices found for time range %s for server identifier %s and item identifier %s",
                                 timeRange, serverIdentifier, itemIdentifier)));
 
-        return createAuctionHouseInfo(itemPrices);
+        return auctionHouseMapper.toPagedWithServerAndItem(page);
     }
 
     @Transactional
     public void saveAll(List<ItemPrice> itemPricesToSave) {
         Objects.requireNonNull(itemPricesToSave, "Item prices cannot be null");
-
         itemPriceRepository.saveAll(itemPricesToSave, jdbcTemplate);
     }
 
-    private SearchCriteria[] getSearchCriteria(String serverIdentifier, String itemIdentifier) {
-        SearchCriteria serverCriteria = ServerSearchCriteriaBuilder.getJoinCriteria(serverIdentifier);
-        SearchCriteria itemCriteria = getItemCriteria(itemIdentifier);
-
-        return new SearchCriteria[]{serverCriteria, itemCriteria};
+    private Page<ItemPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
+        Specification<ItemPrice> specification = searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
+        return itemPriceRepository.findAll(specification, pageable);
     }
 
-     private Specification<ItemPrice> getServerItemSpec(String serverIdentifier, String itemIdentifier) {
-        SearchCriteria[] searchCriteria = getSearchCriteria(serverIdentifier, itemIdentifier);
-
-        return searchSpecification.createSearchSpecification(SearchRequest.GlobalOperator.AND, searchCriteria);
+    private Page<ItemPrice> findRecentForServer(String serverIdentifier, Pageable pageable) {
+        int serverId = serverServiceImpl.getServer(serverIdentifier).id();
+        return itemPriceRepository.findRecentForServer(serverId, pageable);
     }
 
-    private SearchCriteria getItemCriteria(String itemIdentifier) {
-        boolean isNumber = isNumber(itemIdentifier);
-
-        return SearchCriteria.builder()
-                .column(isNumber ? "id" : "uniqueName")
-                .joinTable("item")
-                .operation(SearchCriteria.Operation.EQUALS)
-                .value(itemIdentifier)
-                .build();
+    private Page<ItemPrice> findForServerAndTimeRange(String serverIdentifier,
+                                                      String itemIdentifier,
+                                                      TimeRange timeRange,
+                                                      Pageable pageable) {
+        int itemId = itemServiceImpl.getItem(itemIdentifier).id();
+        int serverId = serverServiceImpl.getServer(serverIdentifier).id();
+        return itemPriceRepository.findForServerAndTimeRange(serverId, itemId, timeRange.start(), timeRange.end(), pageable);
     }
 
-    private AuctionHouseInfo createAuctionHouseInfo(List<ItemPrice> itemPrices) {
-        Objects.requireNonNull(itemPrices, "Item price cannot be null");
-
-        List<ItemPriceResponse> items = itemPriceMapper.toResponseList(itemPrices);
-
-        return AuctionHouseInfo.builder()
-                .items(items)
-                .build();
+    private List<ItemPrice> findRecentForServerAndItem(String serverIdentifier, String itemIdentifier) {
+        int itemId = itemServiceImpl.getItem(itemIdentifier).id();
+        int serverId = serverServiceImpl.getServer(serverIdentifier).id();
+        return itemPriceRepository.findRecentForServerAndItem(serverId, itemId);
     }
 
-    private List<ItemPrice> findAllRecentForServer(String serverIdentifier) {
-        try {
-            int serverId = Integer.parseInt(serverIdentifier);
-            return itemPriceRepository.findAllRecentByServerId(serverId);
-        } catch (NumberFormatException e) {
-            return itemPriceRepository.findAllRecentByUniqueServerName(serverIdentifier);
-        }
+    private List<ItemPrice> findRecentForRegionAndItem(String regionName, String itemIdentifier) {
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        int itemId = itemServiceImpl.getItem(itemIdentifier).id();
+        return itemPriceRepository.findRecentForRegionAndItem(region.ordinal(), itemId);
     }
 
-
+    private List<ItemPrice> findRecentForFactionAndItem(String factionName, String itemIdentifier) {
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        int itemId = itemServiceImpl.getItem(itemIdentifier).id();
+        return itemPriceRepository.findRecentForFactionAndItem(faction.ordinal(), itemId);
+    }
 }

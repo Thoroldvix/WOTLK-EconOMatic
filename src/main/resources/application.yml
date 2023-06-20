@@ -1,5 +1,8 @@
 spring:
   data:
+    rest:
+      max-page-size: 40000
+      default-page-size: 100
     web:
       pageable:
         max-page-size: 40000

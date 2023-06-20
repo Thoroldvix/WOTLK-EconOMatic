@@ -1,21 +1,35 @@
 package com.thoroldvix.pricepal.shared;
 
+import com.thoroldvix.pricepal.item.ItemQuality;
+import com.thoroldvix.pricepal.item.ItemSlot;
+import com.thoroldvix.pricepal.item.ItemType;
+import com.thoroldvix.pricepal.server.Faction;
+import com.thoroldvix.pricepal.server.Region;
+import com.thoroldvix.pricepal.server.ServerType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
 
 public final class PredicateUtils {
+    private static final String INTEGER = "Integer";
+    private static final String LONG = "Long";
+    private static final String DOUBLE = "Double";
+    private static final String LOCAL_DATE_TIME = "LocalDateTime";
+    private static final String STRING = "String";
     private static final DateTimeFormatter DATE_TIME_FORMATTER;
+    private static final String FACTION = "Faction";
+    private static final String REGION = "Region";
+    private static final String ITEM_TYPE = "ItemType";
+    private static final String ITEM_QUALITY = "ItemQuality";
+    private static final String ITEM_SLOT = "ItemSlot";
+    private static final String SERVER_TYPE = "ServerType";
 
     static {
         DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
@@ -50,10 +64,10 @@ public final class PredicateUtils {
     public static Predicate getLessThanOrEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
         return switch (columnType.getSimpleName()) {
-            case "Integer" -> cb.lessThanOrEqualTo(columnPath.as(Integer.class), Integer.parseInt(value));
-            case "Long" -> cb.lessThanOrEqualTo(columnPath.as(Long.class), Long.parseLong(value));
-            case "Double" -> cb.lessThanOrEqualTo(columnPath.as(Double.class), Double.parseDouble(value));
-            case "LocalDateTime" ->
+            case INTEGER -> cb.lessThanOrEqualTo(columnPath.as(Integer.class), Integer.parseInt(value));
+            case LONG -> cb.lessThanOrEqualTo(columnPath.as(Long.class), Long.parseLong(value));
+            case DOUBLE -> cb.lessThanOrEqualTo(columnPath.as(Double.class), Double.parseDouble(value));
+            case LOCAL_DATE_TIME ->
                     cb.lessThanOrEqualTo(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
             default ->
                     throw new IllegalArgumentException("Invalid operation: LESS_THAN_OR_EQUALS is only applicable to numeric and date-time column types.");
@@ -63,10 +77,10 @@ public final class PredicateUtils {
     public static Predicate getGreaterThanOrEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
         return switch (columnType.getSimpleName()) {
-            case "Integer" -> cb.greaterThanOrEqualTo(columnPath.as(Integer.class), Integer.parseInt(value));
-            case "Long" -> cb.greaterThanOrEqualTo(columnPath.as(Long.class), Long.parseLong(value));
-            case "Double" -> cb.greaterThanOrEqualTo(columnPath.as(Double.class), Double.parseDouble(value));
-            case "LocalDateTime" ->
+            case INTEGER -> cb.greaterThanOrEqualTo(columnPath.as(Integer.class), Integer.parseInt(value));
+            case LONG -> cb.greaterThanOrEqualTo(columnPath.as(Long.class), Long.parseLong(value));
+            case DOUBLE -> cb.greaterThanOrEqualTo(columnPath.as(Double.class), Double.parseDouble(value));
+            case LOCAL_DATE_TIME ->
                     cb.greaterThanOrEqualTo(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
             default ->
                     throw new IllegalArgumentException("Invalid operation: GREATER_THAN is only applicable to numeric and date-time column types.");
@@ -83,10 +97,10 @@ public final class PredicateUtils {
         String upperBound = split[1];
         Class<?> columnType = columnPath.getJavaType();
         return switch (columnType.getSimpleName()) {
-            case "Integer" -> getIntegerBetweenPredicate(cb, columnPath, lowerBound, upperBound);
-            case "Long" -> getLongBetweenPredicate(cb, columnPath, lowerBound, upperBound);
-            case "Double" -> getDoubleBetweenPredicate(cb, columnPath, lowerBound, upperBound);
-            case "LocalDateTime" -> getLocalDateTimeBetweenPredicate(cb, columnPath, lowerBound, upperBound);
+            case INTEGER -> getIntegerBetweenPredicate(cb, columnPath, lowerBound, upperBound);
+            case LONG -> getLongBetweenPredicate(cb, columnPath, lowerBound, upperBound);
+            case DOUBLE -> getDoubleBetweenPredicate(cb, columnPath, lowerBound, upperBound);
+            case LOCAL_DATE_TIME -> getLocalDateTimeBetweenPredicate(cb, columnPath, lowerBound, upperBound);
             default ->
                     throw new IllegalArgumentException("Invalid operation: BETWEEN is only applicable to numeric and date-time column types.");
         };
@@ -94,20 +108,25 @@ public final class PredicateUtils {
 
     public static Predicate getEqualsIgnoreCasePredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
-        if (String.class.isAssignableFrom(columnType)) {
-            return cb.equal(cb.lower(columnPath.as(String.class)), value.toLowerCase());
-        }
-        throw new IllegalArgumentException("Invalid operation: EQUALS_IGNORE_CASE is only applicable to string column types.");
+        return switch (columnType.getSimpleName()) {
+            case STRING -> cb.equal(cb.lower(columnPath.as(String.class)), value.toLowerCase());
+            case INTEGER -> cb.equal(columnPath, Integer.parseInt(value));
+            case LONG -> cb.equal(columnPath, Long.parseLong(value));
+            case DOUBLE -> cb.equal(columnPath, Double.parseDouble(value));
+            default ->
+                    throw new IllegalArgumentException("Invalid operation: EQUALS_IGNORE_CASE is only applicable to string and numeric column types.");
+        };
     }
 
     public static Predicate getEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
         if (columnType.isEnum()) {
-            int searchValue = Enum.valueOf((Class<Enum>) columnType, value.toUpperCase()).ordinal();
+            int searchValue = getValueForEnumType(columnType.getSimpleName(), value);
             return cb.equal(columnPath, searchValue);
         }
         return cb.equal(columnPath, value);
     }
+
 
     public static Predicate getInPredicate(SearchCriteria searchCriteria, Path<?> columnPath) {
         String[] split = searchCriteria.value().split(",");
@@ -117,10 +136,10 @@ public final class PredicateUtils {
     public static Predicate getLessThanPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
         return switch (columnType.getSimpleName()) {
-            case "Integer" -> cb.lessThan(columnPath.as(Integer.class), Integer.parseInt(value));
-            case "Long" -> cb.lessThan(columnPath.as(Long.class), Long.parseLong(value));
-            case "Double" -> cb.lessThan(columnPath.as(Double.class), Double.parseDouble(value));
-            case "LocalDateTime" ->
+            case INTEGER -> cb.lessThan(columnPath.as(Integer.class), Integer.parseInt(value));
+            case LONG -> cb.lessThan(columnPath.as(Long.class), Long.parseLong(value));
+            case DOUBLE -> cb.lessThan(columnPath.as(Double.class), Double.parseDouble(value));
+            case LOCAL_DATE_TIME ->
                     cb.lessThan(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
             default ->
                     throw new IllegalArgumentException("Invalid operation: LESS_THAN is only applicable to numeric and date-time column types.");
@@ -130,10 +149,10 @@ public final class PredicateUtils {
     public static Predicate getGreaterThanPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
         return switch (columnType.getSimpleName()) {
-            case "Integer" -> cb.greaterThan(columnPath.as(Integer.class), Integer.parseInt(value));
-            case "Long" -> cb.greaterThan(columnPath.as(Long.class), Long.parseLong(value));
-            case "Double" -> cb.greaterThan(columnPath.as(Double.class), Double.parseDouble(value));
-            case "LocalDateTime" ->
+            case INTEGER -> cb.greaterThan(columnPath.as(Integer.class), Integer.parseInt(value));
+            case LONG -> cb.greaterThan(columnPath.as(Long.class), Long.parseLong(value));
+            case DOUBLE -> cb.greaterThan(columnPath.as(Double.class), Double.parseDouble(value));
+            case LOCAL_DATE_TIME ->
                     cb.greaterThan(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
             default ->
                     throw new IllegalArgumentException("Invalid operation: GREATER_THAN is only applicable to numeric and date-time column types.");
@@ -149,6 +168,17 @@ public final class PredicateUtils {
         return cb.between(columnPath.as(LocalDateTime.class), start, end);
     }
 
+    private static int getValueForEnumType(String enumType, String value) {
+        return switch (enumType) {
+            case FACTION -> Enum.valueOf(Faction.class, value.toUpperCase()).ordinal();
+            case REGION -> Enum.valueOf(Region.class, value.toUpperCase()).ordinal();
+            case ITEM_TYPE -> Enum.valueOf(ItemType.class, value.toUpperCase()).ordinal();
+            case ITEM_QUALITY -> Enum.valueOf(ItemQuality.class, value.toUpperCase()).ordinal();
+            case ITEM_SLOT -> Enum.valueOf(ItemSlot.class, value.toUpperCase()).ordinal();
+            case SERVER_TYPE -> Enum.valueOf(ServerType.class, value.toUpperCase()).ordinal();
+            default -> throw new IllegalArgumentException("Unsupported enum type");
+        };
+    }
 
     private static Predicate getDoubleBetweenPredicate(CriteriaBuilder cb, Path<?> columnPath, String lowerBound, String upperBound) {
         return cb.between(columnPath.as(Double.class), Double.parseDouble(lowerBound), Double.parseDouble(upperBound));

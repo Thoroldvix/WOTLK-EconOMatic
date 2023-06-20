@@ -22,8 +22,7 @@ public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceRespons
         super(vc);
     }
 
-    @Override
-    public List<GoldPriceResponse> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+    @Override public List<GoldPriceResponse> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         List<GoldPriceResponse> prices = new ArrayList<>();
         JsonNode resultsNode = node.get("payload").get("results");
@@ -41,14 +40,14 @@ public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceRespons
         BigDecimal price = resultNode.get("converted_unit_price").decimalValue();
 
         return GoldPriceResponse.builder()
-                .serverName(serverName)
+                .server(serverName)
                 .price(price)
                 .build();
     }
 
     private String formatServerName(String serverName) {
         Pattern pattern = Pattern.compile("^(\\w+(?:\\s\\w+)?)\\s.*-\\s(\\w+)$");
-        Matcher matcher = pattern.matcher(serverName.replaceAll("'", ""));
+        Matcher matcher = pattern.matcher(serverName.replace("'", ""));
 
         if (matcher.find()) {
             String server = matcher.group(1).toLowerCase().replaceAll("\\s+", "-");

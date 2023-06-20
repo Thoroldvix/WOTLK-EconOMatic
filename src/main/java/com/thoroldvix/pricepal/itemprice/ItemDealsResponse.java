@@ -2,16 +2,13 @@ package com.thoroldvix.pricepal.itemprice;
 
 import lombok.Builder;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Builder
 public record ItemDealsResponse(
-    int itemId,
-    long marketValue,
-    long minBuyout,
-    long dealDiff,
-    BigDecimal dealPercentage,
-    String name,
-    String uniqueName
+        String server,
+        String region,
+        String faction,
+        List<ItemDealResponse> deals
 ) {
 }

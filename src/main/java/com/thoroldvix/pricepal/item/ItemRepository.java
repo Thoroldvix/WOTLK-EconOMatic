@@ -1,7 +1,5 @@
 package com.thoroldvix.pricepal.item;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -68,7 +66,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer>, JpaSpecifi
                 SUM(CASE WHEN type = 11 THEN 1 ELSE 0 END) AS key,
                 SUM(CASE WHEN type = 12 THEN 1 ELSE 0 END) AS miscellaneous,
                 SUM(CASE WHEN type = 13 THEN 1 ELSE 0 END) AS glyph,
-                count(id) as total
+                count(id)  as total
                 FROM item
             """, nativeQuery = true)
     ItemSummaryProjection getSummary();

@@ -1,6 +1,6 @@
 package com.thoroldvix.pricepal.goldprice;
 
-public class GoldPriceParsingException extends RuntimeException{
+class GoldPriceParsingException extends RuntimeException{
     public GoldPriceParsingException() {
     }
 

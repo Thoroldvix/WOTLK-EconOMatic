@@ -30,7 +30,7 @@ public interface ServerRepository extends JpaRepository<Server, Integer>, JpaSpe
                    SUM(CASE WHEN locale = 'es_ES' THEN 1 ELSE 0 END) / 2 AS esES,
                    SUM(CASE WHEN locale = 'fr_FR' THEN 1 ELSE 0 END) / 2 AS frFR,
                    SUM(CASE WHEN locale = 'ru_RU' THEN 1 ELSE 0 END) / 2 AS ruRU,
-                   COUNT(name) as total
+                   COUNT(name) / 2 as total
             FROM server
             """, nativeQuery = true)
     ServerSummaryProjection getSummary();

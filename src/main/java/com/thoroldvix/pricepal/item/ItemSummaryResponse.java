@@ -4,14 +4,20 @@ import lombok.Builder;
 
 @Builder
 public record ItemSummaryResponse(
-        Quality quality,
-
-        Slot slot,
-
-        Type type,
-
-        int total
+        Summary summary
 ) {
+    @Builder
+    protected record Summary(
+            Quality quality,
+
+            Slot slot,
+
+            Type type,
+
+            int total
+    ) {
+    }
+
     @Builder
     protected record Quality(
             int common,

@@ -22,32 +22,44 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public final class ItemPriceUpdateService {
+    private static final RateLimiter RATE_LIMITER = RateLimiter.create(4);
     @PersistenceContext
     private final EntityManager entityManager;
     private final NexusHubClient nexusHubClient;
     private final ItemPriceService itemPriceService;
-    private final Set<Integer> ITEM_IDS;
-    private final Map<String, Integer> SERVER_IDENTIFIERS;
-    private final RateLimiter rateLimiter = RateLimiter.create(4);
+    private final Set<Integer> itemIds;
+    private final Map<String, Integer> serverIdentifiers;
 
 
     private ItemPriceUpdateService(EntityManager entityManager,
-                                  NexusHubClient nexusHubClient,
-                                  ServerService serverServiceImpl,
-                                  ItemService itemServiceImpl,
-                                  ItemPriceService itemPriceService) {
+                                   NexusHubClient nexusHubClient,
+                                   ServerService serverServiceImpl,
+                                   ItemService itemServiceImpl,
+                                   ItemPriceService itemPriceService) {
         this.entityManager = entityManager;
         this.nexusHubClient = nexusHubClient;
         this.itemPriceService = itemPriceService;
-        this.SERVER_IDENTIFIERS = getServerIds(serverServiceImpl);
-        this.ITEM_IDS = getItemIds(itemServiceImpl);
+        serverIdentifiers = getServerIds(serverServiceImpl);
+        itemIds = getItemIds(itemServiceImpl);
     }
 
+    private static Set<Integer> getItemIds(ItemService itemService) {
+        return itemService.getAll().stream()
+                .map(ItemResponse::id)
+                .collect(Collectors.toSet());
+    }
+
+    private static Map<String, Integer> getServerIds(ServerService serverService) {
+        return serverService.getAll().stream()
+                .collect(Collectors.toMap(ServerResponse::uniqueName, ServerResponse::id, (id1, id2) -> id1));
+    }
+
+    //    todo add retry on fail
 //    @Scheduled(fixedRate = 3, timeUnit = TimeUnit.HOURS)
     private void update() {
         log.info("Updating item prices");
         Instant start = Instant.now();
-        SERVER_IDENTIFIERS.keySet().parallelStream()
+        serverIdentifiers.keySet().parallelStream()
                 .forEach(serverName -> {
                     List<ItemPrice> itemPrices = retrieveItemPrices(serverName);
                     itemPriceService.saveAll(itemPrices);
@@ -57,53 +69,48 @@ public final class ItemPriceUpdateService {
     }
 
     private List<ItemPrice> retrieveItemPrices(String serverName) {
-        rateLimiter.acquire();
-        AuctionHouseInfo auctionHouseInfo = nexusHubClient.fetchAllItemPricesForServer(serverName);
-        Server server = getServer(auctionHouseInfo.server());
-        List<ItemPriceResponse> filteredPrices = filterPrices(auctionHouseInfo.items());
+        RATE_LIMITER.acquire();
+        NexusHubResponse nexusHubResponse = nexusHubClient.fetchAllItemPricesForServer(serverName);
+        Server server = getServer(nexusHubResponse.slug());
+        List<NexusHubResponse.NexusHubPrice> filteredPrices = filterPrices(nexusHubResponse.data());
         return getItemPrices(server, filteredPrices);
     }
 
-
-    private Set<Integer> getItemIds(ItemService itemService) {
-        return itemService.getAll().stream()
-                .map(ItemResponse::itemId)
-                .collect(Collectors.toSet());
-    }
-
     private Server getServer(String uniqueServerName) {
-        int serverId = SERVER_IDENTIFIERS.get(uniqueServerName);
+        int serverId = serverIdentifiers.get(uniqueServerName);
         return entityManager.getReference(Server.class, serverId);
     }
 
-    private Map<String, Integer> getServerIds(ServerService serverService) {
-        return serverService.getAll().stream()
-                .collect(Collectors.toMap(ServerResponse::uniqueName, ServerResponse::id, (id1, id2) -> id1));
+    private List<NexusHubResponse.NexusHubPrice> filterPrices(List<NexusHubResponse.NexusHubPrice> prices) {
+        return prices.stream()
+                .filter(this::filterPrice)
+                .toList();
     }
 
-    private List<ItemPriceResponse> filterPrices(List<ItemPriceResponse> items) {
-        return items.stream()
-                .filter(itemPriceResponse -> ITEM_IDS.contains(itemPriceResponse.itemInfo().itemId()))
-                .filter(itemPriceResponse -> itemPriceResponse.quantity() > 0)
-                .filter(itemPriceResponse -> itemPriceResponse.numAuctions() > 0)
-                .collect(Collectors.toList());
+    private boolean filterPrice(NexusHubResponse.NexusHubPrice price) {
+        return itemIds.contains(price.itemId()) &&
+                price.quantity() > 0 &&
+                price.minBuyout() > 0 &&
+                price.marketValue() > 0 &&
+                price.numAuctions() > 0;
     }
 
-    private List<ItemPrice> getItemPrices(Server server, List<ItemPriceResponse> filteredPrices) {
+    private List<ItemPrice> getItemPrices(Server server, List<NexusHubResponse.NexusHubPrice> filteredPrices) {
         return filteredPrices.stream()
                 .map(itemResponse -> getItemPrice(server, itemResponse))
                 .toList();
     }
 
-    private ItemPrice getItemPrice(Server server, ItemPriceResponse itemResponse) {
-        Item item = entityManager.getReference(Item.class, itemResponse.itemInfo().itemId());
+    private ItemPrice getItemPrice(Server server, NexusHubResponse.NexusHubPrice price) {
+        Item item = entityManager.getReference(Item.class, price.itemId());
+
         return ItemPrice.builder()
                 .item(item)
-                .marketValue(itemResponse.marketValue())
-                .historicalValue(itemResponse.historicalValue())
-                .numAuctions(itemResponse.numAuctions())
-                .quantity(itemResponse.quantity())
-                .minBuyout(itemResponse.minBuyout())
+                .marketValue(price.marketValue())
+                .historicalValue(price.historicalValue())
+                .numAuctions(price.numAuctions())
+                .quantity(price.quantity())
+                .minBuyout(price.minBuyout())
                 .server(server)
                 .build();
     }

@@ -3,11 +3,13 @@ package com.thoroldvix.pricepal.goldprice;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.pricepal.server.*;
+import com.thoroldvix.pricepal.server.Server;
+import com.thoroldvix.pricepal.server.ServerRepository;
+import com.thoroldvix.pricepal.server.ServerResponse;
+import com.thoroldvix.pricepal.server.ServerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,7 +18,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -29,7 +30,7 @@ public final class GoldPriceUpdateService {
     private final GoldPriceService goldPriceServiceImpl;
 
 
-    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.HOURS)
+//        @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.HOURS)
     private void update() {
         log.info("Updating gold prices");
         Instant start = Instant.now();
@@ -60,12 +61,12 @@ public final class GoldPriceUpdateService {
         BigDecimal price = findPrice(prices, uniqueServerName);
         Server serverEntity = serverRepository.getReferenceById(server.id());
         return GoldPrice.builder()
-                .price(price)
+                .value(price)
                 .server(serverEntity)
                 .build();
     }
 
-     private List<GoldPriceResponse> extractFromJson(String goldPricesJson) {
+    private List<GoldPriceResponse> extractFromJson(String goldPricesJson) {
         GoldPriceDeserializer deserializer = new GoldPriceDeserializer();
         ObjectMapper mapper = new ObjectMapper();
         DeserializationContext context = mapper.getDeserializationContext();
@@ -79,7 +80,8 @@ public final class GoldPriceUpdateService {
     }
 
     private BigDecimal findPrice(List<GoldPriceResponse> prices, String uniqueServerName) {
-        return prices.stream().filter(result -> result.serverName().equals(uniqueServerName))
+        return prices.stream()
+                .filter(result -> result.server().equals(uniqueServerName))
                 .findFirst()
                 .map(GoldPriceResponse::price)
                 .orElseThrow(() -> new G2GPriceNotFoundException("Price not found for server: " + uniqueServerName));

@@ -2,84 +2,77 @@ package com.thoroldvix.pricepal.population;
 
 import com.thoroldvix.pricepal.server.Faction;
 import com.thoroldvix.pricepal.server.Region;
-import com.thoroldvix.pricepal.shared.*;
+import com.thoroldvix.pricepal.server.ServerService;
+import com.thoroldvix.pricepal.shared.StatsProjection;
+import com.thoroldvix.pricepal.shared.StringEnumConverter;
+import com.thoroldvix.pricepal.shared.TimeRange;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Objects;
 
+import static com.thoroldvix.pricepal.server.ServerErrorMessages.*;
+import static com.thoroldvix.pricepal.shared.ErrorMessages.TIME_RANGE_CANNOT_BE_NULL;
 import static com.thoroldvix.pricepal.shared.ValidationUtils.validateStringNonNullOrEmpty;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class PopulationStatsService implements StatsService<PopulationResponse> {
+public class PopulationStatsService {
 
-    private final PopulationMapper populationMapper;
     private final PopulationStatRepository populationStatRepository;
-    private final PopulationRepository populationRepository;
+    private final ServerService serverServiceImpl;
+    private final PopulationStatMapper populationStatMapper;
 
-    @Override
-    public StatsResponse<PopulationResponse> getForServer(String serverIdentifier) {
-        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
-        StatsProjection statsProjection = findForServer(serverIdentifier);
-        return getStatResponse(statsProjection, serverIdentifier);
+
+    public PopulationStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        Objects.requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        StatsProjection statsProjection = findForServer(serverIdentifier, timeRange);
+        return populationStatMapper.toResponse(statsProjection, populationStatRepository);
     }
 
-    @Override
-    public StatsResponse<PopulationResponse> getForRegion(String regionName) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        StatsProjection statsProjection = populationStatRepository.findStatsByRegion(region.ordinal());
-        return getStatResponse(statsProjection, regionName);
+    public PopulationStatResponse getForRegion(String regionName, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        Objects.requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        StatsProjection statsProjection = findForRegion(regionName, timeRange);
+        return populationStatMapper.toResponse(statsProjection, populationStatRepository);
     }
 
-    @Override
-    public StatsResponse<PopulationResponse> getForFaction(String factionName) {
+
+    public PopulationStatResponse getForFaction(String factionName, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        Objects.requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        StatsProjection statsProjection = findForFaction(factionName, timeRange);
+        return populationStatMapper.toResponse(statsProjection, populationStatRepository);
+    }
+
+    public PopulationStatResponse getForAll(TimeRange timeRange) {
+        StatsProjection statsProjection = populationStatRepository.findStatsForAll(timeRange.start(), timeRange.end());
+        return populationStatMapper.toResponse(statsProjection, populationStatRepository);
+    }
+
+
+    private StatsProjection findForServer(String serverIdentifier, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        Objects.requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        int serverId = serverServiceImpl.getServer(serverIdentifier).id();
+        return populationStatRepository.findStatsByServer(serverId, timeRange.start(), timeRange.end());
+    }
+
+
+    private StatsProjection findForFaction(String factionName, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        Objects.requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        StatsProjection statsProjection = populationStatRepository.findStatsByFaction(faction.ordinal());
-        return getStatResponse(statsProjection, factionName);
+        return populationStatRepository.findStatsByFaction(faction.ordinal(), timeRange.start(), timeRange.end());
     }
 
-    @Override
-    public StatsResponse<PopulationResponse> getForAll(int timeRangeInDays) {
-        LocalDateTime start = LocalDateTime.now().minusDays(timeRangeInDays);
-        LocalDateTime end = LocalDateTime.now();
-        StatsProjection statsProjection = populationStatRepository.findStatsForAll(start, end);
-        return getStatResponse(statsProjection, "all");
-    }
-
-    private StatsResponse<PopulationResponse> getStatResponse(StatsProjection statsProjection, String property) {
-        PopulationResponse min = getMin(statsProjection, property);
-        PopulationResponse max = getMax(statsProjection, property);
-
-        return StatsResponse.<PopulationResponse>builder()
-                .mean(statsProjection.getMean().intValue())
-                .median(statsProjection.getMedian().intValue())
-                .count(statsProjection.getCount())
-                .minimum(min)
-                .maximum(max)
-                .build();
-    }
-
-    private PopulationResponse getMax(StatsProjection statsProjection, String property) {
-        return populationRepository.findById(statsProjection.getMaxId().longValue())
-                .map(populationMapper::toResponse)
-                .orElseThrow(() -> new PopulationNotFoundException("No max population found for " + property));
-    }
-
-    private PopulationResponse getMin(StatsProjection statsProjection, String property) {
-        return populationRepository.findById(statsProjection.getMinId().longValue())
-                .map(populationMapper::toResponse)
-                .orElseThrow(() -> new PopulationNotFoundException("No min population found for " + property));
-    }
-
-    private StatsProjection findForServer(String serverIdentifier) {
-        try {
-            int serverId = Integer.parseInt(serverIdentifier);
-            return populationStatRepository.findStatsByServerId(serverId);
-        } catch (NumberFormatException e) {
-            return populationStatRepository.findStatsByServerUniqueName(serverIdentifier);
-        }
+    private StatsProjection findForRegion(String regionName, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        Objects.requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        return populationStatRepository.findStatsByRegion(region.ordinal(), timeRange.start(), timeRange.end());
     }
 }

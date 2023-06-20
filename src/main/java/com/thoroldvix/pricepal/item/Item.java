@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GeneratedColumn;
 import org.hibernate.annotations.GenerationTime;
 
 import java.util.Objects;
@@ -36,7 +35,7 @@ public class Item {
     @Enumerated(EnumType.ORDINAL)
     private ItemSlot slot;
 
-    @Column(nullable = false)
+    @Column(nullable = false, insertable = false, updatable = false)
     @Generated(GenerationTime.INSERT)
     private String uniqueName;
 

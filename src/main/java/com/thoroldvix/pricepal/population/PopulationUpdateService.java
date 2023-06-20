@@ -1,6 +1,5 @@
 package com.thoroldvix.pricepal.population;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,14 +8,11 @@ import com.thoroldvix.pricepal.server.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service
@@ -28,7 +24,7 @@ public final class PopulationUpdateService {
     private final ServerService serverServiceImpl;
     private final PopulationService populationService;
 
-        @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+//            @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     private void update() {
         log.info("Updating population");
         Instant start = Instant.now();
@@ -48,16 +44,16 @@ public final class PopulationUpdateService {
     private List<Population> getPopulationList(List<TotalPopResponse> totalPopulationsForServer, List<ServerResponse> servers) {
         return totalPopulationsForServer.stream()
                 .flatMap(totalPop -> getForBothFactions(totalPop, servers).stream())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<Population> getForBothFactions(TotalPopResponse totalPop,
                                                 List<ServerResponse> servers) {
 
         return servers.stream()
-                .filter(server -> server.name().equals(totalPop.name()))
+                .filter(server -> server.name().equals(totalPop.serverName()))
                 .map(server -> getPopulation(totalPop, server))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Population getPopulation(TotalPopResponse totalPopulation, ServerResponse server) {
@@ -68,7 +64,7 @@ public final class PopulationUpdateService {
         Server serverEntity = serverRepository.getReferenceById(server.id());
 
         return Population.builder()
-                .population(populationSize)
+                .value(populationSize)
                 .server(serverEntity)
                 .build();
     }

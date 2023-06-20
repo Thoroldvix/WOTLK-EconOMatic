@@ -1,8 +1,8 @@
 package com.thoroldvix.pricepal.population;
 
 public interface TotalPopProjection {
-    int getPopTotal();
-    int getPopHorde();
-    int getPopAlliance();
+    Integer getPopTotal();
+    Integer getPopHorde();
+    Integer getPopAlliance();
     String getServerName();
 }

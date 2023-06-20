@@ -15,7 +15,7 @@ public final class ValidationUtils {
 
     public static void validatePositiveInt(int value, String errorMessage) {
         if (value <= 0) {
-            throw new IllegalArgumentException(errorMessage);
+            throw new NumberNotPositiveException(errorMessage);
         }
     }
 

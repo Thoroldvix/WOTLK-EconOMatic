@@ -23,7 +23,7 @@ public class GoldPrice {
     private Long id;
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private BigDecimal value;
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;

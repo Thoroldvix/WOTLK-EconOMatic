@@ -4,7 +4,6 @@ import com.thoroldvix.pricepal.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -23,7 +22,7 @@ public class Population {
     private Long id;
 
     @Column(nullable = false)
-    private int population;
+    private int value;
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;

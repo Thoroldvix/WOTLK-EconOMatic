@@ -1,7 +1,7 @@
 package com.thoroldvix.pricepal.goldprice.server.service;
 
 import com.thoroldvix.pricepal.server.ServerServiceImpl;
-import com.thoroldvix.pricepal.goldprice.GoldPriceResponse;
+import com.thoroldvix.pricepal.goldprice.GoldPricesResponse;
 import com.thoroldvix.pricepal.goldprice.GoldPrice;
 import com.thoroldvix.pricepal.goldprice.GoldPriceRepository;
 import com.thoroldvix.pricepal.goldprice.GoldPriceMapper;
@@ -22,7 +22,7 @@ import java.util.List;
 public
 class GoldPriceServiceTest {
 
-    private static List<GoldPriceResponse> priceResponses;
+    private static List<GoldPricesResponse> priceResponses;
     private static List<GoldPrice> prices;
     private static FilterRequest filters;
     private final Pageable unpaged = Pageable.unpaged();

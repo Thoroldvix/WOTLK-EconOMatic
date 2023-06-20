@@ -36,6 +36,6 @@ public enum ItemSlot {
     @Override
     @JsonValue
     public String toString() {
-        return name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
+        return name().charAt(0) + name().substring(1).toLowerCase().replace("_", " ");
     }
 }

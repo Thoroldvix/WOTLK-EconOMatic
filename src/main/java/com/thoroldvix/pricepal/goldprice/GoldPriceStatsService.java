@@ -1,97 +1,67 @@
 package com.thoroldvix.pricepal.goldprice;
 
-import com.thoroldvix.pricepal.population.PopulationNotFoundException;
-import com.thoroldvix.pricepal.population.PopulationResponse;
 import com.thoroldvix.pricepal.server.Faction;
 import com.thoroldvix.pricepal.server.Region;
-import com.thoroldvix.pricepal.shared.*;
+import com.thoroldvix.pricepal.server.ServerService;
+import com.thoroldvix.pricepal.shared.StatsProjection;
+import com.thoroldvix.pricepal.shared.StringEnumConverter;
+import com.thoroldvix.pricepal.shared.TimeRange;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Objects;
-
-import static com.thoroldvix.pricepal.shared.ServerSearchCriteriaBuilder.getJoinCriteria;
+import static com.thoroldvix.pricepal.server.ServerErrorMessages.SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
 import static com.thoroldvix.pricepal.shared.ValidationUtils.validateStringNonNullOrEmpty;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class GoldPriceStatsService implements StatsService<GoldPriceResponse> {
+public class GoldPriceStatsService {
 
+    private final ServerService serverServiceImpl;
     private final GoldPriceStatRepository goldPriceStatRepository;
-    private final GoldPriceMapper goldPriceMapper;
+    private final GoldPriceStatMapper goldPriceStatMapper;
 
-    @Override
-    public StatsResponse<GoldPriceResponse> getForServer(String serverIdentifier) {
-        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
-        StatsProjection statsProjection = findForServer(serverIdentifier);
-        return getStatResponse(statsProjection, serverIdentifier);
+    public GoldPriceStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        StatsProjection statsProjection = findForServer(serverIdentifier, timeRange);
+        return goldPriceStatMapper.toResponse(statsProjection, goldPriceStatRepository);
     }
 
-    @Override
-    public StatsResponse<GoldPriceResponse> getForRegion(String regionName) {
+    public GoldPriceStatResponse getForRegion(String regionName, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(regionName, "Region serverName cannot be null or empty");
+        StatsProjection statsProjection = findForRegion(regionName, timeRange);
+        return goldPriceStatMapper.toResponse(statsProjection, goldPriceStatRepository);
+    }
+
+    public GoldPriceStatResponse getForFaction(String factionName, TimeRange timeRange) {
+        validateStringNonNullOrEmpty(factionName, "Faction serverName cannot be null or empty");
+        StatsProjection statsProjection = findForFaction(factionName, timeRange);
+        return goldPriceStatMapper.toResponse(statsProjection, goldPriceStatRepository);
+    }
+
+    public GoldPriceStatResponse getForAll(TimeRange timeRange) {
+        StatsProjection statsProjection = findForTimeRange(timeRange);
+        return goldPriceStatMapper.toResponse(statsProjection, goldPriceStatRepository);
+    }
+
+    private StatsProjection findForServer(String serverIdentifier, TimeRange timeRange) {
+        int serverId = serverServiceImpl.getServer(serverIdentifier).id();
+        return goldPriceStatRepository.findStatsForServer(serverId, timeRange.start(), timeRange.end());
+    }
+
+    private StatsProjection findForRegion(String regionName, TimeRange timeRange) {
         Region region = StringEnumConverter.fromString(regionName, Region.class);
-        StatsProjection statsProjection = goldPriceStatRepository.findStatsByRegion(region.ordinal());
-        return getStatResponse(statsProjection, regionName);
+        return goldPriceStatRepository.findForRegion(region.ordinal(), timeRange.start(), timeRange.end());
     }
 
-    @Override
-    public StatsResponse<GoldPriceResponse> getForFaction(String factionName) {
+    private StatsProjection findForTimeRange(TimeRange timeRange) {
+        return goldPriceStatRepository.findStatsForAll(timeRange.start(), timeRange.end());
+    }
+
+    private StatsProjection findForFaction(String factionName, TimeRange timeRange) {
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        StatsProjection statsProjection = goldPriceStatRepository.findStatsByFaction(faction.ordinal());
-        return getStatResponse(statsProjection, factionName);
+        return goldPriceStatRepository.findForFaction(faction.ordinal(), timeRange.start(), timeRange.end());
     }
 
-    @Override
-    public StatsResponse<GoldPriceResponse> getForAll(int timeRangeInDays) {
-        LocalDateTime start = LocalDateTime.now().minusDays(timeRangeInDays);
-        LocalDateTime end = LocalDateTime.now();
-        StatsProjection statsProjection = goldPriceStatRepository.findStatsForAll(start, end);
-        return getStatResponse(statsProjection, "all");
-    }
-
-    private StatsResponse<GoldPriceResponse> getStatResponse(StatsProjection statsProjection, String property) {
-        GoldPriceResponse min = getMin(statsProjection, property);
-        GoldPriceResponse max = getMax(statsProjection, property);
-
-        BigDecimal mean = BigDecimal.valueOf(statsProjection.getMean().doubleValue())
-                .setScale(6, RoundingMode.HALF_UP);
-        BigDecimal median = BigDecimal.valueOf(statsProjection.getMedian().doubleValue())
-                .setScale(6, RoundingMode.HALF_UP);
-
-        return StatsResponse.<GoldPriceResponse>builder()
-                .mean(mean)
-                .median(median)
-                .count(statsProjection.getCount())
-                .minimum(min)
-                .maximum(max)
-                .build();
-    }
-
-    private GoldPriceResponse getMax(StatsProjection statsProjection, String property) {
-        return goldPriceStatRepository.findById(statsProjection.getMaxId().longValue())
-                .map(goldPriceMapper::toResponse)
-                .orElseThrow(() -> new PopulationNotFoundException("No max population found for " + property));
-    }
-
-    private GoldPriceResponse getMin(StatsProjection statsProjection, String property) {
-        return goldPriceStatRepository.findById(statsProjection.getMinId().longValue())
-                .map(goldPriceMapper::toResponse)
-                .orElseThrow(() -> new PopulationNotFoundException("No min population found for " + property));
-    }
-
-    private StatsProjection findForServer(String serverIdentifier) {
-        try {
-            int serverId = Integer.parseInt(serverIdentifier);
-            return goldPriceStatRepository.findStatsByServerId(serverId);
-        } catch (NumberFormatException e) {
-            return goldPriceStatRepository.findStatsByServerUniqueName(serverIdentifier);
-        }
-    }
 }

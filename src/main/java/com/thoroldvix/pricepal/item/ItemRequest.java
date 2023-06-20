@@ -9,8 +9,8 @@ import lombok.Builder;
 public record ItemRequest(
         @Min(1)
         int id,
-        @NotBlank(message = "Item name cannot be blank")
-        @NotNull(message = "Item name cannot be null")
+        @NotBlank(message = "Item itemName cannot be blank")
+        @NotNull(message = "Item itemName cannot be null")
         String name,
         @Min(0)
         long vendorPrice,

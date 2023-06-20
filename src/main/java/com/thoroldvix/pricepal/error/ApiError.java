@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record ApiError(
+record ApiError(
         LocalDateTime timestamp,
         int status,
         String error,

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,22 +19,26 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
     @Query(value = """
             WITH populations AS (
               SELECT
-                (SELECT p.population
+                (SELECT p.value
                  FROM population p JOIN server s ON s.id = p.server_id
                  WHERE LOWER(s.name) = LOWER(?1) AND s.faction = 1
-                 ORDER BY p.updated_at DESC LIMIT 1) AS hordePop,
-                (SELECT p.population
+                 ORDER BY p.updated_at DESC LIMIT 1) AS popHorde,
+                (SELECT p.value
                  FROM population p JOIN server s ON s.id = p.server_id
                  WHERE LOWER(s.name) = LOWER(?1) AND s.faction = 0
-                 ORDER BY p.updated_at DESC LIMIT 1) AS alliancePop
+                 ORDER BY p.updated_at DESC LIMIT 1) AS popAlliance,
+                 (SELECT s.name
+                 FROM population p JOIN server s ON s.id = p.server_id
+                 WHERE LOWER(s.name) = LOWER(?1)
+                 ORDER BY p.updated_at DESC LIMIT 1) AS serverName
             )
             SELECT
-              hordePop,
-              alliancePop,
-              hordePop + alliancePop AS totalPop,
-              ?1 AS serverName
+              popHorde,
+              popAlliance,
+              popHorde + popAlliance AS popTotal,
+              serverName
             FROM populations""", nativeQuery = true)
-    Optional<TotalPopProjection> findTotalPopulationForServerName(String serverName);
+    Optional<TotalPopProjection> findTotalPopForServer(String serverName);
 
     @Query(value = """
             SELECT  p.*
@@ -49,18 +54,12 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
 
     @Query(value = """
             select p
-            from Population p where p.server.id = ?1
-            order by p.updatedAt desc limit 1
-            """)
-    Optional<Population> findRecentByServerId(int serverId);
-
-    @Query(value = """
-            select p
             from Population p
-            where p.server.uniqueName = ?1
-            order by p.updatedAt desc limit 1
+            where p.server.id = ?1
+            order by p.updatedAt desc
+            limit 1
             """)
-    Optional<Population> findRecentByServerUniqueName(String uniqueName);
+    Optional<Population> findRecentForServer(int serverId);
 
     @Query("""
             SELECT p
@@ -85,5 +84,21 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
               )
             """)
     List<Population> findRecentForFaction(Faction faction);
+
+    @Query("""
+                        SELECT p
+                        from Population p
+                        join fetch Server s on p.server.id = s.id
+                        where s.id = ?1 and p.updatedAt >= ?2 and p.updatedAt <= ?3
+            """)
+    Page<Population> findAllForServer(int serverId, LocalDateTime start, LocalDateTime end, Pageable pageable);
+
+    @Query("""
+       select p
+       from Population p
+       join fetch Server s on p.server.id = s.id
+       where p.updatedAt >= ?1 and p.updatedAt <= ?2
+    """)
+    Page<Population> findAllForTimeRange(LocalDateTime start, LocalDateTime end, Pageable pageable);
 }
 

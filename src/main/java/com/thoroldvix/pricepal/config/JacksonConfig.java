@@ -13,7 +13,7 @@ public class JacksonConfig {
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return builder -> builder.serializationInclusion(JsonInclude.Include.NON_NULL)
                 .featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
-                .failOnUnknownProperties(true)
+                .failOnUnknownProperties(false)
                 .indentOutput(true)
                 .modules(new JavaTimeModule());
     }

@@ -12,7 +12,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.thoroldvix.pricepal.shared.ValidationUtils.*;
+import static com.thoroldvix.pricepal.server.ServerErrorMessages.REGION_CANNOT_BE_NULL;
+import static com.thoroldvix.pricepal.server.ServerErrorMessages.SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
+import static com.thoroldvix.pricepal.shared.ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL;
+import static com.thoroldvix.pricepal.shared.ValidationUtils.validateCollectionNotNullOrEmpty;
+import static com.thoroldvix.pricepal.shared.ValidationUtils.validateStringNonNullOrEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +31,7 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public ServerResponse getServer(String serverIdentifier) {
-        validateStringNonNullOrEmpty(serverIdentifier, "Server identifier cannot be null or empty");
+        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
         Optional<Server> server = findServer(serverIdentifier);
         return server.map(serverMapper::toResponse)
                 .orElseThrow(() -> new ServerNotFoundException("No server found for identifier: " + serverIdentifier));
@@ -35,9 +39,9 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public List<ServerResponse> search(SearchRequest searchRequest) {
-        Objects.requireNonNull(searchRequest, "Search request cannot be null");
+        Objects.requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
         Specification<Server> spec =
-                searchSpecification.createSearchSpecification(searchRequest.globalOperator(), searchRequest.searchCriteria());
+                searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
         List<Server> servers = serverRepository.findAll(spec);
         validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
         return serverMapper.toResponseList(servers);
@@ -53,7 +57,7 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public List<ServerResponse> getAllForRegion(Region region) {
-        Objects.requireNonNull(region, "Region cannot be null");
+        Objects.requireNonNull(region, REGION_CANNOT_BE_NULL);
         List<Server> servers = serverRepository.findAllByRegion(region);
         validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + region.name()));
         return serverMapper.toResponseList(servers);

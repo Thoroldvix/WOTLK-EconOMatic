@@ -7,6 +7,6 @@ public record TotalPopResponse(
         int popAlliance,
         int popHorde,
         int popTotal,
-        String name
+        String serverName
 ) {
 }

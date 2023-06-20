@@ -7,8 +7,7 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.thoroldvix.pricepal.shared.PredicateUtils.getPredicateFromOperation;
@@ -17,41 +16,26 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 @Component
 public class SearchSpecification<E> {
 
-    public Specification<E> createSearchSpecification(SearchRequest.GlobalOperator globalOperator,
-                                                      SearchCriteria... searchCriteria) {
-        if (searchCriteria == null || searchCriteria.length  == 0) {
-            return (root, query, cb) -> cb.isTrue(cb.literal(true));
+    public Specification<E> create(SearchRequest.GlobalOperator globalOperator,
+                                   SearchCriteria... searchCriteria) {
+        if (searchCriteria == null || searchCriteria.length == 0) {
+            throw new IllegalArgumentException("You must provide valid search criteria");
         }
+        return getSpecification(globalOperator, searchCriteria);
+    }
+
+    private Specification<E> getSpecification(SearchRequest.GlobalOperator globalOperator, SearchCriteria[] searchCriteria) {
         return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            for (SearchCriteria criteria : searchCriteria) {
-                Path<?> columnPath = getColumnPath(root, criteria);
-                Predicate predicate = getPredicateFromOperation(cb, criteria, columnPath);
-                predicates.add(predicate);
-            }
+            List<Predicate> predicates = getPredicates(root, cb, searchCriteria);
             return getSpecFromPredicates(globalOperator, cb, predicates);
         };
     }
 
-    public Specification<E> getSpecForTimeRange(int timeRangeInDays) {
-        if (timeRangeInDays < 0) {
-            throw new IllegalArgumentException("Time range must be positive");
-        }
-        return createSearchSpecification(SearchRequest.GlobalOperator.AND,
-                getBetweenCriteriaForDays(timeRangeInDays));
-    }
-
-    private SearchCriteria getBetweenCriteriaForDays(int timeRangeInDays) {
-        LocalDateTime startDate = LocalDateTime.now().minusDays(timeRangeInDays);
-        LocalDateTime endDate = LocalDateTime.now();
-
-        String timeRangeString = startDate + "," + endDate;
-
-        return SearchCriteria.builder()
-                .column("updatedAt")
-                .value(timeRangeString)
-                .operation(SearchCriteria.Operation.BETWEEN)
-                .build();
+    private List<Predicate> getPredicates(Root<E> root, CriteriaBuilder cb, SearchCriteria[] searchCriteria) {
+        return Arrays.stream(searchCriteria).map(criteria -> {
+            Path<?> columnPath = getColumnPath(root, criteria);
+            return getPredicateFromOperation(cb, criteria, columnPath);
+        }).toList();
     }
 
     private Predicate getSpecFromPredicates(SearchRequest.GlobalOperator globalOperator, CriteriaBuilder cb, List<Predicate> predicates) {
