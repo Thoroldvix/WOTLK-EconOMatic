@@ -41,7 +41,7 @@ public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceRespons
         BigDecimal price = resultNode.get("converted_unit_price").decimalValue();
 
         return GoldPriceResponse.builder()
-                .serverName(serverName)
+                .server(serverName)
                 .price(price)
                 .build();
     }

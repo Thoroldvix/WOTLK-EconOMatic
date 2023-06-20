@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Tag(name = "Prices API", description = "API for retrieving server gold prices")
@@ -62,7 +63,7 @@ public class GoldPriceController {
     }
 
     @Operation(summary = "Retrieves prices for given server identifier",
-            description = "Returns all price scans for time range and server identifier. Server identifier can be server unique name or server ID")
+            description = "Returns all price scans for time range and server identifier. Server identifier can be server unique itemName or server ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -73,16 +74,16 @@ public class GoldPriceController {
     })
     @GetMapping(value = "/servers/{serverIdentifier}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GoldPriceResponse>> getForServer(
+    public ResponseEntity<GoldPriceServerResponse> getForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier,
             @ParameterObject Pageable pageable) {
-        List<GoldPriceResponse> prices = goldPriceService.getForServer(serverIdentifier, pageable);
+        GoldPriceServerResponse prices = goldPriceService.getAllForServer(serverIdentifier, pageable);
         return ResponseEntity.ok(prices);
     }
 
     @Operation(summary = "Retrieves most recent price for given server identifier",
-            description = "Returns most recent price for server identifier. Server identifier can be server unique name or server ID")
+            description = "Returns most recent price for server identifier. Server identifier can be server unique itemName or server ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server price",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

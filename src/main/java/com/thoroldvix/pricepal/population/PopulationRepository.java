@@ -4,11 +4,13 @@ import com.thoroldvix.pricepal.server.Faction;
 import com.thoroldvix.pricepal.server.Region;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,15 +54,7 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
             from Population p where p.server.id = ?1
             order by p.updatedAt desc limit 1
             """)
-    Optional<Population> findRecentByServerId(int serverId);
-
-    @Query(value = """
-            select p
-            from Population p
-            where p.server.uniqueName = ?1
-            order by p.updatedAt desc limit 1
-            """)
-    Optional<Population> findRecentByServerUniqueName(String uniqueName);
+    Optional<Population> findRecentForServer(int serverId);
 
     @Query("""
             SELECT p
@@ -85,5 +79,21 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
               )
             """)
     List<Population> findRecentForFaction(Faction faction);
+
+    @Query("""
+                        SELECT p
+                        from Population p
+                        join fetch Server s on p.server.id = s.id
+                        where s.id = ?1 order by p.updatedAt desc
+            """)
+    Page<Population> findAllForServer(int serverId, Pageable pageable);
+
+    @Query("""
+       select p
+       from Population p
+       join fetch Server s on p.server.id = s.id
+       where p.updatedAt >= ?1 and p.updatedAt <= ?2
+    """)
+    Page<Population> findAllForTimeRange(LocalDateTime start, LocalDateTime end, Pageable pageable);
 }
 

@@ -37,7 +37,7 @@ public class ServerServiceImpl implements ServerService {
     public List<ServerResponse> search(SearchRequest searchRequest) {
         Objects.requireNonNull(searchRequest, "Search request cannot be null");
         Specification<Server> spec =
-                searchSpecification.createSearchSpecification(searchRequest.globalOperator(), searchRequest.searchCriteria());
+                searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
         List<Server> servers = serverRepository.findAll(spec);
         validateCollectionNotNullOrEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
         return serverMapper.toResponseList(servers);

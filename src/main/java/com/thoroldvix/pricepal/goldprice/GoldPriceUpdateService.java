@@ -79,7 +79,7 @@ public final class GoldPriceUpdateService {
     }
 
     private BigDecimal findPrice(List<GoldPriceResponse> prices, String uniqueServerName) {
-        return prices.stream().filter(result -> result.serverName().equals(uniqueServerName))
+        return prices.stream().filter(result -> result.server().equals(uniqueServerName))
                 .findFirst()
                 .map(GoldPriceResponse::price)
                 .orElseThrow(() -> new G2GPriceNotFoundException("Price not found for server: " + uniqueServerName));

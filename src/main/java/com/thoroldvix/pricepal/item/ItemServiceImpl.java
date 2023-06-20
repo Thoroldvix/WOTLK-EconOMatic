@@ -30,12 +30,11 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemResponse> search(SearchRequest searchRequest, Pageable pageable) {
         Objects.requireNonNull(searchRequest, "SearchRequest cannot be null");
         Objects.requireNonNull(pageable,  "Pageable cannot be null");
-        Specification<Item> spec = searchSpecification.createSearchSpecification(searchRequest.globalOperator(),
-                searchRequest.searchCriteria());
-        List<Item> items = itemRepository.findAll(spec, pageable).getContent();
+        List<Item> items = findAllForSearch(searchRequest, pageable);
         validateCollectionNotNullOrEmpty(items, () -> new ItemNotFoundException("Items not found"));
         return itemMapper.toResponseList(items);
     }
+
 
     @Override
     public List<ItemResponse> getAll(Pageable pageable) {
@@ -55,14 +54,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemResponse getItem(String itemIdentifier) {
         validateStringNonNullOrEmpty(itemIdentifier, "Item identifier cannot be null or empty");
+        Optional<Item> item = findItem(itemIdentifier);
+        return item.map(itemMapper::toResponse).orElseThrow(() -> new ItemNotFoundException("No item found for identifier " + itemIdentifier));
+    }
+
+    private Optional<Item> findItem(String itemIdentifier) {
         Optional<Item> item;
-        if (isNumber(itemIdentifier)) {
+        try {
             int itemId = Integer.parseInt(itemIdentifier);
             item = itemRepository.findById(itemId);
-        } else {
+        } catch (NumberFormatException e) {
             item = itemRepository.findByUniqueName(itemIdentifier);
         }
-        return item.map(itemMapper::toResponse).orElseThrow(() -> new ItemNotFoundException("No item found for identifier " + itemIdentifier));
+        return item;
     }
 
     @Override
@@ -78,4 +82,11 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemMapper.fromRequest(itemRequest);
         return itemMapper.toResponse(itemRepository.save(item));
     }
+
+    private List<Item> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
+        Specification<Item> spec = searchSpecification.create(searchRequest.globalOperator(),
+                searchRequest.searchCriteria());
+        return itemRepository.findAll(spec, pageable).getContent();
+    }
+
 }

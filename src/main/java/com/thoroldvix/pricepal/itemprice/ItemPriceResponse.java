@@ -8,8 +8,6 @@ import java.time.LocalDateTime;
 
 @Builder
 public record ItemPriceResponse(
-        String server,
-        ItemResponse itemInfo,
         long minBuyout,
         long historicalValue,
         long marketValue,

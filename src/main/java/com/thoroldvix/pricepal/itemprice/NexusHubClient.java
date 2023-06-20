@@ -10,5 +10,5 @@ public interface NexusHubClient {
 
 
     @GetMapping("/{serverName}")
-    AuctionHouseInfo fetchAllItemPricesForServer(@PathVariable String serverName);
+    NexusHubResponse fetchAllItemPricesForServer(@PathVariable String serverName);
 }

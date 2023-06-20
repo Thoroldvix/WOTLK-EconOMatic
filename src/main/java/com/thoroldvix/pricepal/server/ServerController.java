@@ -29,7 +29,7 @@ public class ServerController {
     private final ServerService serverServiceImpl;
 
     @Operation(summary = "Retrieves basic server info for given server identifier",
-            description = "Returns basic server info for given server identifier. Server identifier can be server unique name or server ID")
+            description = "Returns basic server info for given server identifier. Server identifier can be server unique itemName or server ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server info",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

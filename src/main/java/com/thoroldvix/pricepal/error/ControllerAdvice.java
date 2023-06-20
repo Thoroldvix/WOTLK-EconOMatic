@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
@@ -40,6 +41,11 @@ public class ControllerAdvice {
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
+        ApiError apiError = getApiError("Bad request", HttpStatus.BAD_REQUEST, request);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ApiError> handleDateTimeParseException(DateTimeParseException e, HttpServletRequest request) {
         ApiError apiError = getApiError("Bad request", HttpStatus.BAD_REQUEST, request);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }

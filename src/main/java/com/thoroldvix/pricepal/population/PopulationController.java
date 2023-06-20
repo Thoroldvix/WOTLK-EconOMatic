@@ -64,7 +64,7 @@ public class PopulationController {
     }
 
     @Operation(summary = "Retrieves populations for given server identifier",
-            description = "Returns all population scans for time range and server identifier. Server identifier can be server unique name or server ID")
+            description = "Returns all population scans for time range and server identifier. Server identifier can be server unique itemName or server ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Population history retrieved",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -84,7 +84,7 @@ public class PopulationController {
     }
 
     @Operation(summary = "Retrieves most recent population for given server identifier",
-            description = "Returns most recent population for server identifier. Server identifier can be server unique name or server ID")
+            description = "Returns most recent population for server identifier. Server identifier can be server unique itemName or server ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server population",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -98,7 +98,7 @@ public class PopulationController {
     public ResponseEntity<?> getRecentForServer(
             @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
             @PathVariable String serverIdentifier,
-            @Parameter(description = "Whether to return population for both factions or not, if true then server identifier is treated as server name without faction (e.g. everlook)")
+            @Parameter(description = "Whether to return population for both factions or not, if true then server identifier is treated as server itemName without faction (e.g. everlook)")
             @RequestParam (defaultValue = "false") boolean totalPop) {
         if (totalPop) {
             TotalPopResponse totalPopulation = populationService.getTotalPopulation(serverIdentifier);

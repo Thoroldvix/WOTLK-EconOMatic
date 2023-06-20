@@ -41,9 +41,9 @@ class G2GGoldPriceListDeserializerTest {
         List<GoldPriceResponse> prices = new GoldPriceDeserializer().deserialize(jp, ctxt);
 
         assertThat(prices).hasSize(2);
-        assertThat(prices.get(0).serverName()).isEqualTo("giantstalker-horde");
+        assertThat(prices.get(0).server()).isEqualTo("giantstalker-horde");
         assertThat(prices.get(0).price()).isEqualTo(BigDecimal.valueOf(0.000624));
-        assertThat(prices.get(1).serverName()).isEqualTo("nethergarde-keep-horde");
+        assertThat(prices.get(1).server()).isEqualTo("nethergarde-keep-horde");
         assertThat(prices.get(1).price()).isEqualTo(BigDecimal.valueOf(0.000745));
     }
 }

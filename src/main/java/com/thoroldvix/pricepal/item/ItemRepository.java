@@ -68,7 +68,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer>, JpaSpecifi
                 SUM(CASE WHEN type = 11 THEN 1 ELSE 0 END) AS key,
                 SUM(CASE WHEN type = 12 THEN 1 ELSE 0 END) AS miscellaneous,
                 SUM(CASE WHEN type = 13 THEN 1 ELSE 0 END) AS glyph,
-                count(id) as total
+                count(id) / 2 as total
                 FROM item
             """, nativeQuery = true)
     ItemSummaryProjection getSummary();

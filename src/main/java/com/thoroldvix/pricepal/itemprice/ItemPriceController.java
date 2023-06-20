@@ -33,7 +33,7 @@ public class ItemPriceController {
                                                                        @PathVariable String itemIdentifier,
                                                                        @RequestParam(defaultValue = "7") int timeRange,
                                                                        @ParameterObject Pageable pageable) {
-        AuctionHouseInfo auctionHouseInfo = itemPriceService.getForTimeRange(serverIdentifier, itemIdentifier, timeRange, pageable);
+        AuctionHouseInfo auctionHouseInfo = itemPriceService.getForServer(serverIdentifier, itemIdentifier, timeRange, pageable);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -41,6 +41,12 @@ public class ItemPriceController {
     public ResponseEntity<AuctionHouseInfo> search(@RequestBody SearchRequest searchRequest,
                                                           @ParameterObject Pageable pageable) {
         AuctionHouseInfo auctionHouseInfo = itemPriceService.search(searchRequest, pageable);
+        return ResponseEntity.ok(auctionHouseInfo);
+    }
+    @GetMapping("/regions/{regionName}/{itemIdentifier}")
+    public ResponseEntity<AuctionHouseInfo> getRecentForRegionAndItem(@PathVariable String regionName,
+                                                                      @PathVariable String itemIdentifier) {
+        AuctionHouseInfo auctionHouseInfo = itemPriceService.getRecentForRegion(regionName, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 }

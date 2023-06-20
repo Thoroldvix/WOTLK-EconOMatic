@@ -4,13 +4,10 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
 
@@ -94,10 +91,13 @@ public final class PredicateUtils {
 
     public static Predicate getEqualsIgnoreCasePredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
-        if (String.class.isAssignableFrom(columnType)) {
-            return cb.equal(cb.lower(columnPath.as(String.class)), value.toLowerCase());
-        }
-        throw new IllegalArgumentException("Invalid operation: EQUALS_IGNORE_CASE is only applicable to string column types.");
+        return switch (columnType.getSimpleName()) {
+            case "String" -> cb.equal(cb.lower(columnPath.as(String.class)), value.toLowerCase());
+            case "Integer" -> cb.equal(columnPath, Integer.parseInt(value));
+            case "Long" -> cb.equal(columnPath, Long.parseLong(value));
+            case "Double" -> cb.equal(columnPath, Double.parseDouble(value));
+            default -> throw new IllegalArgumentException("Invalid operation: EQUALS_IGNORE_CASE is only applicable to string and numeric column types.");
+        };
     }
 
     public static Predicate getEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {

@@ -7,9 +7,7 @@ import static com.thoroldvix.pricepal.shared.ValidationUtils.hasText;
 
 public final class StringEnumConverter {
 
-    private StringEnumConverter() {
-
-    }
+    private StringEnumConverter() {}
 
     public static <T extends Enum<T>> T fromString(String str, Class<T> enumClass) {
         if (!hasText(str)) {
@@ -21,7 +19,7 @@ public final class StringEnumConverter {
                 return value;
             }
         }
-        throw new NotFoundException(String.format("Could not find %s with name: %s", enumClass.getSimpleName(),
+        throw new NotFoundException(String.format("Could not find %s with itemName: %s", enumClass.getSimpleName(),
                 str));
     }
 }
