@@ -1,6 +1,6 @@
 # WOTLK EconOMatic
 
-EconOMatic is an API service created to provide useful economy related information for WoW Classic WOTLK.
+EconOMatic is an API service created to provide comprehensive economy-related information for WoW Classic WOTLK.
 
 ## Table of contents
 
@@ -33,8 +33,6 @@ reliable resource to access crucial information about auction house listings, se
 offering such functionality, WOTLKTools aims to enhance the gaming experience and provide valuable insights for players
 who are deeply engaged with the market dynamics or who rely on gold trading as a means of livelihood.
 
-Explore the features of WOTLKTools API, integrate it into your projects, and unleash its potential to elevate your WoW
-Classic WOTLK gaming experience and economy analysis capabilities
 
 ## Features
 
@@ -56,17 +54,17 @@ valuable insights into the in-game economy. Here are some key features:
 3. ### Population Retrieval for Servers
    Obtain population statistics for specific servers. This feature provides valuable insights into server populations,
    including metrics such as total player count, faction distribution, and any relevant demographics. Analyze population
-   trends and make informed decisions based on server activity levels.
+   trends and make informed decisions based on server activity levels. Population information is provided by [WarcraftTavern](https://www.warcrafttavern.com/population/wotlk)
 
 4. ### Gold price Retrieval for Servers
    Retrieve real-time gold prices for specified servers. This feature allows you to monitor the market dynamics and
    fluctuations of gold prices on different servers. Stay updated with the current value of gold and strategize your
-   in-game trading activities accordingly.
+   in-game trading activities accordingly. Gold prices are fetched from [g2g](https://www.g2g.com)
 
 5. ### Auction House Information Retrieval
    Access detailed auction house information for a particular server. Retrieve data about auction house listings,
    including item prices, quantities and more. This feature enables you to analyze the market trends, identify
-   profitable deals, and make informed decisions about your trading strategies.
+   profitable deals, and make informed decisions about your trading strategies. Auction House information is provided by [NexusHub](https://nexushub.co)
 
 6. ### Data Filtering
    Efficiently filter the data you want to retrieve from the API. Customize your queries to obtain specific subsets of
