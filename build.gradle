@@ -20,7 +20,7 @@ repositories {
 }
 jib {
     to {
-        image = "registry.hub.docker.com/thorold/price-pal"
+        image = "registry.hub.docker.com/thorold/economatic"
     }
 }
 ext {

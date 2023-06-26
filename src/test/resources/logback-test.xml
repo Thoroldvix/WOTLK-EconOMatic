@@ -11,5 +11,5 @@
 
     <logger name="org.testcontainers" level="INFO"/>
     <logger name="com.github.dockerjava" level="WARN"/>
-    <logger name="com.thoroldvix.pricepal.service" level="DEBUG"/>
+    <logger name="com.thoroldvix.economatic.service" level="DEBUG"/>
 </configuration>
