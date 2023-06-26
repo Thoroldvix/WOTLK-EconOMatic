@@ -19,7 +19,7 @@ public final class StringEnumConverter {
                 return value;
             }
         }
-        throw new NotFoundException(String.format("Could not find %s with name: %s", enumClass.getSimpleName(),
+        throw new NotFoundException(String.format("Could not find %s with itemName: %s", enumClass.getSimpleName(),
                 str));
     }
 }
