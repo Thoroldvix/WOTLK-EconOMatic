@@ -17,7 +17,7 @@ EconOMatic is an API service created to provide comprehensive economy-related in
 ## Project Description
 
 EconOMatic is an API that aims to consolidate economy information for WoW Classic WOTLK. It provides access to various
-data, including auction house information, server population, and more, all through a single unified interface. Whether
+data, including auction house information, server population, and more, all combined into single API. Whether
 you are a player interested in analyzing the in-game market dynamics or a professional player involved in gold trading,
 EconOMatic offers a range of functionalities that can greatly benefit you.
 
@@ -29,8 +29,8 @@ it accessible and convenient to interact with.
 
 EconOMatic strives to provide a comprehensive solution that combines essential economy information for WoW Classic
 WOTLK, streamlining the process of gathering data from multiple sources. This enables players to have a centralized and
-reliable resource to access crucial information about auction house listings, server population statistics, and more. By
-offering such functionality, WOTLKTools aims to enhance the gaming experience and provide valuable insights for players
+reliable resource to access information about auction house listings, server population statistics, and more. By
+offering such functionality, EconOMatic aims to enhance the gaming experience and provide valuable insights for players
 who are deeply engaged with the market dynamics or who rely on gold trading as a means of livelihood.
 
 
@@ -59,7 +59,7 @@ valuable insights into the in-game economy. Here are some key features:
 4. ### Gold price Retrieval for Servers
    Retrieve real-time gold prices for specified servers. This feature allows you to monitor the market dynamics and
    fluctuations of gold prices on different servers. Stay updated with the current value of gold and strategize your
-   in-game trading activities accordingly. Gold prices are fetched from [g2g](https://www.g2g.com)
+   in-game trading activities accordingly. Gold prices are fetched from [G2G](https://www.g2g.com)
 
 5. ### Auction House Information Retrieval
    Access detailed auction house information for a particular server. Retrieve data about auction house listings,
