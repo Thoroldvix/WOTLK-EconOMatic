@@ -4,15 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.thoroldvix.economatic.server.*;
+import com.thoroldvix.economatic.server.Faction;
+import com.thoroldvix.economatic.server.Server;
+import com.thoroldvix.economatic.server.ServerRepository;
+import com.thoroldvix.economatic.server.ServerResponse;
+import com.thoroldvix.economatic.shared.ServerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service
@@ -24,7 +30,9 @@ public final class PopulationUpdateService {
     private final ServerService serverServiceImpl;
     private final PopulationService populationService;
 
-//            @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+    @Scheduled(fixedRateString = "${economatic.population.update-rate}",
+            initialDelayString = "#{${economatic.update-on-startup} ? -1 : ${economatic.population.update-rate}}",
+            timeUnit = TimeUnit.DAYS)
     private void update() {
         log.info("Updating population");
         Instant start = Instant.now();

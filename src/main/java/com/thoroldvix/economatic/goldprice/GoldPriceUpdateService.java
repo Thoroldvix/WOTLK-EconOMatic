@@ -6,10 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerRepository;
 import com.thoroldvix.economatic.server.ServerResponse;
-import com.thoroldvix.economatic.server.ServerService;
+import com.thoroldvix.economatic.shared.ServerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,7 +32,9 @@ public final class GoldPriceUpdateService {
     private final GoldPriceService goldPriceServiceImpl;
 
 
-//        @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.HOURS)
+    @Scheduled(fixedRateString = "${economatic.gold-price.update-rate}",
+            initialDelayString = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}",
+            timeUnit = TimeUnit.MINUTES)
     private void update() {
         log.info("Updating gold prices");
         Instant start = Instant.now();

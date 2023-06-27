@@ -12,9 +12,9 @@ spring:
       pool:
         size: 4
   application:
-    name: PricePal
+    name: EconOMatic
   datasource:
-    url: jdbc:postgresql://localhost:5433/pricepal
+    url: ${DATABASE_URL}
     username: postgres
     password: pass
     driver-class-name: org.postgresql.Driver
@@ -34,3 +34,11 @@ server:
   error:
     include-stacktrace: never
     include-message: never
+economatic:
+  update-on-startup: ${UPDATE_ON_STARTUP:true}
+  population:
+    update-rate: ${POPULATION_UPDATE_RATE:1}
+  item-price:
+    update-rate: ${ITEM_PRICE_UPDATE_RATE:3}
+  gold-price:
+    update-rate: ${GOLD_PRICE_UPDATE_RATE:60}

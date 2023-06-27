@@ -6,10 +6,11 @@ import com.thoroldvix.economatic.item.ItemResponse;
 import com.thoroldvix.economatic.item.ItemService;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerResponse;
-import com.thoroldvix.economatic.server.ServerService;
+import com.thoroldvix.economatic.shared.ServerService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -17,6 +18,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -44,24 +46,20 @@ public final class ItemPriceUpdateService {
         itemIds = getItemIds(itemServiceImpl);
     }
 
-
-
     private static Set<Integer> getItemIds(ItemService itemService) {
         return itemService.getAll().stream()
                 .map(ItemResponse::id)
                 .collect(Collectors.toSet());
     }
 
-
     private static Map<String, Integer> getServerIds(ServerService serverService) {
         return serverService.getAll().stream()
                 .collect(Collectors.toMap(ServerResponse::uniqueName, ServerResponse::id, (id1, id2) -> id1));
     }
 
-    //    todo add retry on fail
-
-
-//    @Scheduled(fixedRate = 3, timeUnit = TimeUnit.HOURS)
+    @Scheduled(fixedRateString = "${economatic.item-price.update-rate}",
+            initialDelayString = "#{${economatic.update-on-startup} ? -1 : ${economatic.item-price.update-rate}}",
+            timeUnit = TimeUnit.HOURS)
     private void update() {
         log.info("Updating item prices");
         Instant start = Instant.now();
