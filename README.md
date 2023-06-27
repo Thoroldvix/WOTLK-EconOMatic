@@ -72,7 +72,7 @@ valuable insights into the in-game economy. Here are some key features:
    relevant parameters.
 
 7. ### Integration Flexibility
-   Integrate WOTLKTools API seamlessly into your own projects or applications. Leverage the provided functionalities to
+   Integrate EconOMatic API seamlessly into your own projects or applications. Leverage the provided functionalities to
    develop tailored tools and solutions that align with your specific needs. The API allows for easy integration,
    enabling you to enhance your gaming experience or build comprehensive market analysis tools.
 
@@ -82,7 +82,9 @@ economy, and optimize your trading strategies for a successful in-game journey.
 ## Technologies
  * ### Java 17
  * ### Spring Boot
+ * ### Lombok
  * ### Postgresql
+ * ### Liquibase
 
 ## Installation
 
