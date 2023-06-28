@@ -1,44 +1,53 @@
 package com.thoroldvix.economatic.goldprice;
 
 import com.thoroldvix.economatic.server.Server;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.Objects;
 
 import static com.thoroldvix.economatic.shared.ErrorMessages.PAGE_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.shared.ValidationUtils.validateCollectionNotNullOrEmpty;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface GoldPriceMapper {
+@Validated
+public abstract class GoldPriceMapper {
 
-    String PRICES_CANNOT_BE_NULL_OR_EMPTY = "Prices cannot be null or empty";
+    private static final String PRICES_CANNOT_BE_NULL_OR_EMPTY = "Prices cannot be null or empty";
 
 
     @Mapping(target = "price", source = "value")
     @Mapping(target = "server", source = "server", qualifiedByName = "serverName")
-    GoldPriceResponse toResponseWithServer(GoldPrice goldPrice);
+    abstract GoldPriceResponse toResponseWithServer(@NotNull(message = "Gold price cannot be null")
+                                                    GoldPrice goldPrice);
 
     @Mapping(target = "price", source = "value")
     @Mapping(target = "server", ignore = true)
-    GoldPriceResponse toResponse(GoldPrice goldPrice);
+    abstract GoldPriceResponse toResponse(
+            @NotNull(message = "Gold price cannot be null")
+            GoldPrice goldPrice);
 
-    default List<GoldPriceResponse> toResponseListWithServer(List<GoldPrice> prices) {
-        validateCollectionNotNullOrEmpty(prices, () -> new IllegalArgumentException(PRICES_CANNOT_BE_NULL_OR_EMPTY));
+    public List<GoldPriceResponse> toResponseListWithServer(
+            @NotEmpty(message = PRICES_CANNOT_BE_NULL_OR_EMPTY)
+            List<GoldPrice> prices) {
         return prices.stream().map(this::toResponseWithServer).toList();
     }
 
-    default List<GoldPriceResponse> toResponseList(List<GoldPrice> prices) {
-        validateCollectionNotNullOrEmpty(prices, () -> new IllegalArgumentException(PRICES_CANNOT_BE_NULL_OR_EMPTY));
+    public List<GoldPriceResponse> toResponseList(
+            @NotEmpty(message = PRICES_CANNOT_BE_NULL_OR_EMPTY)
+            List<GoldPrice> prices) {
         return prices.stream().map(this::toResponse).toList();
     }
 
-    default GoldPricesPagedResponse toPagedPricesResponse(Page<GoldPrice> page) {
-         Objects.requireNonNull(page, PAGE_CANNOT_BE_NULL);
+    public GoldPricesPagedResponse toPagedPricesResponse(
+            @NotNull(message = PAGE_CANNOT_BE_NULL)
+            Page<GoldPrice> page) {
+
         GoldPricesResponse goldPricesResponse = getGoldPricesResponse(page);
         return GoldPricesPagedResponse.builder()
                 .pricesResponse(goldPricesResponse)
@@ -49,23 +58,18 @@ public interface GoldPriceMapper {
                 .build();
     }
 
-    private GoldPricesResponse getGoldPricesResponse(Page<GoldPrice> page) {
-        return GoldPricesResponse.builder()
-                .prices(toResponseListWithServer(page.getContent()))
-                .build();
-    }
-
-
-    default GoldPricesResponse toPricesResponse(List<GoldPrice> prices) {
-        validateCollectionNotNullOrEmpty(prices, () -> new IllegalArgumentException(PRICES_CANNOT_BE_NULL_OR_EMPTY));
+    public GoldPricesResponse toPricesResponse(
+            @NotEmpty(message = PRICES_CANNOT_BE_NULL_OR_EMPTY)
+            List<GoldPrice> prices) {
         return GoldPricesResponse.builder()
                 .prices(toResponseListWithServer(prices))
                 .build();
     }
 
+    public GoldPricesResponse toPricesRegionResponse(
+            @NotEmpty(message = PRICES_CANNOT_BE_NULL_OR_EMPTY)
+            List<GoldPrice> prices) {
 
-    default GoldPricesResponse toPricesRegionResponse(List<GoldPrice> prices) {
-        validateCollectionNotNullOrEmpty(prices, () -> new IllegalArgumentException(PRICES_CANNOT_BE_NULL_OR_EMPTY));
         String region = prices.get(0).getServer().getRegion().toString();
         List<GoldPriceResponse> pricesResponse = toResponseListWithServer(prices);
         return GoldPricesResponse.builder()
@@ -74,8 +78,9 @@ public interface GoldPriceMapper {
                 .build();
     }
 
-    default GoldPricesResponse toPricesFactionResponse(List<GoldPrice> prices) {
-        validateCollectionNotNullOrEmpty(prices, () -> new IllegalArgumentException(PRICES_CANNOT_BE_NULL_OR_EMPTY));
+    public GoldPricesResponse toPricesFactionResponse(
+            @NotEmpty(message = PRICES_CANNOT_BE_NULL_OR_EMPTY)
+            List<GoldPrice> prices) {
         String faction = prices.get(0).getServer().getFaction().toString();
         return GoldPricesResponse.builder()
                 .faction(faction)
@@ -84,10 +89,15 @@ public interface GoldPriceMapper {
     }
 
     @Named("serverName")
-    default String serverName(Server server) {
-        Objects.requireNonNull(server, "Server cannot be null");
+    protected String serverName(
+            @NotNull(message = "Server cannot be null")
+            Server server) {
         return server.getUniqueName();
     }
 
-
+    private GoldPricesResponse getGoldPricesResponse(Page<GoldPrice> page) {
+        return GoldPricesResponse.builder()
+                .prices(toResponseListWithServer(page.getContent()))
+                .build();
+    }
 }

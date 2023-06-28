@@ -15,22 +15,20 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class GoldPriceUpdateService {
-
     private final ServerRepository serverRepository;
     private final G2GPriceClient g2gPriceClient;
     private final ServerService serverServiceImpl;
     private final GoldPriceService goldPriceServiceImpl;
-
 
     @Scheduled(fixedRateString = "${economatic.gold-price.update-rate}",
             initialDelayString = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}",
@@ -38,31 +36,37 @@ public final class GoldPriceUpdateService {
     private void update() {
         log.info("Updating gold prices");
         Instant start = Instant.now();
-        String goldPricesJson = g2gPriceClient.getAllPrices();
-        List<GoldPrice> pricesToSave = retrieveGoldPrices(goldPricesJson);
+
+        List<GoldPrice> pricesToSave = retrieveGoldPrices(g2gPriceClient.getAllPrices());
         goldPriceServiceImpl.saveAll(pricesToSave);
-        log.info("Finished updating gold prices in {} ms", Duration.between(start, Instant.now()).toMillis());
+
+        log.info("Finished updating gold prices in {} ms", elapsedTimeInMillis(start));
     }
 
     private List<GoldPrice> retrieveGoldPrices(String goldPricesJson) {
-        List<GoldPriceResponse> priceResponses = extractFromJson(goldPricesJson);
-        List<ServerResponse> allServers = serverServiceImpl.getAll();
-        return getPriceList(allServers, priceResponses);
+        return getPriceList(serverServiceImpl.getAll(), extractFromJson(goldPricesJson));
     }
 
-
     private List<GoldPrice> getPriceList(List<ServerResponse> servers, List<GoldPriceResponse> prices) {
-        List<GoldPrice> pricesToSave = new ArrayList<>();
-        servers.forEach(server -> {
-            GoldPrice price = getForServer(server, prices);
-            pricesToSave.add(price);
-        });
-        return pricesToSave;
+        return servers.stream()
+                .map(server -> getForServer(server, prices))
+                .toList();
     }
 
     private GoldPrice getForServer(ServerResponse server, List<GoldPriceResponse> prices) {
-        String uniqueServerName = server.uniqueName();
-        BigDecimal price = findPrice(prices, uniqueServerName);
+        BigDecimal price = findPriceForServer(prices, server.uniqueName());
+        return mapToGoldPriceEntity(server, price);
+    }
+
+    private BigDecimal findPriceForServer(List<GoldPriceResponse> prices, String uniqueServerName) {
+        return prices.stream()
+                .filter(result -> result.server().equals(uniqueServerName))
+                .findFirst()
+                .map(GoldPriceResponse::price)
+                .orElseThrow(() -> new G2GPriceNotFoundException("Price not found for server: " + uniqueServerName));
+    }
+
+    private GoldPrice mapToGoldPriceEntity(ServerResponse server, BigDecimal price) {
         Server serverEntity = serverRepository.getReferenceById(server.id());
         return GoldPrice.builder()
                 .value(price)
@@ -81,13 +85,5 @@ public final class GoldPriceUpdateService {
         } catch (IOException e) {
             throw new GoldPriceParsingException("Error while parsing gold price json", e);
         }
-    }
-
-    private BigDecimal findPrice(List<GoldPriceResponse> prices, String uniqueServerName) {
-        return prices.stream()
-                .filter(result -> result.server().equals(uniqueServerName))
-                .findFirst()
-                .map(GoldPriceResponse::price)
-                .orElseThrow(() -> new G2GPriceNotFoundException("Price not found for server: " + uniqueServerName));
     }
 }

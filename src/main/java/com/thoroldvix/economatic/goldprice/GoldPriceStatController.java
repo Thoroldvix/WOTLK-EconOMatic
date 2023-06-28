@@ -67,7 +67,7 @@ public class GoldPriceStatController {
     }
 
     @Operation(summary = "Retrieve basic price statistics for a region",
-            description = "Retrieves basic price statistics based on the provided region serverName and time range")
+            description = "Retrieves basic price statistics based on the provided region name and time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -88,7 +88,7 @@ public class GoldPriceStatController {
     }
 
     @Operation(summary = "Retrieve basic price statistics for a faction",
-            description = "Retrieves basic price statistics based on the provided faction serverName and time range")
+            description = "Retrieves basic price statistics based on the provided faction name and time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

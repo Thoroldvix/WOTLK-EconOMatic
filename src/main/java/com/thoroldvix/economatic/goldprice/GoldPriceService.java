@@ -3,28 +3,27 @@ package com.thoroldvix.economatic.goldprice;
 import com.thoroldvix.economatic.population.PopulationNotFoundException;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
-import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.shared.SearchRequest;
-import com.thoroldvix.economatic.shared.SearchSpecification;
-import com.thoroldvix.economatic.shared.StringEnumConverter;
-import com.thoroldvix.economatic.shared.TimeRange;
+import com.thoroldvix.economatic.shared.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.Objects;
 
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
 import static com.thoroldvix.economatic.shared.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.shared.ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.shared.ValidationUtils.validateCollectionNotNullOrEmpty;
-import static com.thoroldvix.economatic.shared.ValidationUtils.validateStringNonNullOrEmpty;
+import static com.thoroldvix.economatic.shared.ErrorMessages.TIME_RANGE_CANNOT_BE_NULL;
+import static com.thoroldvix.economatic.shared.ValidationUtils.validateCollectionNotEmpty;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GoldPriceService {
@@ -35,69 +34,78 @@ public class GoldPriceService {
     private final GoldPriceMapper goldPriceMapper;
     private final SearchSpecification<GoldPrice> searchSpecification;
 
-    public GoldPricesPagedResponse getAll(TimeRange timeRange, Pageable pageable) {
-        Objects.requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+    public GoldPricesPagedResponse getAll(
+            @NotNull(message = TIME_RANGE_CANNOT_BE_NULL)
+            TimeRange timeRange,
+            @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
+            Pageable pageable) {
         Page<GoldPrice> page = findAllForTimeRange(timeRange, pageable);
-        validateCollectionNotNullOrEmpty(page.getContent(),
-                () -> new GoldPriceNotFoundException(String.format("No prices found for time range: %s-%s", timeRange.start(), timeRange.end())));
-
+        validateCollectionNotEmpty(page.getContent(),
+                () -> new GoldPriceNotFoundException("No prices found for time range: %s-%s".formatted(timeRange.start(), timeRange.end())));
         return goldPriceMapper.toPagedPricesResponse(page);
     }
 
     public GoldPricesResponse getAllRecent() {
         List<GoldPrice> prices = goldPriceRepository.findAllRecent();
-        validateCollectionNotNullOrEmpty(prices,
+        validateCollectionNotEmpty(prices,
                 () -> new GoldPriceNotFoundException(NO_PRICES_FOUND));
         return goldPriceMapper.toPricesResponse(prices);
     }
 
-    public GoldPricesPagedResponse search(SearchRequest searchRequest,
+    public GoldPricesPagedResponse search(@Valid SearchRequest searchRequest,
+                                          @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
                                           Pageable pageable) {
-        Objects.requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
-        Objects.requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
         Page<GoldPrice> prices = findAllForSearch(searchRequest, pageable);
-        validateCollectionNotNullOrEmpty(prices.getContent(),
-                () -> new GoldPriceNotFoundException(NO_PRICES_FOUND));
+        validatePricesNotEmpty(prices);
         return goldPriceMapper.toPagedPricesResponse(prices);
     }
 
-    public GoldPricesPagedResponse getAllForServer(String serverIdentifier, TimeRange timeRange,
-                                                   Pageable pageable) {
-        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-        Objects.requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+    private static void validatePricesNotEmpty(Page<GoldPrice> prices) {
+        validateCollectionNotEmpty(prices.getContent(),
+                () -> new GoldPriceNotFoundException(NO_PRICES_FOUND));
+    }
 
+    public GoldPricesPagedResponse getAllForServer(
+            @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
+            String serverIdentifier,
+            @NotNull(message = TIME_RANGE_CANNOT_BE_NULL)
+            TimeRange timeRange,
+            @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
+            Pageable pageable) {
         Page<GoldPrice> prices = findAllForServer(serverIdentifier, timeRange, pageable);
-        validateCollectionNotNullOrEmpty(prices.getContent(),
+        validateCollectionNotEmpty(prices.getContent(),
                 () -> new PopulationNotFoundException(String.format("No prices found for server identifier %s and time range: %s-%s",
                         serverIdentifier, timeRange.start(), timeRange.end())));
-
         return goldPriceMapper.toPagedPricesResponse(prices);
     }
 
-    public GoldPricesResponse getRecentForRegion(String regionName) {
-        validateStringNonNullOrEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+    public GoldPricesResponse getRecentForRegion(
+            @NotEmpty(message = REGION_NAME_CANNOT_BE_NULL_OR_EMPTY)
+            String regionName) {
         List<GoldPrice> prices = findRecentForRegion(regionName);
-        validateCollectionNotNullOrEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for region " + regionName));
+        validateCollectionNotEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for region " + regionName));
         return goldPriceMapper.toPricesRegionResponse(prices);
     }
 
-    public GoldPricesResponse getRecentForFaction(String factionName) {
-        validateStringNonNullOrEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+    public GoldPricesResponse getRecentForFaction(
+            @NotEmpty(message = FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY)
+            String factionName) {
         List<GoldPrice> prices = findRecentForFaction(factionName);
-        validateCollectionNotNullOrEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for faction " + factionName));
+        validateCollectionNotEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for faction " + factionName));
         return goldPriceMapper.toPricesFactionResponse(prices);
     }
 
-    public GoldPriceResponse getRecentForServer(String serverIdentifier) {
-        validateStringNonNullOrEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+    public GoldPriceResponse getRecentForServer(
+            @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
+            String serverIdentifier) {
         GoldPrice price = findRecentForServer(serverIdentifier);
         return goldPriceMapper.toResponseWithServer(price);
     }
 
     @Transactional
-    public void saveAll(List<GoldPrice> pricesToSave) {
-        validateCollectionNotNullOrEmpty(pricesToSave,
-                () -> new IllegalArgumentException("Prices cannot be null or empty"));
+    public void saveAll(
+            @NotEmpty(message = "Prices cannot be null or empty")
+            List<GoldPrice> pricesToSave) {
         goldPriceRepository.saveAll(pricesToSave);
     }
 
