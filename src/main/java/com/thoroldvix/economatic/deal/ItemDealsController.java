@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.itemprice;
+package com.thoroldvix.economatic.deal;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import static com.thoroldvix.economatic.shared.ValidationUtils.hasText;
 
 
 @RestController
-@Tag(name = "Item Deals API", description = "API for retrieving item deals")
+@Tag(name = "Item Deals API", description = "API for retrieving item deal")
 @RequestMapping("/wow-classic/api/v1/items/deals")
 @RequiredArgsConstructor
 public class ItemDealsController {
@@ -19,7 +19,7 @@ public class ItemDealsController {
 
     @GetMapping("/{serverIdentifier}")
     public ResponseEntity<ItemDealsResponse> getDealsForServer(@PathVariable String serverIdentifier,
-                                                               @RequestParam(defaultValue = "4") int limit,
+                                                               @RequestParam(defaultValue = "5") int limit,
                                                                @RequestParam(defaultValue = "3") int minQuantity,
                                                                @RequestParam(defaultValue = "0") int minQuality) {
         boolean isInvalidInputs = !hasText(serverIdentifier)

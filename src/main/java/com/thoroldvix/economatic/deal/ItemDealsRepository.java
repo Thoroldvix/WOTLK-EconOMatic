@@ -1,5 +1,6 @@
-package com.thoroldvix.economatic.itemprice;
+package com.thoroldvix.economatic.deal;
 
+import com.thoroldvix.economatic.itemprice.ItemPrice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

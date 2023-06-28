@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.itemprice;
+package com.thoroldvix.economatic.deal;
 
 import lombok.Builder;
 
@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 
 @Builder
-record ItemDealResponse(
+public record ItemDealResponse(
     int itemId,
     long marketValue,
     long minBuyout,

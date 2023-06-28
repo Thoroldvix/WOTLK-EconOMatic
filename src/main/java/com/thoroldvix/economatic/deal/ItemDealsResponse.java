@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.itemprice;
+package com.thoroldvix.economatic.deal;
 
 import lombok.Builder;
 
