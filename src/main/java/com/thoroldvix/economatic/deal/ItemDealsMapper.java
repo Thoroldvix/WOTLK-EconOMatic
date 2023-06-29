@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.deal;
 
+import com.thoroldvix.economatic.shared.Filters;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.mapstruct.Mapper;
@@ -17,30 +18,44 @@ import java.util.List;
 @Validated
 public interface ItemDealsMapper {
 
-
     String DEALS_CANNOT_BE_NULL_OR_EMPTY = "Deals cannot be null or empty";
 
-    @Mapping(target = "discountPercentage", source = "discountPercentage", qualifiedByName = "discountPercentage")
+    @Mapping(target = "discountPercentage", qualifiedByName = "discountPercentage")
     @Mapping(target = "server", ignore = true)
     ItemDealResponse toResponse(ItemDealProjection deal);
 
     List<ItemDealResponse> toResponseList(
             @NotEmpty(message = DEALS_CANNOT_BE_NULL_OR_EMPTY)
-            List<ItemDealProjection> deals);
+            List<ItemDealProjection> deals
+    );
 
     default ItemDealsResponse toDealsWithServer(
             @NotEmpty(message = DEALS_CANNOT_BE_NULL_OR_EMPTY)
-            List<ItemDealProjection> dealsForServer) {
-        return ItemDealsResponse.builder()
-                .server(dealsForServer.get(0).getUniqueServerName())
-                .deals(toResponseList(dealsForServer))
-                .build();
+            List<ItemDealProjection> dealsForServer
+    ) {
+        return createItemDealsResponse(dealsForServer);
     }
 
     @Named("discountPercentage")
     default BigDecimal discountPercentage(
             @NotNull(message = "Discount percentage cannot be null")
-            BigDecimal discountPercentage) {
+            BigDecimal discountPercentage
+    ) {
         return discountPercentage.setScale(2, RoundingMode.HALF_UP);
+    }
+
+
+    private ItemDealsResponse createItemDealsResponse(
+            List<ItemDealProjection> dealsForServer
+    ) {
+        String uniqueServerName = dealsForServer.get(0).getUniqueServerName();
+        Filters filters = Filters.builder()
+                .server(uniqueServerName)
+                .build();
+
+        return ItemDealsResponse.builder()
+                .filters(filters)
+                .deals(toResponseList(dealsForServer))
+                .build();
     }
 }

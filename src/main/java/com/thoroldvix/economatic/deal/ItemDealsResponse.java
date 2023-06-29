@@ -1,5 +1,7 @@
 package com.thoroldvix.economatic.deal;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.thoroldvix.economatic.shared.Filters;
 import lombok.Builder;
 
 import java.util.List;
@@ -7,9 +9,9 @@ import java.util.List;
 
 @Builder
 public record ItemDealsResponse(
-        String server,
-        String region,
-        String faction,
-        List<ItemDealResponse> deals
+        @JsonUnwrapped
+        Filters filters,
+        List<ItemDealResponse>deals
 ) {
+
 }
