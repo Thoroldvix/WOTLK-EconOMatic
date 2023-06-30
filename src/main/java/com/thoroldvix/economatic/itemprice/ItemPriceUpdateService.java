@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +65,7 @@ public final class ItemPriceUpdateService {
     @Scheduled(fixedRateString = UPDATE_RATE,
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.HOURS)
+    @Retryable(maxAttempts = 5)
     private void update() {
         log.info("Updating item prices");
         Instant start = Instant.now();

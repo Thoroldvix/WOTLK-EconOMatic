@@ -11,6 +11,7 @@ import com.thoroldvix.economatic.server.ServerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public final class PopulationUpdateService {
     @Scheduled(fixedRateString = UPDATE_RATE,
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.DAYS)
+    @Retryable(maxAttempts = 5)
     public void update() {
         log.info("Updating population");
         Instant start = Instant.now();
