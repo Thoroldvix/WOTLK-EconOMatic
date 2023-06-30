@@ -24,7 +24,7 @@ jib {
     }
 }
 ext {
-    testContainers = "1.17.5"
+    testContainers = '1.17.6'
     mapStruct = "1.5.3.Final"
     springCloudVersion = "2022.0.0"
     caffeineCache = "3.1.6"
@@ -44,17 +44,18 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.liquibase:liquibase-core:4.23.0'
     implementation "org.mapstruct:mapstruct:${mapStruct}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineCache}"
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3"
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+    implementation 'org.springframework.retry:spring-retry:2.0.2'
 
 
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    runtimeOnly 'org.postgresql:postgresql:42.5.4'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapStruct}"
     testImplementation "org.testcontainers:postgresql:${testContainers}"
     testImplementation "org.testcontainers:junit-jupiter:${testContainers}"

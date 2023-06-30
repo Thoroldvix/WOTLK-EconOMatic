@@ -1,31 +1,30 @@
 version: '3.8'
 
 services:
-  postgres-price-pal:
+  postgres-economatic:
     image: postgres
     container_name: postgres-db
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=price_pal
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=economatic
       - PGDATA=/data/postgres
     expose:
-        - "5433"
+        - "5432"
     ports:
-      - "5433:5433"
+      - "5432:5432"
     command: -p 5433
     restart: unless-stopped
-  price-pal:
-    image: thorold/price-pal
-    container_name: price-pal
+  economatic:
+    image: thorold/economatic
+    container_name: economatic
     ports:
       - "8080:8080"
     environment:
-      - SPRING_LIQUIBASE_CONTEXTS=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-price-pal:5433/price_pal
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-economatic:5433/economatic
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=pass
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
     depends_on:
-      - postgres-price-pal
+      - postgres-economatic
     restart: unless-stopped
