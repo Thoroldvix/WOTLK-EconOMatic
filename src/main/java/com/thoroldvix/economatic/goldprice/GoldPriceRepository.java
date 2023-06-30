@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, JpaSpecificationExecutor<GoldPrice> {
@@ -66,4 +67,15 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             limit 1
             """)
     Optional<GoldPrice> findRecentForServer(int serverId);
+
+    @Query(value = """
+            SELECT gp.*
+            FROM gold_price gp
+                     INNER JOIN (SELECT server_id, MAX(updated_at) AS max_updated_at
+                                 FROM gold_price
+                                 GROUP BY server_id) AS latest_prices ON gp.server_id = latest_prices.server_id
+                AND gp.updated_at = latest_prices.max_updated_at
+            where gp.server_id in ?1
+            """, nativeQuery = true)
+    List<GoldPrice> findRecentForServers(Set<Integer> serverIds);
 }

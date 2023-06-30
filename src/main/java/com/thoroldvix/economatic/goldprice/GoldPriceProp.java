@@ -11,7 +11,7 @@ public record GoldPriceProp(@DurationUnit(ChronoUnit.MINUTES) Duration updateRat
 
     public GoldPriceProp {
         if (updateRate.toMinutes() < 5) {
-            throw new GoldPriceUpdateRateException("Gold price update rate cannot be less than 5 minutes");
+            throw new InvalidGoldPricePropertyException("Gold price update rate cannot be less than 5 minutes");
         }
     }
 }

@@ -2,7 +2,7 @@ package com.thoroldvix.economatic.goldprice;
 
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
-import com.thoroldvix.economatic.shared.ServerService;
+import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.shared.StatsProjection;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
 import com.thoroldvix.economatic.shared.TimeRange;
@@ -24,9 +24,10 @@ import static com.thoroldvix.economatic.shared.ErrorMessages.TIME_RANGE_CANNOT_B
 @RequiredArgsConstructor
 public class GoldPriceStatsService {
 
-    private final ServerService serverServiceImpl;
+    private final ServerService serverService;
     private final GoldPriceStatRepository goldPriceStatRepository;
     private final GoldPriceStatMapper goldPriceStatMapper;
+    private final GoldPriceMapper goldPriceMapper;
 
     public GoldPriceStatResponse getForServer(
             @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
@@ -60,11 +61,17 @@ public class GoldPriceStatsService {
 
     private GoldPriceStatResponse generateGoldPriceStatResponse(Supplier<StatsProjection> statsSupplier) {
         StatsProjection statsProjection = statsSupplier.get();
-        return goldPriceStatMapper.toResponse(statsProjection, goldPriceStatRepository);
+        return getStatResponse(statsProjection);
+    }
+
+    private GoldPriceStatResponse getStatResponse(StatsProjection statsProjection) {
+        GoldPriceResponse min = getMin(statsProjection);
+        GoldPriceResponse max = getMax(statsProjection);
+        return goldPriceStatMapper.toResponse(statsProjection, min, max);
     }
 
     private StatsProjection findForServer(String serverIdentifier, TimeRange timeRange) {
-        int serverId = serverServiceImpl.getServer(serverIdentifier).id();
+        int serverId = serverService.getServer(serverIdentifier).id();
         return goldPriceStatRepository.findStatsForServer(serverId, timeRange.start(), timeRange.end());
     }
 
@@ -80,5 +87,16 @@ public class GoldPriceStatsService {
     private StatsProjection findForFaction(String factionName, TimeRange timeRange) {
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
         return goldPriceStatRepository.findForFaction(faction.ordinal(), timeRange.start(), timeRange.end());
+    }
+    private GoldPriceResponse getMax(StatsProjection goldPriceStat) {
+        long maxId = goldPriceStat.getMaxId().longValue();
+        return goldPriceStatRepository.findById(maxId).map(goldPriceMapper::toResponseWithServer)
+                .orElseThrow(() -> new GoldPriceNotFoundException("No max gold price found with id " + maxId));
+    }
+
+    private GoldPriceResponse getMin(StatsProjection goldPriceStat) {
+        long minId = goldPriceStat.getMinId().longValue();
+        return goldPriceStatRepository.findById(minId).map(goldPriceMapper::toResponseWithServer)
+                .orElseThrow(() -> new GoldPriceNotFoundException("No min gold price found with id " + minId));
     }
 }

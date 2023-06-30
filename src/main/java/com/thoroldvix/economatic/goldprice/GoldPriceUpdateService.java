@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerRepository;
 import com.thoroldvix.economatic.server.ServerResponse;
-import com.thoroldvix.economatic.shared.ServerService;
+import com.thoroldvix.economatic.server.ServerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +25,15 @@ import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class GoldPriceUpdateService {
+    public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}";
+    public static final String UPDATE_RATE = "${economatic.gold-price.update-rate}";
     private final ServerRepository serverRepository;
     private final G2GPriceClient g2gPriceClient;
     private final ServerService serverServiceImpl;
     private final GoldPriceService goldPriceServiceImpl;
 
-    @Scheduled(fixedRateString = "${economatic.gold-price.update-rate}",
-            initialDelayString = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}",
+    @Scheduled(fixedRateString = UPDATE_RATE,
+            initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.MINUTES)
     private void update() {
         log.info("Updating gold prices");
@@ -83,7 +85,7 @@ public final class GoldPriceUpdateService {
             parser = mapper.getFactory().createParser(goldPricesJson);
             return deserializer.deserialize(parser, context);
         } catch (IOException e) {
-            throw new GoldPriceParsingException("Error while parsing gold price json", e);
+            throw new GoldPriceParsingException("Error while parsing gold price json");
         }
     }
 }
