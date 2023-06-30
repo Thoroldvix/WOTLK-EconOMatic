@@ -30,7 +30,7 @@ public class CachingConfig {
         return cacheManager;
     }
 
-     @Bean
+    @Bean
     CacheManager itemPriceCache() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCacheNames(Collections.singletonList(("item-price-cache")));
@@ -42,7 +42,7 @@ public class CachingConfig {
         return cacheManager;
     }
 
-      @Bean
+    @Bean
     CacheManager populationCache() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCacheNames(Collections.singletonList(("population-cache")));
@@ -66,7 +66,7 @@ public class CachingConfig {
         return cacheManager;
     }
 
-   @Bean
+    @Bean
     CacheManager serverCache() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCacheNames(Collections.singletonList(("server-cache")));

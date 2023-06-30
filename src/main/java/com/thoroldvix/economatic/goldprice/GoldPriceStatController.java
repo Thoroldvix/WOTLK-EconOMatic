@@ -13,8 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.thoroldvix.economatic.shared.ValidationUtils.hasText;
-
 @RestController
 @Tag(name = "Gold price statistics API", description = "API for retrieving statistics of gold prices")
 @RequestMapping("/wow-classic/api/v1/servers/prices/stats")
@@ -61,9 +59,7 @@ public class GoldPriceStatController {
             @Parameter(description = "Time range in days to retrieve statistics for",
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
-        if (!hasText(serverIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var statsForServer = goldPriceStatsService.getForServer(serverIdentifier, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForServer);
     }
@@ -87,9 +83,7 @@ public class GoldPriceStatController {
             @Parameter(description = "Time range in days to retrieve statistics for",
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
-        if (!hasText(regionName)) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var statsForRegion = goldPriceStatsService.getForRegion(regionName, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForRegion);
     }
@@ -113,9 +107,7 @@ public class GoldPriceStatController {
             @Parameter(description = "Time range in days to retrieve statistics for",
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
-        if (!hasText(factionName)) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var statsForFaction = goldPriceStatsService.getForFaction(factionName, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForFaction);
     }

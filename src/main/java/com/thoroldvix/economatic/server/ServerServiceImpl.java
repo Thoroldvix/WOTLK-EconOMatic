@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.shared.ValidationUtils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.Utils.validateCollectionNotEmpty;
 
 @Service
 @Validated

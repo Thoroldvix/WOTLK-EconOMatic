@@ -18,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Optional;
 
 import static com.thoroldvix.economatic.shared.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.shared.ValidationUtils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.Utils.validateCollectionNotEmpty;
 
 @Service
 @Validated

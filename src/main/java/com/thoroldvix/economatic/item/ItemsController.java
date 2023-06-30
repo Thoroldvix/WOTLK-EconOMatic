@@ -20,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static com.thoroldvix.economatic.shared.ValidationUtils.hasText;
-
 @RestController
 @Tag(name = "Items API", description = "API for retrieving item information")
 @RequestMapping("/wow-classic/api/v1/items")
@@ -43,6 +41,7 @@ public class ItemsController {
     @GetMapping
     public ResponseEntity<ItemPagedResponse> getAll(@ParameterObject @PageableDefault(size = 100, sort = "name",
             direction = Sort.Direction.ASC) Pageable pageable) {
+
         var items = itemService.getAll(pageable);
         return ResponseEntity.ok(items);
     }
@@ -63,9 +62,7 @@ public class ItemsController {
                     example = "righteous-orb or 12811",
                     required = true)
             @PathVariable String itemIdentifier) {
-        if (!hasText(itemIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var item = itemService.getItem(itemIdentifier);
         return ResponseEntity.ok(item);
     }
@@ -140,9 +137,7 @@ public class ItemsController {
                     example = "righteous-orb or 12811",
                     required = true)
             @PathVariable String itemIdentifier) {
-        if (!hasText(itemIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
+
         ItemResponse deletedItem = itemService.deleteItem(itemIdentifier);
         return ResponseEntity.ok(deletedItem);
     }

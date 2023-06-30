@@ -11,7 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.thoroldvix.economatic.shared.PredicateUtils.getPredicateFromOperation;
-import static com.thoroldvix.economatic.shared.ValidationUtils.hasText;
+import static com.thoroldvix.economatic.shared.Utils.hasText;
+
 
 @Component
 public class SearchSpecification<E> {

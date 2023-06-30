@@ -3,7 +3,7 @@ package com.thoroldvix.economatic.shared;
 
 import com.thoroldvix.economatic.error.NotFoundException;
 
-import static com.thoroldvix.economatic.shared.ValidationUtils.hasText;
+import static com.thoroldvix.economatic.shared.Utils.hasText;
 
 public final class StringEnumConverter {
 

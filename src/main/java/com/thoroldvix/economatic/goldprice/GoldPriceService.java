@@ -4,7 +4,10 @@ import com.thoroldvix.economatic.population.PopulationNotFoundException;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.shared.*;
+import com.thoroldvix.economatic.shared.SearchRequest;
+import com.thoroldvix.economatic.shared.SearchSpecification;
+import com.thoroldvix.economatic.shared.StringEnumConverter;
+import com.thoroldvix.economatic.shared.TimeRange;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +27,7 @@ import java.util.stream.Collectors;
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
 import static com.thoroldvix.economatic.shared.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.shared.ErrorMessages.TIME_RANGE_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.shared.ValidationUtils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.Utils.validateCollectionNotEmpty;
 
 @Service
 @Validated

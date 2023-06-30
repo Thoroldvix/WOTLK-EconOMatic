@@ -10,7 +10,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-import static com.thoroldvix.economatic.shared.ValidationUtils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.Utils.validateCollectionNotEmpty;
 
 
 @Service

@@ -21,8 +21,7 @@ public record SearchRequest(
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SearchRequest)) return false;
-        SearchRequest that = (SearchRequest) o;
+        if (!(o instanceof SearchRequest that)) return false;
         if (!Arrays.equals(searchCriteria, that.searchCriteria)) return false;
         return globalOperator == that.globalOperator;
     }
