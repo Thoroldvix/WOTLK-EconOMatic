@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.deal;
 
-import com.thoroldvix.economatic.shared.ServerService;
+import com.thoroldvix.economatic.server.ServerService;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
