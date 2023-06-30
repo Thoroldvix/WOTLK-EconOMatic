@@ -50,7 +50,7 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
             ) AS latest_prices ON p.server_id = latest_prices.server_id
             AND p.updated_at = latest_prices.max_updated_at
             """, nativeQuery = true)
-    Page<Population> findAllRecent(Pageable pageable);
+    List<Population> findAllRecent();
 
     @Query(value = """
             select p

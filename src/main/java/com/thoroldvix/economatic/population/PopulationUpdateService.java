@@ -1,45 +1,47 @@
 package com.thoroldvix.economatic.population;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerRepository;
 import com.thoroldvix.economatic.server.ServerResponse;
-import com.thoroldvix.economatic.shared.ServerService;
+import com.thoroldvix.economatic.server.ServerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service
 @Slf4j
 public final class PopulationUpdateService {
 
+    public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.population.update-rate}}";
+    public static final String UPDATE_RATE = "${economatic.population.update-rate}";
     private final WarcraftTavernClient warcraftTavernClient;
     private final ServerRepository serverRepository;
     private final ServerService serverServiceImpl;
     private final PopulationService populationService;
 
-    @Scheduled(fixedRateString = "${economatic.population.update-rate}",
-            initialDelayString = "#{${economatic.update-on-startup} ? -1 : ${economatic.population.update-rate}}",
+    @Scheduled(fixedRateString = UPDATE_RATE,
+            initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.DAYS)
-    private void update() {
+    public void update() {
         log.info("Updating population");
         Instant start = Instant.now();
         String populationJson = warcraftTavernClient.getAll();
         List<Population> populations = retrievePopulations(populationJson);
         populationService.saveAll(populations);
-        log.info("Finished updating population in {} ms", Duration.between(start, Instant.now()).toMillis());
+        log.info("Finished updating population in {} ms", elapsedTimeInMillis(start));
     }
 
 
@@ -79,12 +81,11 @@ public final class PopulationUpdateService {
 
     private List<TotalPopResponse> extractFromJson(String populationJson) {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, TotalPopResponse.class);
         try {
             return mapper.readValue(populationJson, collectionType);
         } catch (JsonProcessingException e) {
-            throw new PopulationParsingException("Error while parsing population json", e);
+            throw new PopulationParsingException("Error while parsing population json");
         }
     }
 
