@@ -27,7 +27,7 @@ import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 
 @Service
 @Slf4j
-public final class ItemPriceUpdateService {
+public class ItemPriceUpdateService {
     private static final RateLimiter RATE_LIMITER = RateLimiter.create(4);
     public static final String UPDATE_RATE = "${economatic.item-price.update-rate}";
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.item-price.update-rate}}";
@@ -66,7 +66,7 @@ public final class ItemPriceUpdateService {
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.HOURS)
     @Retryable(maxAttempts = 5)
-    private void update() {
+    protected void update() {
         log.info("Updating item prices");
         Instant start = Instant.now();
         serverIdentifiers.keySet().parallelStream()

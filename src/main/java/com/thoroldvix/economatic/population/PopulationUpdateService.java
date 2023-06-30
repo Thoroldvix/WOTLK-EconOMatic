@@ -3,12 +3,7 @@ package com.thoroldvix.economatic.population;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.thoroldvix.economatic.server.Faction;
-import com.thoroldvix.economatic.server.Server;
-import com.thoroldvix.economatic.server.ServerRepository;
-import com.thoroldvix.economatic.server.ServerResponse;
-import com.thoroldvix.economatic.server.ServerService;
-import lombok.AccessLevel;
+import com.thoroldvix.economatic.server.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Retryable;
@@ -21,10 +16,10 @@ import java.util.concurrent.TimeUnit;
 
 import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Service
 @Slf4j
-public final class PopulationUpdateService {
+public  class PopulationUpdateService {
 
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.population.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.population.update-rate}";
@@ -37,7 +32,7 @@ public final class PopulationUpdateService {
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.DAYS)
     @Retryable(maxAttempts = 5)
-    public void update() {
+    protected  void update() {
         log.info("Updating population");
         Instant start = Instant.now();
         String populationJson = warcraftTavernClient.getAll();

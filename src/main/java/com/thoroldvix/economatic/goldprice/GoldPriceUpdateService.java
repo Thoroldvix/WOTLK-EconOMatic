@@ -7,7 +7,6 @@ import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerRepository;
 import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Retryable;
@@ -23,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Slf4j
-public final class GoldPriceUpdateService {
+public class GoldPriceUpdateService {
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.gold-price.update-rate}";
     private final ServerRepository serverRepository;
@@ -37,7 +36,7 @@ public final class GoldPriceUpdateService {
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.MINUTES)
     @Retryable(maxAttempts = 5)
-    private void update() {
+    protected  void update() {
         log.info("Updating gold prices");
         Instant start = Instant.now();
 
