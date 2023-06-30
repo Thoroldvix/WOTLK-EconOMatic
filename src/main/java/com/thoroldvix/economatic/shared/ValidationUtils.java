@@ -1,44 +1,21 @@
 package com.thoroldvix.economatic.shared;
 
 import org.springframework.lang.Nullable;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
-
+@Validated
 public final class ValidationUtils {
 
-    private ValidationUtils() {
+    private ValidationUtils() {}
 
-    }
-
-    public static void validatePositiveInt(int value, String errorMessage) {
-        if (value <= 0) {
-            throw new NumberNotPositiveException(errorMessage);
-        }
-    }
-
-    public static void validateStringNonNullOrEmpty(String value, String errorMessage) {
-        Objects.requireNonNull(errorMessage, "Error message cannot be null");
-        if (!hasText(value)) {
-            throw new IllegalArgumentException(errorMessage);
-        }
-    }
-
-    public static boolean isNumber(String input) {
-        try {
-            Double.parseDouble(input);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    public static <T, E extends RuntimeException> void validateCollectionNotNullOrEmpty(Collection<T> list, Supplier<E> exceptionSupplier) {
-        Objects.requireNonNull(list, "List cannot be null");
+    public static <T, E extends RuntimeException> void validateCollectionNotEmpty(@Nullable Collection<T> list, Supplier<E> exceptionSupplier) {
         Objects.requireNonNull(exceptionSupplier, "Exception supplier cannot be null");
-        if (list.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             throw exceptionSupplier.get();
         }
     }
@@ -48,15 +25,9 @@ public final class ValidationUtils {
     }
 
     private static boolean containsText(CharSequence str) {
-        int strLen = str.length();
-        for (int i = 0; i < strLen; i++) {
-            if (!Character.isWhitespace(str.charAt(i))) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(0, str.length())
+                .anyMatch(i -> !Character.isWhitespace(str.charAt(i)));
     }
-
 }
 
 

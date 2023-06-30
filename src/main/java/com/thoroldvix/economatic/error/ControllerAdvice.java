@@ -7,6 +7,8 @@ import com.thoroldvix.economatic.shared.NumberNotPositiveException;
 import feign.FeignException;
 import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 class ControllerAdvice {
@@ -74,6 +77,19 @@ class ControllerAdvice {
     protected ResponseEntity<ApiError> handleNumberNotPositiveException(NumberNotPositiveException e, HttpServletRequest request) {
         ApiError apiError = getApiError(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST, request);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<ApiError> handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
+        String errorMessage = extractErrorMessage(e);
+        ApiError apiError = getApiError(errorMessage, HttpStatus.BAD_REQUEST, request);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+
+    private String extractErrorMessage(ConstraintViolationException e) {
+        return e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(", "));
     }
 
     private ApiError getApiError(String errorMessage, HttpStatus status, HttpServletRequest request) {

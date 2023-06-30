@@ -1,11 +1,5 @@
 package com.thoroldvix.economatic.shared;
 
-import com.thoroldvix.economatic.item.ItemQuality;
-import com.thoroldvix.economatic.item.ItemSlot;
-import com.thoroldvix.economatic.item.ItemType;
-import com.thoroldvix.economatic.server.Faction;
-import com.thoroldvix.economatic.server.Region;
-import com.thoroldvix.economatic.server.ServerType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -16,6 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
+
+
 
 public final class PredicateUtils {
     private static final String INTEGER = "Integer";
@@ -54,7 +50,6 @@ public final class PredicateUtils {
             case EQUALS_IGNORE_CASE -> getEqualsIgnoreCasePredicate(cb, columnPath, value);
         };
     }
-
 
     public static Predicate getLessThanOrEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
@@ -116,7 +111,7 @@ public final class PredicateUtils {
     public static Predicate getEqualsPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
         if (columnType.isEnum()) {
-            int searchValue = getValueForEnumType(columnType.getSimpleName(), value);
+            int searchValue = getValueForEnumType(columnType, value);
             return cb.equal(columnPath, searchValue);
         }
         return cb.equal(columnPath, value);
@@ -163,27 +158,29 @@ public final class PredicateUtils {
         return cb.between(columnPath.as(LocalDateTime.class), start, end);
     }
 
-    private static int getValueForEnumType(String enumType, String value) {
-        return switch (enumType) {
-            case "Faction" -> Enum.valueOf(Faction.class, value.toUpperCase()).ordinal();
-            case "Region" -> Enum.valueOf(Region.class, value.toUpperCase()).ordinal();
-            case "ItemType" -> Enum.valueOf(ItemType.class, value.toUpperCase()).ordinal();
-            case "ItemQuality" -> Enum.valueOf(ItemQuality.class, value.toUpperCase()).ordinal();
-            case "ItemSlot" -> Enum.valueOf(ItemSlot.class, value.toUpperCase()).ordinal();
-            case "ServerType" -> Enum.valueOf(ServerType.class, value.toUpperCase()).ordinal();
-            default -> throw new IllegalArgumentException("Unsupported enum type");
-        };
+    private static <E extends Enum<E>> int getValueForEnumType(Class<?> enumClass, String value) {
+        @SuppressWarnings("unchecked")
+        Class<E> castedEnumClass = (Class<E>) enumClass;
+        E enumValue = Enum.valueOf(castedEnumClass, value.toUpperCase());
+        return enumValue.ordinal();
     }
 
     private static Predicate getDoubleBetweenPredicate(CriteriaBuilder cb, Path<?> columnPath, String lowerBound, String upperBound) {
-        return cb.between(columnPath.as(Double.class), Double.parseDouble(lowerBound), Double.parseDouble(upperBound));
+        double lowerBoundValue = Double.parseDouble(lowerBound);
+        double upperDoubleValue = Double.parseDouble(upperBound);
+        return cb.between(columnPath.as(Double.class), lowerBoundValue, upperDoubleValue);
     }
 
     private static Predicate getLongBetweenPredicate(CriteriaBuilder cb, Path<?> columnPath, String lowerBound, String upperBound) {
-        return cb.between(columnPath.as(Long.class), Long.parseLong(lowerBound), Long.parseLong(upperBound));
+        long lowerBoundValue = Long.parseLong(lowerBound);
+        long upperBoundValue = Long.parseLong(upperBound);
+        return cb.between(columnPath.as(Long.class), lowerBoundValue, upperBoundValue);
     }
 
     private static Predicate getIntegerBetweenPredicate(CriteriaBuilder cb, Path<?> columnPath, String lowerBound, String upperBound) {
-        return cb.between(columnPath.as(Integer.class), Integer.parseInt(lowerBound), Integer.parseInt(upperBound));
+        int lowerBoundValue = Integer.parseInt(lowerBound);
+        int upperBoundValue = Integer.parseInt(upperBound);
+        return cb.between(columnPath.as(Integer.class), lowerBoundValue, upperBoundValue);
+
     }
 }
