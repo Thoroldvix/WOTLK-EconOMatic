@@ -1,7 +1,10 @@
 package com.thoroldvix.economatic.item;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
@@ -9,10 +12,8 @@ import org.hibernate.annotations.GenerationTime;
 import java.util.Objects;
 
 @Entity
-@Getter
-@Setter
+@Data
 @Builder
-@ToString
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class Item {

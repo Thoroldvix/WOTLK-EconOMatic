@@ -9,9 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer>, JpaSpecificationExecutor<Item> {
-
-    Optional<Item> findByName(String itemName);
-
+    
     Optional<Item> findByUniqueName(String uniqueName);
 
     @Query(value = """
