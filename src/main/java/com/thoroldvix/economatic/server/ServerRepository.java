@@ -34,4 +34,6 @@ public interface ServerRepository extends JpaRepository<Server, Integer>, JpaSpe
             FROM server
             """, nativeQuery = true)
     ServerSummaryProjection getSummary();
+
+    List<Server> findAllByFaction(Faction faction);
 }
