@@ -67,7 +67,7 @@ public class GoldPriceController {
     }
 
      @Operation(summary = "Retrieve most recent prices for the given server list",
-            description = "Returns the most recent prices for given server list",
+            description = "Returns the most recent prices for the given server list",
             tags = {"Gold prices"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",

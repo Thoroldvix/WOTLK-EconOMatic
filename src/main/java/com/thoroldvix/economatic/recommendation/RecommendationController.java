@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Tag(name = "Recommendations API", description = "API for retrieving server recommendations for farming gold")
 @RequestMapping("/wow-classic/api/v1/recommendations")
 @RequiredArgsConstructor
 public class RecommendationController {
@@ -20,7 +22,7 @@ public class RecommendationController {
     @Operation(summary = "Retrieve recommendations for item list",
             description = """
             Returns a list of recommended servers based on the input item list.
-             Up to 'limit' servers are returned""",
+             Up to 'limit' servers are returned""", tags = {"Recommendation"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successful retrieval of recommendations",
                             content = @Content(schema = @Schema(implementation = RecommendationResponse.class))),
