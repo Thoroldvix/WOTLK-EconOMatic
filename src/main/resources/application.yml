@@ -1,11 +1,11 @@
 spring:
   data:
     rest:
-      max-page-size: 40000
+      max-page-size: 10000
       default-page-size: 100
     web:
       pageable:
-        max-page-size: 40000
+        max-page-size: 10000
         default-page-size: 100
   task:
     scheduling:
@@ -14,9 +14,9 @@ spring:
   application:
     name: EconOMatic
   datasource:
-    url: ${DATABASE_URL}
-    username: postgres
-    password: pass
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/economatic}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASS:pass}
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: db/changelog/db.changelog-master.yml
@@ -35,6 +35,11 @@ server:
     include-stacktrace: never
     include-message: never
 economatic:
+  recommendation:
+    gold-price-default-weight: ${GOLD_PRICE_DEFAULT_WEIGHT:1}
+    item-price-default-weight: ${ITEM_PRICE_DEFAULT_WEIGHT:1}
+    population-default-weight: ${POPULATION_DEFAULT_WEIGHT:0.1}
+    min-allowed-population: ${MIN_ALLOWED_POPULATION:1000}
   update-on-startup: ${UPDATE_ON_STARTUP:true}
   population:
     update-rate: ${POPULATION_UPDATE_RATE:1}
