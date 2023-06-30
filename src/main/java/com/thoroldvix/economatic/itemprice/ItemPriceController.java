@@ -18,8 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.thoroldvix.economatic.shared.ValidationUtils.hasText;
-
 @RequestMapping("/wow-classic/api/v1/items/prices")
 @RestController
 @Tag(name = "Item Prices API", description = "API for retrieving item prices")
@@ -35,19 +33,19 @@ public class ItemPriceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = PagedAuctionHouseInfo.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No item prices found for the given server identifier", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/servers/{serverIdentifier}")
     public ResponseEntity<PagedAuctionHouseInfo> getRecentForServer(
-            @Parameter(description = "Identifier of the server in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
+            @Parameter(description = "Identifier of the server in the format server-faction or server ID",
+                    example = "everlook-alliance or 41003",
+                    required = true)
             @PathVariable String serverIdentifier,
             @ParameterObject
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
             Pageable pageable) {
-        if (!hasText(serverIdentifier)) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var auctionHouseInfo = itemPriceService.getRecentForServer(serverIdentifier, pageable);
         return ResponseEntity.ok(auctionHouseInfo);
     }
@@ -59,19 +57,20 @@ public class ItemPriceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = AuctionHouseInfo.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier or item identifier", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No item price found for the given server and item identifiers", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No price found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/servers/{serverIdentifier}/{itemIdentifier}/recent")
     public ResponseEntity<AuctionHouseInfo> getRecentForServerAndItem(
-            @Parameter(description = "Identifier of the server can be either server unique name in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
+            @Parameter(description = "Identifier of the server in the format server-faction or server ID",
+                    example = "everlook-alliance or 41003",
+                    required = true)
             @PathVariable String serverIdentifier,
-            @Parameter(description = "Identifier of the item can be either item unique name (e.g 'righteous-orb') or item ID")
+            @Parameter(description = "Identifier of the item can be either item unique name or item ID",
+                    example = "righteous-orb or 12811",
+                    required = true)
             @PathVariable String itemIdentifier) {
-        boolean isInvalidInputs = !hasText(serverIdentifier) || !hasText(itemIdentifier);
-        if (isInvalidInputs) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var auctionHouseInfo = itemPriceService.getRecentForServer(serverIdentifier, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
@@ -83,24 +82,26 @@ public class ItemPriceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = PagedAuctionHouseInfo.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier or item identifier or time range", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No item prices found for the given server and item identifiers", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/servers/{serverIdentifier}/{itemIdentifier}")
     public ResponseEntity<PagedAuctionHouseInfo> getRecentForServerAndItem(
-            @Parameter(description = "Identifier of the server can be either server unique name in the format 'server-faction' (e.g. 'everlook-alliance') or server ID")
+            @Parameter(description = "Identifier of the server in the format server-faction or server ID",
+                    example = "everlook-alliance or 41003",
+                    required = true)
             @PathVariable String serverIdentifier,
-            @Parameter(description = "Identifier of the item can be either item unique serverName (e.g 'righteous-orb') or item ID")
+            @Parameter(description = "Identifier of the item can be either item unique name or item ID",
+                    example = "righteous-orb or 12811",
+                    required = true)
             @PathVariable String itemIdentifier,
-            @Parameter(description = "Time range in days to retrieve populations for")
+            @Parameter(description = "Time range in days to retrieve populations for",
+                    example = "7")
             @RequestParam(defaultValue = "7") int timeRange,
             @ParameterObject
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
             Pageable pageable) {
-        boolean isInvalidInputs = !hasText(serverIdentifier) || !hasText(itemIdentifier);
-        if (isInvalidInputs) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var auctionHouseInfo = itemPriceService.getForServer(serverIdentifier, itemIdentifier, new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(auctionHouseInfo);
     }
@@ -112,7 +113,7 @@ public class ItemPriceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ItemPricePagedResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid search request", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No prices found for the given search request", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @PostMapping("/search")
@@ -126,6 +127,28 @@ public class ItemPriceController {
         return ResponseEntity.ok(itemPrices);
     }
 
+    @Operation(summary = "Retrieve recent prices for given item list and server list",
+            description = """
+                         If no specific servers are specified in the item list request,
+                          this function will return the most recent prices from all servers for the given items.
+                           However, if a list of servers is provided, the function will return the most recent prices from only those specific servers for the given items
+                    """)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of recent prices",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ItemPricePagedResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid item list", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
+            @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
+    })
+    @PostMapping("/recent")
+    public ResponseEntity<ItemPricePagedResponse> getRecentForItemList(@RequestBody ItemPriceRequest itemList,
+                                                                       @PageableDefault(sort = "updated_at", direction = Sort.Direction.DESC, size = 100)
+                                                                       @ParameterObject Pageable pageable) {
+        var itemPrices = itemPriceService.getRecentForItemListAndServers(itemList, pageable);
+        return ResponseEntity.ok(itemPrices);
+    }
+
     @Operation(summary = "Retrieve prices for the specified item and region name",
             description = "Returns recent prices that match the given item and region name")
     @ApiResponses(value = {
@@ -133,43 +156,45 @@ public class ItemPriceController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = AuctionHouseInfo.class))),
             @ApiResponse(responseCode = "400", description = "Invalid region name or item identifier", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No prices found for the given region name and item identifier", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/regions/{regionName}/{itemIdentifier}")
     public ResponseEntity<AuctionHouseInfo> getRecentForRegionAndItem(
-            @Parameter(description = "Region name to retrieve prices for. Can be either 'eu' or 'us'")
+            @Parameter(description = "Region name to retrieve prices for. Can be either 'eu' or 'us'",
+                    example = "eu",
+                    required = true)
             @PathVariable String regionName,
-            @Parameter(description = "Identifier of the item can be either item unique name (e.g 'righteous-orb') or item ID")
+            @Parameter(description = "Identifier of the item can be either item unique name or item ID",
+                    example = "righteous-orb or 12811",
+                    required = true)
             @PathVariable String itemIdentifier) {
-        boolean isInvalidInputs = !hasText(regionName) || !hasText(itemIdentifier);
-        if (isInvalidInputs) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var auctionHouseInfo = itemPriceService.getRecentForRegion(regionName, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
-     @Operation(summary = "Retrieve prices for the specified item and faction name",
-             description = "Returns recent prices that match the given item and faction name")
-     @ApiResponses(value = {
-             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the given faction name",
-                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                             schema = @Schema(implementation = AuctionHouseInfo.class))),
-             @ApiResponse(responseCode = "400", description = "Invalid faction name or item identifier", content = @Content),
-             @ApiResponse(responseCode = "404", description = "No prices found for the given faction name and item identifier", content = @Content),
-             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
-     })
+    @Operation(summary = "Retrieve prices for the specified item and faction name",
+            description = "Returns recent prices that match the given item and faction name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the given faction name",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = AuctionHouseInfo.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid faction name or item identifier", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
+            @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
+    })
     @GetMapping("/factions/{factionName}/{itemIdentifier}")
     public ResponseEntity<AuctionHouseInfo> getRecentForFactionAndItem(
-            @Parameter(description = "Faction name to retrieve prices for. Can be either 'alliance' or 'horde'")
+            @Parameter(description = "Faction name to retrieve prices for. Can be either 'alliance' or 'horde'",
+                    example = "horde",
+                    required = true)
             @PathVariable String factionName,
-            @Parameter(description = "Identifier of the item can be either item unique name (e.g 'righteous-orb') or item ID")
+            @Parameter(description = "Identifier of the item can be either item unique name or item ID",
+                    example = "righteous-orb or 12811",
+                    required = true)
             @PathVariable String itemIdentifier) {
-        boolean isInvalidInputs = !hasText(factionName) || !hasText(itemIdentifier);
-        if (isInvalidInputs) {
-            return ResponseEntity.badRequest().build();
-        }
+
         var auctionHouseInfo = itemPriceService.getRecentForFaction(factionName, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }

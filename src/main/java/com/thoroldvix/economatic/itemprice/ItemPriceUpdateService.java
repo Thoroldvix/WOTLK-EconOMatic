@@ -6,14 +6,14 @@ import com.thoroldvix.economatic.item.ItemResponse;
 import com.thoroldvix.economatic.item.ItemService;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerResponse;
-import com.thoroldvix.economatic.shared.ServerService;
+import com.thoroldvix.economatic.server.ServerService;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -21,33 +21,37 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
+
 
 @Service
 @Slf4j
 public final class ItemPriceUpdateService {
     private static final RateLimiter RATE_LIMITER = RateLimiter.create(4);
-    @PersistenceContext
+    public static final String UPDATE_RATE = "${economatic.item-price.update-rate}";
+    public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.item-price.update-rate}}";
+
     private final EntityManager entityManager;
     private final NexusHubClient nexusHubClient;
     private final ItemPriceService itemPriceService;
     private final Set<Integer> itemIds;
     private final Map<String, Integer> serverIdentifiers;
 
-
-    private ItemPriceUpdateService(EntityManager entityManager,
+    @Autowired
+    public ItemPriceUpdateService(EntityManager entityManager,
                                    NexusHubClient nexusHubClient,
-                                   ServerService serverServiceImpl,
-                                   ItemService itemServiceImpl,
+                                   ServerService serverService,
+                                   ItemService itemService,
                                    ItemPriceService itemPriceService) {
         this.entityManager = entityManager;
         this.nexusHubClient = nexusHubClient;
         this.itemPriceService = itemPriceService;
-        serverIdentifiers = getServerIds(serverServiceImpl);
-        itemIds = getItemIds(itemServiceImpl);
+        serverIdentifiers = getServerIds(serverService);
+        itemIds = getItemIds(itemService);
     }
 
     private static Set<Integer> getItemIds(ItemService itemService) {
-        return itemService.getAll().stream()
+        return itemService.getAll(Pageable.unpaged()).items().stream()
                 .map(ItemResponse::id)
                 .collect(Collectors.toSet());
     }
@@ -57,8 +61,8 @@ public final class ItemPriceUpdateService {
                 .collect(Collectors.toMap(ServerResponse::uniqueName, ServerResponse::id, (id1, id2) -> id1));
     }
 
-    @Scheduled(fixedRateString = "${economatic.item-price.update-rate}",
-            initialDelayString = "#{${economatic.update-on-startup} ? -1 : ${economatic.item-price.update-rate}}",
+    @Scheduled(fixedRateString = UPDATE_RATE,
+            initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.HOURS)
     private void update() {
         log.info("Updating item prices");
@@ -68,8 +72,7 @@ public final class ItemPriceUpdateService {
                     List<ItemPrice> itemPrices = retrieveItemPrices(serverName);
                     itemPriceService.saveAll(itemPrices);
                 });
-        Instant finish = Instant.now();
-        log.info("Finished updating item prices in {} ms", Duration.between(start, finish).toMillis());
+        log.info("Finished updating item prices in {} ms", elapsedTimeInMillis(start));
     }
 
 

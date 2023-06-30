@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 
 @Builder
-record ItemPriceResponse(
+public record ItemPriceResponse(
         Integer itemId,
         String itemName,
         String server,

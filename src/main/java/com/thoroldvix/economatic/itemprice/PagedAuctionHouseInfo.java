@@ -6,7 +6,7 @@ import lombok.Builder;
 
 
 @Builder
-record PagedAuctionHouseInfo(
+public record PagedAuctionHouseInfo(
         int page,
         int pageSize,
         int totalPages,

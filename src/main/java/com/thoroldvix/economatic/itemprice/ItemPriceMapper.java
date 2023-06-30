@@ -8,12 +8,14 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Objects;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {ItemMapper.class})
+@Validated
 public interface ItemPriceMapper {
 
     String ITEM_PRICE_CANNOT_BE_NULL = "Item prices cannot be null";
@@ -23,7 +25,9 @@ public interface ItemPriceMapper {
     @Mapping(target = "itemId", ignore = true)
     @Mapping(target = "server", ignore = true)
     @Mapping(target = "itemName", ignore = true)
-    ItemPriceResponse toResponse(ItemPrice itemPrice);
+    ItemPriceResponse toResponse(
+
+            ItemPrice itemPrice);
 
 
     @Mapping(target = "server", source = "server", qualifiedByName = "serverName")
@@ -49,13 +53,13 @@ public interface ItemPriceMapper {
     }
 
 
-    default List<ItemPriceResponse> toResponseWithServerList(List<ItemPrice> itemPrice) {
+    default List<ItemPriceResponse> toResponseListWithServer(List<ItemPrice> itemPrice) {
         Objects.requireNonNull(itemPrice, ITEM_PRICE_CANNOT_BE_NULL);
         return itemPrice.stream().map(this::toResponseWithServer).toList();
     }
 
 
-    default List<ItemPriceResponse> toResponseWithItemList(List<ItemPrice> itemPrice) {
+    default List<ItemPriceResponse> toResponseListWithItem(List<ItemPrice> itemPrice) {
         Objects.requireNonNull(itemPrice, ITEM_PRICE_CANNOT_BE_NULL);
         return itemPrice.stream().map(this::toResponseWithItem).toList();
     }
