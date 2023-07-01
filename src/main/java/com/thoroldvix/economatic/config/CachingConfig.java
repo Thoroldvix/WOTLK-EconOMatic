@@ -83,7 +83,6 @@ public class CachingConfig {
     public CacheManager cacheManagerComposite() {
         CompositeCacheManager cacheManager = new CompositeCacheManager();
         cacheManager.setCacheManagers(Arrays.asList(serverCache(), itemCache(), itemPriceCache(), goldPriceCache(), populationCache()));
-
         return cacheManager;
     }
 }

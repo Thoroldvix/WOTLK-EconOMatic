@@ -1,11 +1,11 @@
 spring:
   data:
     rest:
-      max-page-size: 10000
+      max-page-size: 20000
       default-page-size: 100
     web:
       pageable:
-        max-page-size: 10000
+        max-page-size: 20000
         default-page-size: 100
   task:
     scheduling:
@@ -25,10 +25,6 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
 server:
   port: ${PORT:8080}
   error:

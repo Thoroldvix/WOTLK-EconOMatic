@@ -9,14 +9,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 public interface PostgreSqlContainerInitializer {
-
-
     @Container
-    PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres").withEnv("POSTGRES_SCHEMA", "wow");
+    PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres");
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry dymDynamicPropertyRegistry) {
-        dymDynamicPropertyRegistry.add("spring.datasource.url", () -> postgreSQLContainer.getJdbcUrl() + "?currentSchema=wow");
+        dymDynamicPropertyRegistry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
         dymDynamicPropertyRegistry.add("spring.datasource.driver-class-name", postgreSQLContainer::getDriverClassName);
         dymDynamicPropertyRegistry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         dymDynamicPropertyRegistry.add("spring.datasource.password", postgreSQLContainer::getPassword);

@@ -1,0 +1,22 @@
+package com.thoroldvix.economatic.itemprice.dto;
+
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.thoroldvix.economatic.shared.dto.Filters;
+import lombok.Builder;
+
+import java.util.List;
+
+@Builder
+public record AuctionHouseInfo(
+        @JsonUnwrapped
+        AuctionHouseFilters filters,
+        List<ItemPriceResponse> prices
+) {
+    @Builder
+    public record AuctionHouseFilters(
+            @JsonUnwrapped
+            Filters filters,
+            Integer itemId,
+            String itemName
+    ) {}
+}
