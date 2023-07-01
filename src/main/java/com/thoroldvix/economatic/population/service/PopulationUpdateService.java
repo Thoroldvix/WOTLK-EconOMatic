@@ -1,6 +1,7 @@
 package com.thoroldvix.economatic.population.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.thoroldvix.economatic.population.model.Population;
@@ -87,6 +88,7 @@ public  class PopulationUpdateService {
     private List<TotalPopResponse> extractFromJson(String populationJson) {
         ObjectMapper mapper = new ObjectMapper();
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, TotalPopResponse.class);
+         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             return mapper.readValue(populationJson, collectionType);
         } catch (JsonProcessingException e) {

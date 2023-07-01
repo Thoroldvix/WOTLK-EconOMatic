@@ -113,7 +113,7 @@ public class ItemPriceUpdateService {
 
 
     private List<ItemPrice> getItemPrices(Server server, List<NexusHubResponse.NexusHubPrice> filteredPrices) {
-        return filteredPrices.stream()
+        return filteredPrices.parallelStream()
                 .map(itemResponse -> getItemPrice(server, itemResponse))
                 .toList();
     }
