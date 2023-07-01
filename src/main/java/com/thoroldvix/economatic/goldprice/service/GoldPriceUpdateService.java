@@ -52,7 +52,7 @@ public class GoldPriceUpdateService {
     }
 
     private List<GoldPrice> retrieveGoldPrices(String goldPricesJson) {
-        return getPriceList(serverServiceImpl.getAll(), extractFromJson(goldPricesJson));
+        return getPriceList(serverServiceImpl.getAll().servers(), extractFromJson(goldPricesJson));
     }
 
     private List<GoldPrice> getPriceList(List<ServerResponse> servers, List<GoldPriceResponse> prices) {

@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.server.service;
 
+import com.thoroldvix.economatic.server.dto.ServerListResponse;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
 import com.thoroldvix.economatic.server.error.ServerNotFoundException;
@@ -52,20 +53,20 @@ public class ServerServiceImpl implements ServerService {
     }
 
     @Override
-    public List<ServerResponse> search(@Valid @NotNull(message = "Search request cannot be null") SearchRequest searchRequest) {
+    public ServerListResponse search(@Valid @NotNull(message = "Search request cannot be null") SearchRequest searchRequest) {
         Specification<Server> spec =
                 searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
         List<Server> servers = serverRepository.findAll(spec);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
-        return serverMapper.toResponseList(servers);
+        return serverMapper.toServerListResponse(servers);
     }
 
     @Override
     @Cacheable("server-cache")
-    public List<ServerResponse> getAll() {
+    public ServerListResponse getAll() {
         List<Server> servers = serverRepository.findAll();
         notEmpty(servers, () -> new ServerNotFoundException("No servers found"));
-        return serverMapper.toResponseList(servers);
+        return serverMapper.toServerListResponse(servers);
     }
 
 
@@ -76,21 +77,21 @@ public class ServerServiceImpl implements ServerService {
     }
 
     @Override
-    public List<ServerResponse> getAllForRegion(
+    public ServerListResponse getAllForRegion(
             @NotEmpty(message = REGION_NAME_CANNOT_BE_NULL_OR_EMPTY)
             String regionName) {
         List<Server> servers = findAllByRegion(regionName);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + regionName));
-        return serverMapper.toResponseList(servers);
+        return serverMapper.toServerListResponse(servers);
     }
 
     @Override
-    public List<ServerResponse> getAllForFaction(
+    public ServerListResponse getAllForFaction(
             @NotEmpty(message = FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY)
             String factionName) {
         List<Server> servers = findAllByFaction(factionName);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for faction: " + factionName));
-        return serverMapper.toResponseList(servers);
+        return serverMapper.toServerListResponse(servers);
     }
 
     private List<Server> findAllByRegion(String regionName) {

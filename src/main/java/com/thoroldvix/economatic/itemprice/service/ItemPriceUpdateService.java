@@ -61,7 +61,7 @@ public class ItemPriceUpdateService {
     }
 
     private static Map<String, Integer> getServerIds(ServerService serverService) {
-        return serverService.getAll().stream()
+        return serverService.getAll().servers().stream()
                 .collect(Collectors.toMap(ServerResponse::uniqueName, ServerResponse::id, (id1, id2) -> id1));
     }
 

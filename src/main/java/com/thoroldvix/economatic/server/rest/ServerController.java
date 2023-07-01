@@ -1,12 +1,12 @@
 package com.thoroldvix.economatic.server.rest;
 
+import com.thoroldvix.economatic.server.dto.ServerListResponse;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
-import com.thoroldvix.economatic.server.service.ServerService;
 import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
+import com.thoroldvix.economatic.server.service.ServerService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @Tag(name = "Servers API", description = "API for retrieving server information")
@@ -32,7 +30,7 @@ public class ServerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server info for the given search request",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = ServerResponse.class)))),
+                            schema = @Schema(implementation = ServerListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid search request", content = @Content),
             @ApiResponse(responseCode = "404", description = "No servers found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
@@ -40,7 +38,7 @@ public class ServerController {
     @PostMapping(value = "/search",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ServerResponse>> search(
+    public ResponseEntity<ServerListResponse> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering servers",
                     required = true)
             @RequestBody
@@ -76,12 +74,12 @@ public class ServerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of all servers",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = ServerResponse.class)))),
+                           schema = @Schema(implementation = ServerListResponse.class))),
             @ApiResponse(responseCode = "404", description = "No servers found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ServerResponse>> getAll() {
+    public ResponseEntity<ServerListResponse> getAll() {
         var all = serverServiceImpl.getAll();
         return ResponseEntity.ok(all);
     }
@@ -105,13 +103,13 @@ public class ServerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of servers",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ServerSummaryResponse.class))),
+                            schema = @Schema(implementation = ServerListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid region name", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/regions/{regionName}")
-    public ResponseEntity<List<ServerResponse>> getForRegion(
-            @Parameter(description = "Region name to retrieve prices for. Can be either 'eu' or 'us'",
+    public ResponseEntity<ServerListResponse> getForRegion(
+            @Parameter(description = "Region name to retrieve servers for. Can be either 'eu' or 'us'",
                     example = "eu",
                     required = true)
             @PathVariable String regionName) {
@@ -124,13 +122,13 @@ public class ServerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of servers",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ServerSummaryResponse.class))),
+                            schema = @Schema(implementation = ServerListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid faction name", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/factions/{factionName}")
-    public ResponseEntity<List<ServerResponse>> getForFaction(
-            @Parameter(description = "Faction name to retrieve prices for. Can be either 'alliance' or 'horde'",
+    public ResponseEntity<ServerListResponse> getForFaction(
+            @Parameter(description = "Faction name to retrieve servers for. Can be either 'alliance' or 'horde'",
                     example = "alliance",
                     required = true)
             @PathVariable String factionName) {

@@ -51,7 +51,7 @@ public  class PopulationUpdateService {
 
 
     private List<Population> retrievePopulations(String populationJson) {
-        List<ServerResponse> servers = serverServiceImpl.getAll();
+        List<ServerResponse> servers = serverServiceImpl.getAll().servers();
         List<TotalPopResponse> totalPopulationsForServer = extractFromJson(populationJson);
         return getPopulationList(totalPopulationsForServer, servers);
     }
