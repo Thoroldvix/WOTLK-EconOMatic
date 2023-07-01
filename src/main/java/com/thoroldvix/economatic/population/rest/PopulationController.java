@@ -1,8 +1,8 @@
 package com.thoroldvix.economatic.population.rest;
 
 import com.thoroldvix.economatic.population.dto.PopulationResponse;
-import com.thoroldvix.economatic.population.dto.PopulationsPagedResponse;
-import com.thoroldvix.economatic.population.dto.PopulationsResponse;
+import com.thoroldvix.economatic.population.dto.PopulationPageResponse;
+import com.thoroldvix.economatic.population.dto.PopulationListResponse;
 import com.thoroldvix.economatic.population.dto.TotalPopResponse;
 import com.thoroldvix.economatic.population.service.PopulationService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
@@ -39,16 +39,16 @@ public class PopulationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PopulationsPagedResponse.class))),
+                            schema = @Schema(implementation = PopulationPageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid time range", content = @Content),
             @ApiResponse(responseCode = "404", description = "No populations found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PopulationsPagedResponse> getAll(@Parameter(description = "Time range in days to retrieve populations for",
+    public ResponseEntity<PopulationPageResponse> getAll(@Parameter(description = "Time range in days to retrieve populations for",
     example = "7")
                                                            @RequestParam(defaultValue = "7") int timeRange,
-                                                           @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
+                                                         @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
                                                            @ParameterObject Pageable pageable) {
         var allPopulations = populationService.getAll(new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(allPopulations);
@@ -59,13 +59,13 @@ public class PopulationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of populations",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = PopulationsResponse.class)))),
+                            array = @ArraySchema(schema = @Schema(implementation = PopulationListResponse.class)))),
             @ApiResponse(responseCode = "404", description = "No populations found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(value = "/recent",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PopulationsResponse> getAllRecent() {
+    public ResponseEntity<PopulationListResponse> getAllRecent() {
         var allPopulations = populationService.getAllRecent();
         return ResponseEntity.ok(allPopulations);
     }
@@ -75,14 +75,14 @@ public class PopulationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server populations",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PopulationsPagedResponse.class))),
+                            schema = @Schema(implementation = PopulationPageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier or time range", content = @Content),
             @ApiResponse(responseCode = "404", description = "No populations found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(value = "/{serverIdentifier}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PopulationsPagedResponse> getForServer(
+    public ResponseEntity<PopulationPageResponse> getForServer(
              @Parameter(description = "Identifier of the server in the format server-faction or server ID",
                     example = "everlook-alliance or 41003",
                     required = true)
@@ -101,7 +101,7 @@ public class PopulationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server population",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PopulationsResponse.class))),
+                            schema = @Schema(implementation = PopulationListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier", content = @Content),
             @ApiResponse(responseCode = "404", description = "No recent population found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
@@ -144,7 +144,7 @@ public class PopulationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of populations for the given search request",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PopulationsPagedResponse.class))),
+                            schema = @Schema(implementation = PopulationPageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid search request", content = @Content),
             @ApiResponse(responseCode = "404", description = "No populations found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
@@ -152,7 +152,7 @@ public class PopulationController {
     @PostMapping(value = "/search",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PopulationsPagedResponse> search(
+    public ResponseEntity<PopulationPageResponse> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering populations",
             required = true)
             @RequestBody SearchRequest searchRequest,
@@ -167,13 +167,13 @@ public class PopulationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of populations for the region name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PopulationsResponse.class))),
+                            schema = @Schema(implementation = PopulationListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid region name", content = @Content),
             @ApiResponse(responseCode = "404", description = "No populations found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/regions/{regionName}")
-    public ResponseEntity<PopulationsResponse> getForRegion(
+    public ResponseEntity<PopulationListResponse> getForRegion(
             @Parameter(description = "Region name to retrieve prices for. Can be either 'eu' or 'us'",
                     example = "eu",
                     required = true)
@@ -187,13 +187,13 @@ public class PopulationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of populations for the faction name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PopulationsResponse.class))),
+                            schema = @Schema(implementation = PopulationListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid faction name", content = @Content),
             @ApiResponse(responseCode = "404", description = "No populations found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/factions/{factionName}")
-    public ResponseEntity<PopulationsResponse> getForFaction(
+    public ResponseEntity<PopulationListResponse> getForFaction(
             @Parameter(description = "Faction name to retrieve prices for. Can be either 'alliance' or 'horde'",
                     example = "alliance",
                     required = true)

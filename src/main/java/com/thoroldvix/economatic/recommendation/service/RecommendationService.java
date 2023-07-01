@@ -10,7 +10,7 @@ import com.thoroldvix.economatic.population.dto.PopulationResponse;
 import com.thoroldvix.economatic.population.service.PopulationService;
 import com.thoroldvix.economatic.recommendation.dto.RecommendationProp;
 import com.thoroldvix.economatic.recommendation.dto.RecommendationRequest;
-import com.thoroldvix.economatic.recommendation.dto.RecommendationResponse;
+import com.thoroldvix.economatic.recommendation.dto.RecommendationListResponse;
 import com.thoroldvix.economatic.recommendation.mapper.RecommendationMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -53,7 +53,7 @@ public class RecommendationService {
         this.prop = prop;
     }
 
-    public RecommendationResponse getRecommendationsForItemList(
+    public RecommendationListResponse getRecommendationsForItemList(
             @Valid @NotNull(message = "Recommendation request cannot be null")
             RecommendationRequest request,
             @Min(value = 1, message = "Limit cannot be less that 1")
@@ -100,7 +100,7 @@ public class RecommendationService {
     private Map<String, BigDecimal> getGoldPriceScores(BigDecimal goldPriceWeight, Set<String> servers) {
         BigDecimal weight = goldPriceWeight == null ? this.prop.goldPriceDefaultWeight() : goldPriceWeight;
         GoldPriceRequest request = new GoldPriceRequest(servers);
-        return goldPriceService.getRecentForServers(request).prices().stream()
+        return goldPriceService.getRecentForServerList(request).prices().stream()
                 .collect(Collectors.toMap(
                         GoldPriceResponse::server,
                         goldPriceResponse ->

@@ -5,6 +5,7 @@ import com.thoroldvix.economatic.server.model.Faction;
 import com.thoroldvix.economatic.server.model.Region;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -53,6 +54,7 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
             """, nativeQuery = true)
     List<Population> findAllRecent();
 
+    @EntityGraph(attributePaths = {"server"})
     @Query(value = """
             select p
             from Population p
@@ -62,6 +64,7 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
             """)
     Optional<Population> findRecentForServer(int serverId);
 
+    @EntityGraph(attributePaths = {"server"})
     @Query("""
             SELECT p
             FROM Population p
@@ -86,6 +89,7 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
             """)
     List<Population> findRecentForFaction(Faction faction);
 
+    @EntityGraph(attributePaths = {"server"})
     @Query("""
             SELECT p
             from Population p
@@ -94,6 +98,7 @@ public interface PopulationRepository extends JpaRepository<Population, Long>, J
             """)
     Page<Population> findAllForServer(int serverId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"server"})
     @Query("""
             select p
             from Population p

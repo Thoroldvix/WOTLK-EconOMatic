@@ -1,45 +1,50 @@
 package com.thoroldvix.economatic.population.mapper;
 
-import com.thoroldvix.economatic.population.model.Population;
+import com.thoroldvix.economatic.population.dto.PopulationPageResponse;
+import com.thoroldvix.economatic.population.dto.PopulationListResponse;
 import com.thoroldvix.economatic.population.dto.PopulationResponse;
+import com.thoroldvix.economatic.population.dto.TotalPopResponse;
+import com.thoroldvix.economatic.population.model.Population;
+import com.thoroldvix.economatic.population.repository.TotalPopProjection;
 import com.thoroldvix.economatic.server.model.Server;
-import jakarta.validation.constraints.NotEmpty;
+import com.thoroldvix.economatic.shared.dto.PaginationInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.Objects;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PopulationMapper {
 
-    String POPULATIONS_CANNOT_BE_NULL_OR_EMPTY = "Populations cannot be null or empty";
-
     @Mapping(target = "server", source = "server", qualifiedByName = "serverName")
-    PopulationResponse toResponseWithServer(Population population);
-
-    @Mapping(target = "server", ignore = true)
     PopulationResponse toResponse(Population population);
 
-    default List<PopulationResponse> toResponseList(
-            @NotEmpty(message = POPULATIONS_CANNOT_BE_NULL_OR_EMPTY)
-            List<Population> populations) {
-        return populations.stream().map(this::toResponse).toList();
+
+    List<PopulationResponse> toList(List<Population> populations);
+
+    default PopulationListResponse toPopulationList(List<Population> populations) {
+        return new PopulationListResponse(toList(populations));
     }
 
-    default List<PopulationResponse> toResponseListWithServer(
-            @NotEmpty(message = POPULATIONS_CANNOT_BE_NULL_OR_EMPTY)
-            List<Population> populations) {
-        return populations.stream().map(this::toResponseWithServer).toList();
+    default PopulationPageResponse toPageResponse(Page<Population> page) {
+        List<PopulationResponse> populations = toList(page.getContent());
+        return new PopulationPageResponse(new PaginationInfo(page), populations);
     }
 
-
+    default TotalPopResponse toTotalPopResponse(TotalPopProjection totalPopProjection) {
+        return TotalPopResponse.builder()
+                .popAlliance(totalPopProjection.getPopAlliance())
+                .popHorde(totalPopProjection.getPopHorde())
+                .popTotal(totalPopProjection.getPopTotal())
+                .serverName(totalPopProjection.getServerName())
+                .build();
+    }
 
     @Named("serverName")
     default String serverName(Server server) {
-        Objects.requireNonNull(server, "Server cannot be null");
-        return server.getUniqueName();
+        return server != null ? server.getUniqueName() : null;
     }
 }

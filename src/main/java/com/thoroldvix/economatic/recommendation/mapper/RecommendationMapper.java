@@ -1,14 +1,16 @@
 package com.thoroldvix.economatic.recommendation.mapper;
 
+import com.thoroldvix.economatic.recommendation.dto.RecommendationListResponse;
 import com.thoroldvix.economatic.recommendation.dto.RecommendationResponse;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -17,26 +19,22 @@ public interface RecommendationMapper {
     BigDecimal DEFAULT_SCORE = BigDecimal.ZERO;
 
 
-    default RecommendationResponse toRecommendationResponse(
-            @NotEmpty(message = "Item price scores cannot be null or empty")
+    default RecommendationListResponse toRecommendationResponse(
             Map<String, BigDecimal> itemPriceScores,
-            @NotEmpty(message = "Population scores cannot be null or empty")
             Map<String, BigDecimal> populationScores,
-            @NotEmpty(message = "Gold price scores cannot be null or empty")
             Map<String, BigDecimal> goldPriceScores,
-            @Min(value = 1, message = "Limit cannot be less than 1")
             int limit) {
 
-        List<RecommendationResponse.Recommendation> recommendations = getRecommendations(itemPriceScores, populationScores, goldPriceScores, limit);
-        return RecommendationResponse.builder()
+        List<RecommendationResponse> recommendations = getRecommendations(itemPriceScores, populationScores, goldPriceScores, limit);
+        return RecommendationListResponse.builder()
                 .recommendations(recommendations)
                 .build();
     }
 
-    private List<RecommendationResponse.Recommendation> getRecommendations(Map<String, BigDecimal> itemPriceScores,
-                                                                           Map<String, BigDecimal> populationScores,
-                                                                           Map<String, BigDecimal> goldPriceScores,
-                                                                           int limit) {
+    private List<RecommendationResponse> getRecommendations(Map<String, BigDecimal> itemPriceScores,
+                                                            Map<String, BigDecimal> populationScores,
+                                                            Map<String, BigDecimal> goldPriceScores,
+                                                            int limit) {
         return goldPriceScores.keySet().stream()
                 .map(key ->
                         createRecommendation(
@@ -46,7 +44,7 @@ public interface RecommendationMapper {
                                 getOrDefault(goldPriceScores, key)
                         )
                 )
-                .sorted(Comparator.comparing(RecommendationResponse.Recommendation::totalScore)
+                .sorted(Comparator.comparing(RecommendationResponse::totalScore)
                         .reversed())
                 .limit(limit)
                 .toList();
@@ -56,13 +54,13 @@ public interface RecommendationMapper {
         return Optional.ofNullable(scores.get(key)).orElse(DEFAULT_SCORE).setScale(6, RoundingMode.HALF_UP);
     }
 
-    private RecommendationResponse.Recommendation createRecommendation(String serverName,
-                                                                       BigDecimal itemPriceScore,
-                                                                       BigDecimal populationScore,
-                                                                       BigDecimal goldPriceScore) {
+    private RecommendationResponse createRecommendation(String serverName,
+                                                        BigDecimal itemPriceScore,
+                                                        BigDecimal populationScore,
+                                                        BigDecimal goldPriceScore) {
 
         BigDecimal totalScore = itemPriceScore.add(populationScore).add(goldPriceScore);
-        return RecommendationResponse.Recommendation.builder()
+        return RecommendationResponse.builder()
                 .totalScore(totalScore)
                 .serverName(serverName)
                 .itemPriceScore(itemPriceScore)

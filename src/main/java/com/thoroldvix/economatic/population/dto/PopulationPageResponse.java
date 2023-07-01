@@ -1,15 +1,16 @@
 package com.thoroldvix.economatic.population.dto;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.thoroldvix.economatic.shared.dto.Filters;
+import com.thoroldvix.economatic.shared.dto.PaginationInfo;
 import lombok.Builder;
 
 import java.util.List;
 
 @Builder
-public record PopulationsResponse(
+public record PopulationPageResponse(
         @JsonUnwrapped
-        Filters filters,
+        PaginationInfo paginationInfo,
+
         List<PopulationResponse> populations
 ) {
 }

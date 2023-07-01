@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.recommendation.rest;
 
 import com.thoroldvix.economatic.recommendation.dto.RecommendationRequest;
-import com.thoroldvix.economatic.recommendation.dto.RecommendationResponse;
+import com.thoroldvix.economatic.recommendation.dto.RecommendationListResponse;
 import com.thoroldvix.economatic.recommendation.service.RecommendationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,12 +28,12 @@ public class RecommendationController {
              Up to 'limit' servers are returned""", tags = {"Recommendation"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successful retrieval of recommendations",
-                            content = @Content(schema = @Schema(implementation = RecommendationResponse.class))),
+                            content = @Content(schema = @Schema(implementation = RecommendationListResponse.class))),
                     @ApiResponse(responseCode = "400", description = "Invalid item list or limit"),
                     @ApiResponse(responseCode = "500", description = "An unexpected exception occurred")
             })
     @PostMapping
-    public ResponseEntity<RecommendationResponse> getRecommendationsForItemList(
+    public ResponseEntity<RecommendationListResponse> getRecommendationsForItemList(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Item list to retrieve recommendations for", required = true)
             @RequestBody
             RecommendationRequest request,

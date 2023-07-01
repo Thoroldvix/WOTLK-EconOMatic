@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.thoroldvix.economatic.server.error.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.shared.util.Utils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.util.Utils.notEmpty;
 
 @Service
 @Validated
@@ -56,7 +56,7 @@ public class ServerServiceImpl implements ServerService {
         Specification<Server> spec =
                 searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
         List<Server> servers = serverRepository.findAll(spec);
-        validateCollectionNotEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
+        notEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
         return serverMapper.toResponseList(servers);
     }
 
@@ -64,7 +64,7 @@ public class ServerServiceImpl implements ServerService {
     @Cacheable("server-cache")
     public List<ServerResponse> getAll() {
         List<Server> servers = serverRepository.findAll();
-        validateCollectionNotEmpty(servers, () -> new ServerNotFoundException("No servers found"));
+        notEmpty(servers, () -> new ServerNotFoundException("No servers found"));
         return serverMapper.toResponseList(servers);
     }
 
@@ -80,7 +80,7 @@ public class ServerServiceImpl implements ServerService {
             @NotEmpty(message = REGION_NAME_CANNOT_BE_NULL_OR_EMPTY)
             String regionName) {
         List<Server> servers = findAllByRegion(regionName);
-        validateCollectionNotEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + regionName));
+        notEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + regionName));
         return serverMapper.toResponseList(servers);
     }
 
@@ -89,7 +89,7 @@ public class ServerServiceImpl implements ServerService {
             @NotEmpty(message = FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY)
             String factionName) {
         List<Server> servers = findAllByFaction(factionName);
-        validateCollectionNotEmpty(servers, () -> new ServerNotFoundException("No servers found for faction: " + factionName));
+        notEmpty(servers, () -> new ServerNotFoundException("No servers found for faction: " + factionName));
         return serverMapper.toResponseList(servers);
     }
 

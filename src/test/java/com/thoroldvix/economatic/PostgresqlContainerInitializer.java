@@ -8,7 +8,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 
 @Testcontainers
-public interface PostgreSqlContainerInitializer {
+public interface PostgresqlContainerInitializer {
     @Container
     PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres");
 

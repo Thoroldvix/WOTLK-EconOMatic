@@ -2,12 +2,11 @@ package com.thoroldvix.economatic.population.service;
 
 import com.thoroldvix.economatic.population.model.Population;
 import com.thoroldvix.economatic.population.dto.PopulationResponse;
-import com.thoroldvix.economatic.population.dto.PopulationsPagedResponse;
-import com.thoroldvix.economatic.population.dto.PopulationsResponse;
+import com.thoroldvix.economatic.population.dto.PopulationPageResponse;
+import com.thoroldvix.economatic.population.dto.PopulationListResponse;
 import com.thoroldvix.economatic.population.dto.TotalPopResponse;
 import com.thoroldvix.economatic.population.error.PopulationNotFoundException;
 import com.thoroldvix.economatic.population.mapper.PopulationMapper;
-import com.thoroldvix.economatic.population.mapper.PopulationsMapper;
 import com.thoroldvix.economatic.population.repository.PopulationRepository;
 import com.thoroldvix.economatic.population.repository.TotalPopProjection;
 import com.thoroldvix.economatic.server.model.Faction;
@@ -33,7 +32,7 @@ import java.util.List;
 
 import static com.thoroldvix.economatic.server.error.ServerErrorMessages.*;
 import static com.thoroldvix.economatic.shared.error.ErrorMessages.*;
-import static com.thoroldvix.economatic.shared.util.Utils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.util.Utils.notEmpty;
 
 @Service
 @Validated
@@ -45,24 +44,23 @@ public class PopulationService {
     private final PopulationRepository populationRepository;
     private final ServerService serverService;
     private final PopulationMapper populationMapper;
-    private final PopulationsMapper populationsMapper;
     private final SearchSpecification<Population> searchSpecification;
 
     @Cacheable("population-cache")
-    public PopulationsPagedResponse getAll(
+    public PopulationPageResponse getAll(
             @Valid @NotNull(message = TIME_RANGE_CANNOT_BE_NULL)
             TimeRange timeRange,
             @NotNull(message = PAGE_CANNOT_BE_NULL)
             Pageable pageable) {
         Page<Population> page = findForTimeRange(timeRange, pageable);
-        validateCollectionNotEmpty(page.getContent(),
+        notEmpty(page.getContent(),
                 () -> new PopulationNotFoundException(NO_POPULATIONS_FOUND));
 
-        return populationsMapper.toPaged(page);
+        return populationMapper.toPageResponse(page);
     }
 
     @Cacheable("population-cache")
-    public PopulationsPagedResponse getForServer(
+    public PopulationPageResponse getForServer(
             @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
             String serverIdentifier,
             @Valid @NotNull(message = TIME_RANGE_CANNOT_BE_NULL)
@@ -71,10 +69,10 @@ public class PopulationService {
             Pageable pageable) {
 
         Page<Population> page = findAllForServer(serverIdentifier, timeRange, pageable);
-        validateCollectionNotEmpty(page.getContent(),
+        notEmpty(page.getContent(),
                 () -> new PopulationNotFoundException("No populations found for server identifier: " + serverIdentifier));
 
-        return populationsMapper.toPagedWithServer(page);
+        return populationMapper.toPageResponse(page);
     }
 
     @Transactional
@@ -90,47 +88,47 @@ public class PopulationService {
         TotalPopProjection totalPopProjection = populationRepository.findTotalPopForServer(serverName)
                 .orElseThrow(() -> new PopulationNotFoundException("No total population found for server name " + serverName));
         validateTotalPopProj(totalPopProjection, serverName);
-        return populationsMapper.toTotalPopResponse(totalPopProjection);
+        return populationMapper.toTotalPopResponse(totalPopProjection);
     }
 
     @Cacheable("population-cache")
-    public PopulationsPagedResponse search(
+    public PopulationPageResponse search(
             @Valid @NotNull(message = SEARCH_REQUEST_CANNOT_BE_NULL)
             SearchRequest searchRequest,
             @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
             Pageable pageable) {
         Page<Population> populations = findAllForSearch(searchRequest, pageable);
-        validateCollectionNotEmpty(populations.getContent(),
+        notEmpty(populations.getContent(),
                 () -> new PopulationNotFoundException("No populations found for search request"));
 
-        return populationsMapper.toPaged(populations);
+        return populationMapper.toPageResponse(populations);
     }
 
-    public PopulationsResponse getAllRecent() {
+    public PopulationListResponse getAllRecent() {
         List<Population> populations = populationRepository.findAllRecent();
-        validateCollectionNotEmpty(populations,
+        notEmpty(populations,
                 () -> new PopulationNotFoundException(NO_POPULATIONS_FOUND));
 
-        return populationsMapper.toResponse(populations);
+        return populationMapper.toPopulationList(populations);
     }
 
-    public PopulationsResponse getRecentForRegion(
+    public PopulationListResponse getRecentForRegion(
             @NotEmpty(message = REGION_NAME_CANNOT_BE_NULL_OR_EMPTY)
             String regionName) {
         List<Population> population = findRecentForRegion(regionName);
-        validateCollectionNotEmpty(population,
+        notEmpty(population,
                 () -> new PopulationNotFoundException("No recent populations found for region: " + regionName));
 
-        return populationsMapper.toRegionResponse(population);
+        return populationMapper.toPopulationList(population);
     }
 
-    public PopulationsResponse getRecentForFaction(
+    public PopulationListResponse getRecentForFaction(
             @NotEmpty(message = FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY)
             String factionName) {
         List<Population> population = findRecentForFaction(factionName);
-        validateCollectionNotEmpty(population, () -> new PopulationNotFoundException("No recent populations found for faction: " + factionName));
+        notEmpty(population, () -> new PopulationNotFoundException("No recent populations found for faction: " + factionName));
 
-        return populationsMapper.toFactionResponse(population);
+        return populationMapper.toPopulationList(population);
     }
 
     public PopulationResponse getRecentForServer(
@@ -138,7 +136,7 @@ public class PopulationService {
             String serverIdentifier) {
         Population population = findRecentForServer(serverIdentifier);
 
-        return populationMapper.toResponseWithServer(population);
+        return populationMapper.toResponse(population);
     }
 
     private void validateTotalPopProj(TotalPopProjection totalPopProjection, String serverName) {

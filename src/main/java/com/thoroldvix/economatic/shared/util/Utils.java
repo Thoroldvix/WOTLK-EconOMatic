@@ -14,7 +14,7 @@ public final class Utils {
     private Utils() {
     }
 
-    public static <T, E extends RuntimeException> void validateCollectionNotEmpty(@Nullable Collection<T> list, Supplier<E> exceptionSupplier) {
+    public static <T, E extends RuntimeException> void notEmpty(@Nullable Collection<T> list, Supplier<E> exceptionSupplier) {
         Objects.requireNonNull(exceptionSupplier, "Exception supplier cannot be null");
         if (list == null || list.isEmpty()) {
             throw exceptionSupplier.get();
