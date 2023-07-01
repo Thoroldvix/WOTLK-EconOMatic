@@ -96,13 +96,13 @@ public class GoldPriceStatsService {
     }
     private GoldPriceResponse getMax(StatsProjection goldPriceStat) {
         long maxId = goldPriceStat.getMaxId().longValue();
-        return goldPriceStatRepository.findById(maxId).map(goldPriceMapper::toResponseWithServer)
+        return goldPriceStatRepository.findById(maxId).map(goldPriceMapper::toResponse)
                 .orElseThrow(() -> new GoldPriceNotFoundException("No max gold price found with id " + maxId));
     }
 
     private GoldPriceResponse getMin(StatsProjection goldPriceStat) {
         long minId = goldPriceStat.getMinId().longValue();
-        return goldPriceStatRepository.findById(minId).map(goldPriceMapper::toResponseWithServer)
+        return goldPriceStatRepository.findById(minId).map(goldPriceMapper::toResponse)
                 .orElseThrow(() -> new GoldPriceNotFoundException("No min gold price found with id " + minId));
     }
 }

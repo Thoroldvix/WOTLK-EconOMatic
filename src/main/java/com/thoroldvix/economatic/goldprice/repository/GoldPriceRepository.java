@@ -28,6 +28,7 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             """, nativeQuery = true)
     List<GoldPrice> findAllRecent();
 
+//    @EntityGraph(attributePaths = {"server"})
     @Query("""
             select gp
             from GoldPrice gp
@@ -35,6 +36,7 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             """)
     Page<GoldPrice> findAllForServerAndTimeRange(int serverId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
+//    @EntityGraph(attributePaths = {"server"})
     @Query("""
             select gp
             from GoldPrice gp
@@ -60,6 +62,7 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             """, nativeQuery = true)
     List<GoldPrice> findRecentForFaction(int ordinal);
 
+//    @EntityGraph(attributePaths = {"server"})
     @Query(value = """
             select gp
             from GoldPrice gp

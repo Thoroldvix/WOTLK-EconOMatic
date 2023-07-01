@@ -3,7 +3,6 @@ package com.thoroldvix.economatic.goldprice.service;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceDeserializer;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.error.G2GPriceNotFoundException;
 import com.thoroldvix.economatic.goldprice.error.GoldPriceParsingException;

@@ -1,15 +1,15 @@
 package com.thoroldvix.economatic.goldprice.dto;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.thoroldvix.economatic.shared.dto.Filters;
+import com.thoroldvix.economatic.shared.dto.PaginationInfo;
 import lombok.Builder;
 
 import java.util.List;
 
 @Builder
-public record GoldPricesResponse(
+public record GoldPricePageResponse(
         @JsonUnwrapped
-        Filters filters,
+        PaginationInfo paginationInfo,
         List<GoldPriceResponse> prices
 ) {
 }

@@ -2,8 +2,8 @@ package com.thoroldvix.economatic.goldprice.rest;
 
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceRequest;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPricesPagedResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPricesResponse;
+import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
+import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
 import com.thoroldvix.economatic.goldprice.service.GoldPriceService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
@@ -38,13 +38,13 @@ public class GoldPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = GoldPricesPagedResponse.class))),
+                            schema = @Schema(implementation = GoldPricePageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid time range", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GoldPricesPagedResponse> getAll(
+    public ResponseEntity<GoldPricePageResponse> getAll(
             @Parameter(description = "Time range in days to retrieve populations for",
                     example = "7") @RequestParam(defaultValue = "7")
             int timeRange,
@@ -61,12 +61,12 @@ public class GoldPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = GoldPricesResponse.class)))),
+                            array = @ArraySchema(schema = @Schema(implementation = GoldPriceListResponse.class)))),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(value = "/recent", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GoldPricesResponse> getAllRecent() {
+    public ResponseEntity<GoldPriceListResponse> getAllRecent() {
         var prices = goldPriceService.getAllRecent();
         return ResponseEntity.ok(prices);
     }
@@ -77,13 +77,13 @@ public class GoldPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = GoldPricesResponse.class)))),
+                            array = @ArraySchema(schema = @Schema(implementation = GoldPriceListResponse.class)))),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @PostMapping(value = "/recent", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GoldPricesResponse> getRecentForServers(@RequestBody GoldPriceRequest request) {
-        var prices = goldPriceService.getRecentForServers(request);
+    public ResponseEntity<GoldPriceListResponse> getRecentForServers(@RequestBody GoldPriceRequest request) {
+        var prices = goldPriceService.getRecentForServerList(request);
         return ResponseEntity.ok(prices);
     }
 
@@ -93,14 +93,14 @@ public class GoldPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = GoldPricesPagedResponse.class))),
+                            schema = @Schema(implementation = GoldPricePageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier or time range", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping(value = "/{serverIdentifier}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GoldPricesPagedResponse> getForServer(
+    public ResponseEntity<GoldPricePageResponse> getForServer(
             @Parameter(description = "Identifier of the server in the format server-faction or server ID",
                     example = "everlook-alliance or 41003",
                     required = true)
@@ -119,7 +119,7 @@ public class GoldPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server price",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = GoldPricesPagedResponse.class))),
+                            schema = @Schema(implementation = GoldPricePageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier", content = @Content),
             @ApiResponse(responseCode = "404", description = "No recent price found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
@@ -141,7 +141,7 @@ public class GoldPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the given search request",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = GoldPricesPagedResponse.class))),
+                            schema = @Schema(implementation = GoldPricePageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid search request", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
@@ -149,7 +149,7 @@ public class GoldPriceController {
     @PostMapping(value = "/search",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GoldPricesPagedResponse> search(
+    public ResponseEntity<GoldPricePageResponse> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering prices",
                     required = true)
             @RequestBody SearchRequest searchRequest,
@@ -163,13 +163,13 @@ public class GoldPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the region name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = GoldPricesResponse.class))),
+                            schema = @Schema(implementation = GoldPriceListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid region name", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/regions/{regionName}")
-    public ResponseEntity<GoldPricesResponse> getRecentForRegion(
+    public ResponseEntity<GoldPriceListResponse> getRecentForRegion(
             @Parameter(description = "Region name to retrieve prices for. Can be either 'eu' or 'us'",
                     example = "eu",
                     required = true)
@@ -184,13 +184,13 @@ public class GoldPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the faction name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = GoldPricesResponse.class))),
+                            schema = @Schema(implementation = GoldPriceListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid faction name", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/factions/{factionName}")
-    public ResponseEntity<GoldPricesResponse> getRecentForFaction(
+    public ResponseEntity<GoldPriceListResponse> getRecentForFaction(
             @Parameter(description = "Faction name to retrieve prices for. Can be either 'alliance' or 'horde'",
                     example = "alliance",
                     required = true)
