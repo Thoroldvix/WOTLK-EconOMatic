@@ -90,9 +90,8 @@ Next, set up the environment variables. Defaults are provided, but you can adjus
 
 * `DB_URL` - Link to your database. Default: `jdbc:postgresql://localhost:5432/economatic`
 * `DB_USERNAME` - Username for your database. Default: `postgres`
-* `DB_PASS` -  Password for your database. Default: `pass`
+* `DB_PASS` - Password for your database. Default: `pass`
 * `PORT` - Port to run application on. Default: `8080`
-
 
 Navigate to the code directory and run:
 
@@ -121,23 +120,22 @@ Docker helps in managing the application without the need for manual setup.
 ## Usage
 
 Before you start, ensure the EconOMatic application is running on your machine.
-You have two straightforward options to interact with the EconOMatic API: using Postman for a visual interface, or
-sending requests directly from your browser.
-I prepared ready-to-use Postman collection that includes all the endpoints. This allows you to test out and interact
-with the API immediately after setup.
-To start using it:
-Download the Postman collection using the following link:
-[EconOMatic Postman Collection](https://api.postman.com/collections/27069629-4238bc33-f1cb-473e-a1ae-78ac80161e3a?access_key=PMAT-01H49D33FCR65VXZAZVXRBVSFV)
-Import the Postman collection into your Postman application. If you're unsure how to do this, Postman provides an
-easy-to-understand guide that you can find
-here: [Importing and Exporting Data in Postman](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/).
-Once the Postman collection is imported, you can begin to explore and interact with the EconOMatic API and its endpoints
-directly in the Postman application.
-If you prefer to directly send requests to the API endpoint from your browser, you can use the URL followed by the
-specific endpoint you would like to access. Please refer to our API Reference section for more information about
-available endpoints and how to use them.
-Either way, you will find EconOMatic API a helpful tool in understanding WoW Classic WOTLK's economy, planning your gold
-farming strategies, and making smart trading decisions.
+You have two straightforward options to interact with the EconOMatic API:
+
+1. **Using Postman**: This offers a user-friendly visual interface. A ready-to-use Postman collection is available,
+   which covers all the endpoints. This way, you can immediately start interacting and experimenting with the API after
+   setting it up. Follow these steps:
+    * Download the Postman collection using the following
+      link: [EconOMatic Postman Collection](https://api.postman.com/collections/27069629-4238bc33-f1cb-473e-a1ae-78ac80161e3a?access_key=PMAT-01H49D33FCR65VXZAZVXRBVSFV).
+    * Import this collection into your Postman application. If you're uncertain about this step, Postman provides a
+      comprehensive guide
+      available [here](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/).
+2. **Sending requests directly from your browser**: Another method is to send the requests directly from your browser.
+   Enter the URL with the specific endpoint you're interested in. For a complete list of available endpoints and their
+   usage, refer to the [API Reference](#api-reference) section.
+   Either way, you will find EconOMatic API a helpful tool in understanding WoW Classic WOTLK's economy, planning your
+   gold
+   farming strategies, and making smart trading decisions.
 
 ## Api Reference
 
@@ -151,7 +149,8 @@ Below are additional environmental variables that can be configured to adjust th
 * `GOLD_PRICE_DEFAULT_WEIGHT` Default weight for gold price recommendation calculations. Default: `1`
 * `ITEM_PRICE_DEFAULT_WEIGHT` Default weight for item price recommendation calculations. Default: `1`
 * `POPULATION_DEFAULT_WEIGHT`: Default weight for population recommendation calculations. Default: `0.1`
-* `MIN_ALLOWED_POPULATION` Minimum allowed population when calculating recommendation scores for servers. Default: `1000`
+* `MIN_ALLOWED_POPULATION` Minimum allowed population when calculating recommendation scores for servers.
+  Default: `1000`
 * `UPDATE_ON_STARTUP` Defines whether to update gold price, item price, and population data on startup. Useful to avoid
   redundant fetching of data when the application is restarted frequently. Default: `true`
 * `POPULATION_UPDATE_RATE`: Frequency to update population data in days. Default: `1`
