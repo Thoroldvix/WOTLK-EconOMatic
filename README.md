@@ -139,8 +139,12 @@ You have two straightforward options to interact with the EconOMatic API:
 
 ## Api Reference
 
-Complete documentation for each endpoint is available via the swagger interface at http://localhost:
-app_port/swagger-ui/index.html. Ensure the app is operational on your machine before accessing it.
+Comprehensive documentation for each API endpoint is accessible through the Swagger UI, located
+at http://localhost:8080/swagger-ui/index.html. If app is running on a port other than the default 8080, make
+sure to update the URL accordingly.
+
+Before attempting to access the Swagger UI, please ensure that the application is running as expected on your 
+machine
 
 ## Configuration
 
