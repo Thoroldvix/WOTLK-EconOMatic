@@ -74,7 +74,6 @@ trading decisions and farm gold more effectively.
 
 * ### Java 17
 * ### Spring Boot
-* ### Lombok
 * ### Postgresql
 * ### Hibernate
 * ### Liquibase
