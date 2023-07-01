@@ -7,7 +7,7 @@ public record ServerSummaryResponse(
         Summary summary
 ) {
     @Builder
-    protected record Summary(
+    public record Summary(
             Faction faction,
             Region region,
             Type type,
@@ -17,21 +17,21 @@ public record ServerSummaryResponse(
     }
 
     @Builder
-    protected record Faction(
+    public record Faction(
             int alliance,
             int horde
     ) {
     }
 
     @Builder
-    protected record Region(
+    public record Region(
             int eu,
             int us
     ) {
     }
 
     @Builder
-    protected record Type(
+    public record Type(
             int pve,
             int pvp,
             int pvpRp,
@@ -40,7 +40,7 @@ public record ServerSummaryResponse(
     }
 
     @Builder
-    protected record Locale(
+    public record Locale(
             int enGB,
             int enUS,
             int deDE,
