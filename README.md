@@ -155,7 +155,7 @@ Below are additional environmental variables that can be configured to adjust th
     * Default: 1
 
 * ITEM_PRICE_DEFAULT_WEIGHT: Default weight for item price recommendation calculation.
-* Default: 1
+  * Default: 1
 
 * POPULATION_DEFAULT_WEIGHT: Default weight for population recommendation calculation.
     * Default: 0.1
@@ -165,16 +165,16 @@ Below are additional environmental variables that can be configured to adjust th
 
 * UPDATE_ON_STARTUP: Defines whether to update gold price, item price, and population data on startup. Useful to avoid
   redundant fetching of data when the application is restarted frequently.
-* Default: true
+  * Default: true
 
 * POPULATION_UPDATE_RATE: Frequency to update population data in days.
-* Default 1
+  * Default 1
 
 * ITEM_PRICE_UPDATE_RATE: Frequency to update item price data in hours.
-* Default: 3
+  * Default: 3
 
 * GOLD_PRICE_UPDATE_RATE: Frequency to update gold price data in minutes.
-* Default: 60
+  * Default: 60
 
 When setting up the application, ensure these are considered and adjusted according to your use case. To keep the
 defaults, no action is needed.
