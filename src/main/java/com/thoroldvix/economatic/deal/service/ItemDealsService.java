@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.deal.service;
 
+import com.thoroldvix.economatic.deal.dto.ItemDealsList;
 import com.thoroldvix.economatic.deal.error.ItemDealsNotFoundException;
-import com.thoroldvix.economatic.deal.dto.ItemDealsResponse;
 import com.thoroldvix.economatic.deal.mapper.ItemDealsMapper;
 import com.thoroldvix.economatic.deal.repository.ItemDealProjection;
 import com.thoroldvix.economatic.deal.repository.ItemDealsRepository;
@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-import static com.thoroldvix.economatic.shared.util.Utils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.util.Utils.notEmpty;
 
 
 @Service
@@ -29,7 +29,7 @@ public class ItemDealsService {
     private final ItemDealsMapper itemDealsMapper;
 
 
-    public ItemDealsResponse getDealsForServer(
+    public ItemDealsList getDealsForServer(
             @NotEmpty(message = "Server identifier cannot be null or empty")
             String serverIdentifier,
             @Min(value = 1, message = "Minimum quantity must be a positive integer")
@@ -39,9 +39,9 @@ public class ItemDealsService {
             @Min(value = 1, message = "Limit must be a positive integer")
             int limit) {
         List<ItemDealProjection> deals = findDealsForServer(serverIdentifier, minQuantity, minQuality, limit);
-        validateCollectionNotEmpty(deals,
+        notEmpty(deals,
                 () -> new ItemDealsNotFoundException("No deal found for server " + serverIdentifier));
-        return itemDealsMapper.toDealsWithServer(deals);
+        return itemDealsMapper.toItemDealsList(deals);
     }
 
     private List<ItemDealProjection> findDealsForServer(String serverIdentifier, int minQuantity, int minQuality, int limit) {

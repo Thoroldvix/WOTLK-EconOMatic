@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.item.service;
 
-import com.thoroldvix.economatic.item.dto.ItemPagedResponse;
+import com.thoroldvix.economatic.item.dto.ItemPageResponse;
 import com.thoroldvix.economatic.item.dto.ItemRequest;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
 import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
@@ -30,7 +30,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Optional;
 
 import static com.thoroldvix.economatic.shared.error.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.shared.util.Utils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.util.Utils.notEmpty;
 
 @Service
 @Validated
@@ -47,19 +47,19 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public ItemPagedResponse search(@NotNull(message = "Search request cannot be null") SearchRequest searchRequest,
-                                    @NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable) {
+    public ItemPageResponse search(@NotNull(message = "Search request cannot be null") SearchRequest searchRequest,
+                                   @NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable) {
         Page<Item> items = findAllForSearch(searchRequest, pageable);
-        validateCollectionNotEmpty(items.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
-        return itemMapper.toPagedResponse(items);
+        notEmpty(items.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
+        return itemMapper.toPageResponse(items);
     }
 
     @Override
     @Cacheable("item-cache")
-    public ItemPagedResponse getAll(@NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable) {
+    public ItemPageResponse getAll(@NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable) {
         Page<Item> page = itemRepository.findAll(pageable);
-        validateCollectionNotEmpty(page.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
-        return itemMapper.toPagedResponse(page);
+        notEmpty(page.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
+        return itemMapper.toPageResponse(page);
     }
 
 
@@ -103,14 +103,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Optional<Item> findItem(String itemIdentifier) {
-        Optional<Item> item;
         try {
             int itemId = Integer.parseInt(itemIdentifier);
-            item = itemRepository.findById(itemId);
-        } catch (NumberFormatException e) {
-            item = itemRepository.findByUniqueName(itemIdentifier);
+            return itemRepository.findById(itemId);
+        } catch (NumberFormatException ignored) {
+            return itemRepository.findByUniqueName(itemIdentifier);
         }
-        return item;
     }
 
 }

@@ -3,6 +3,7 @@ package com.thoroldvix.economatic.itemprice.repository;
 import com.thoroldvix.economatic.itemprice.model.ItemPrice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -19,14 +20,17 @@ import java.util.Set;
 public interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, JpaSpecificationExecutor<ItemPrice> {
 
 
+    @EntityGraph(attributePaths = {"item", "server"})
     @Query(""" 
-              select ip
-              from ItemPrice ip join fetch Item i on ip.item = i
-              where ip.server.id = ?1
-              and ip.updatedAt = (select max(ip2.updatedAt) from ItemPrice ip2 where ip2.server.id = ?1)
+                select ip
+                from ItemPrice ip
+                where ip.server.id = ?1
+                and ip.updatedAt = (select max(ip2.updatedAt)
+                from ItemPrice ip2 where ip2.server.id = ?1)
             """)
     Page<ItemPrice> findRecentForServer(int serverId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"item", "server"})
     @Query("""
             select ip
              from ItemPrice ip
@@ -35,6 +39,7 @@ public interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, Jpa
             """)
     List<ItemPrice> findRecentForServerAndItem(int serverId, int itemId);
 
+    @EntityGraph(attributePaths = {"item", "server"})
     @Query("""
             select ip
              from ItemPrice ip
@@ -63,21 +68,6 @@ public interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, Jpa
             """, nativeQuery = true)
     List<ItemPrice> findRecentForFactionAndItem(int faction, int itemId);
 
-    default void saveAll(Collection<ItemPrice> prices, JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.batchUpdate("""
-                INSERT INTO item_price (min_buyout, historical_value, market_value, quantity, num_auctions, item_id, server_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                 """, prices, 100, (ps, price) -> {
-            ps.setLong(1, price.getMinBuyout());
-            ps.setLong(2, price.getHistoricalValue());
-            ps.setLong(3, price.getMarketValue());
-            ps.setInt(4, price.getQuantity());
-            ps.setInt(5, price.getNumAuctions());
-            ps.setInt(6, price.getItem().getId());
-            ps.setInt(7, price.getServer().getId());
-        });
-    }
-
     @Query(value = """
             SELECT ip.*
             FROM item_price ip
@@ -99,4 +89,19 @@ public interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, Jpa
             where item_id in ?1 and ip.server_id in ?2
             """, nativeQuery = true)
     Page<ItemPrice> findRecentForItemListAndServers(Set<Integer> itemIds, Set<Integer> serverIds, Pageable pageable);
+
+    default void saveAll(Collection<ItemPrice> prices, JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.batchUpdate("""
+                INSERT INTO item_price (min_buyout, historical_value, market_value, quantity, num_auctions, item_id, server_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                 """, prices, 100, (ps, price) -> {
+            ps.setLong(1, price.getMinBuyout());
+            ps.setLong(2, price.getHistoricalValue());
+            ps.setLong(3, price.getMarketValue());
+            ps.setInt(4, price.getQuantity());
+            ps.setInt(5, price.getNumAuctions());
+            ps.setInt(6, price.getItem().getId());
+            ps.setInt(7, price.getServer().getId());
+        });
+    }
 }

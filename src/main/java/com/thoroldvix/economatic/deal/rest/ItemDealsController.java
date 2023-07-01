@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.deal.rest;
 
-import com.thoroldvix.economatic.deal.dto.ItemDealsResponse;
+import com.thoroldvix.economatic.deal.dto.ItemDealsList;
 import com.thoroldvix.economatic.deal.service.ItemDealsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,14 +28,14 @@ public class ItemDealsController {
             tags = {"Deals"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content(schema = @Schema(implementation = ItemDealsResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ItemDealsList.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Server not found",
                     content = @Content)
     })
     @GetMapping("/{serverIdentifier}")
-    public ResponseEntity<ItemDealsResponse> getDealsForServer(
+    public ResponseEntity<ItemDealsList> getDealsForServer(
             @Parameter(description = "Identifier of the server in the format server-faction or server ID",
                     required = true,
                     example = "everlook-alliance or 41003")

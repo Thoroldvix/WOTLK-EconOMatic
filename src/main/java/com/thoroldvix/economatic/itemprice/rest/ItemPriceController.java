@@ -1,9 +1,8 @@
 package com.thoroldvix.economatic.itemprice.rest;
 
-import com.thoroldvix.economatic.itemprice.dto.AuctionHouseInfo;
-import com.thoroldvix.economatic.itemprice.dto.ItemPricePagedResponse;
+import com.thoroldvix.economatic.itemprice.dto.ItemPriceListResponse;
+import com.thoroldvix.economatic.itemprice.dto.ItemPricePageResponse;
 import com.thoroldvix.economatic.itemprice.dto.ItemPriceRequest;
-import com.thoroldvix.economatic.itemprice.dto.PagedAuctionHouseInfo;
 import com.thoroldvix.economatic.itemprice.service.ItemPriceService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
@@ -36,13 +35,13 @@ public class ItemPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PagedAuctionHouseInfo.class))),
+                            schema = @Schema(implementation = ItemPricePageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/servers/{serverIdentifier}")
-    public ResponseEntity<PagedAuctionHouseInfo> getRecentForServer(
+    public ResponseEntity<ItemPricePageResponse> getRecentForServer(
             @Parameter(description = "Identifier of the server in the format server-faction or server ID",
                     example = "everlook-alliance or 41003",
                     required = true)
@@ -60,13 +59,13 @@ public class ItemPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item price",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = AuctionHouseInfo.class))),
+                            schema = @Schema(implementation = ItemPriceListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier or item identifier", content = @Content),
             @ApiResponse(responseCode = "404", description = "No price found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/servers/{serverIdentifier}/{itemIdentifier}/recent")
-    public ResponseEntity<AuctionHouseInfo> getRecentForServerAndItem(
+    public ResponseEntity<ItemPriceListResponse> getRecentForServerAndItem(
             @Parameter(description = "Identifier of the server in the format server-faction or server ID",
                     example = "everlook-alliance or 41003",
                     required = true)
@@ -85,13 +84,13 @@ public class ItemPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PagedAuctionHouseInfo.class))),
+                            schema = @Schema(implementation = ItemPricePageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid server identifier or item identifier or time range", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/servers/{serverIdentifier}/{itemIdentifier}")
-    public ResponseEntity<PagedAuctionHouseInfo> getRecentForServerAndItem(
+    public ResponseEntity<ItemPricePageResponse> getRecentForServerAndItem(
             @Parameter(description = "Identifier of the server in the format server-faction or server ID",
                     example = "everlook-alliance or 41003",
                     required = true)
@@ -116,16 +115,16 @@ public class ItemPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for search request",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ItemPricePagedResponse.class))),
+                            schema = @Schema(implementation = ItemPricePageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid search request", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @PostMapping("/search")
-    public ResponseEntity<ItemPricePagedResponse> search(@RequestBody
+    public ResponseEntity<ItemPricePageResponse> search(@RequestBody
                                                          @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering prices")
                                                          SearchRequest searchRequest,
-                                                         @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
+                                                        @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
                                                          @ParameterObject
                                                          Pageable pageable) {
         var itemPrices = itemPriceService.search(searchRequest, pageable);
@@ -141,14 +140,14 @@ public class ItemPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of recent prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ItemPricePagedResponse.class))),
+                            schema = @Schema(implementation = ItemPricePageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid item list", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @PostMapping("/recent")
-    public ResponseEntity<ItemPricePagedResponse> getRecentForItemList(@RequestBody ItemPriceRequest itemList,
-                                                                       @PageableDefault(sort = "updated_at", direction = Sort.Direction.DESC, size = 100)
+    public ResponseEntity<ItemPricePageResponse> getRecentForItemList(@RequestBody ItemPriceRequest itemList,
+                                                                      @PageableDefault(sort = "updated_at", direction = Sort.Direction.DESC, size = 100)
                                                                        @ParameterObject Pageable pageable) {
         var itemPrices = itemPriceService.getRecentForItemListAndServers(itemList, pageable);
         return ResponseEntity.ok(itemPrices);
@@ -159,13 +158,13 @@ public class ItemPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the given region name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = AuctionHouseInfo.class))),
+                            schema = @Schema(implementation = ItemPriceListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid region name or item identifier", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/regions/{regionName}/{itemIdentifier}")
-    public ResponseEntity<AuctionHouseInfo> getRecentForRegionAndItem(
+    public ResponseEntity<ItemPriceListResponse> getRecentForRegionAndItem(
             @Parameter(description = "Region name to retrieve prices for. Can be either 'eu' or 'us'",
                     example = "eu",
                     required = true)
@@ -184,13 +183,13 @@ public class ItemPriceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the given faction name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = AuctionHouseInfo.class))),
+                            schema = @Schema(implementation = ItemPriceListResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid faction name or item identifier", content = @Content),
             @ApiResponse(responseCode = "404", description = "No prices found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping("/factions/{factionName}/{itemIdentifier}")
-    public ResponseEntity<AuctionHouseInfo> getRecentForFactionAndItem(
+    public ResponseEntity<ItemPriceListResponse> getRecentForFactionAndItem(
             @Parameter(description = "Faction name to retrieve prices for. Can be either 'alliance' or 'horde'",
                     example = "horde",
                     required = true)

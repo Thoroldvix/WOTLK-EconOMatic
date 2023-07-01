@@ -1,12 +1,10 @@
 package com.thoroldvix.economatic.itemprice.service;
 
 import com.thoroldvix.economatic.item.service.ItemService;
-import com.thoroldvix.economatic.itemprice.dto.AuctionHouseInfo;
-import com.thoroldvix.economatic.itemprice.dto.ItemPricePagedResponse;
+import com.thoroldvix.economatic.itemprice.dto.ItemPriceListResponse;
+import com.thoroldvix.economatic.itemprice.dto.ItemPricePageResponse;
 import com.thoroldvix.economatic.itemprice.dto.ItemPriceRequest;
-import com.thoroldvix.economatic.itemprice.dto.PagedAuctionHouseInfo;
 import com.thoroldvix.economatic.itemprice.error.ItemPriceNotFoundException;
-import com.thoroldvix.economatic.itemprice.mapper.AuctionHouseMapper;
 import com.thoroldvix.economatic.itemprice.mapper.ItemPriceMapper;
 import com.thoroldvix.economatic.itemprice.model.ItemPrice;
 import com.thoroldvix.economatic.itemprice.repository.ItemPriceRepository;
@@ -37,7 +35,7 @@ import java.util.stream.Collectors;
 
 import static com.thoroldvix.economatic.server.error.ServerErrorMessages.*;
 import static com.thoroldvix.economatic.shared.error.ErrorMessages.*;
-import static com.thoroldvix.economatic.shared.util.Utils.validateCollectionNotEmpty;
+import static com.thoroldvix.economatic.shared.util.Utils.notEmpty;
 
 
 @Service
@@ -52,74 +50,71 @@ public class ItemPriceService {
     private final ServerService serverService;
     private final ItemPriceRepository itemPriceRepository;
     private final ItemPriceMapper itemPriceMapper;
-    private final AuctionHouseMapper auctionHouseMapper;
     private final SearchSpecification<ItemPrice> searchSpecification;
     private final JdbcTemplate jdbcTemplate;
 
     @Cacheable("item-price-cache")
-    public PagedAuctionHouseInfo getRecentForServer(
+    public ItemPricePageResponse getRecentForServer(
             @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
             String serverIdentifier,
             @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
             Pageable pageable) {
         Page<ItemPrice> page = findRecentForServer(serverIdentifier, pageable);
-        validateCollectionNotEmpty(page.getContent(),
+        notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No recent item prices found for server identifier " + serverIdentifier));
-
-        return auctionHouseMapper.toPagedWithServer(page);
+        return itemPriceMapper.toPageResponse(page);
     }
 
 
-    public AuctionHouseInfo getRecentForRegion(
+    public ItemPriceListResponse getRecentForRegion(
             @NotEmpty(message = REGION_NAME_CANNOT_BE_NULL_OR_EMPTY)
             String regionName,
             @NotEmpty(message = ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
             String itemIdentifier) {
         List<ItemPrice> itemPrices = findRecentForRegionAndItem(regionName, itemIdentifier);
-        validateCollectionNotEmpty(itemPrices,
+        notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for region and item identifier " + regionName + " " + itemIdentifier));
 
-        return auctionHouseMapper.toInfoWithRegionAndItem(itemPrices);
+        return itemPriceMapper.toItemPriceList(itemPrices);
     }
 
 
-    public AuctionHouseInfo getRecentForFaction(
+    public ItemPriceListResponse getRecentForFaction(
             @NotEmpty(message = FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY)
             String factionName,
             @NotEmpty(message = ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
             String itemIdentifier) {
         List<ItemPrice> itemPrices = findRecentForFactionAndItem(factionName, itemIdentifier);
-        validateCollectionNotEmpty(itemPrices,
+        notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for faction and item identifier " + factionName + " " + itemIdentifier));
 
-        return auctionHouseMapper.toInfoWithFactionAndItem(itemPrices);
+        return itemPriceMapper.toItemPriceList(itemPrices);
     }
 
 
-    public AuctionHouseInfo getRecentForServer(
+    public ItemPriceListResponse getRecentForServer(
             @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
             String serverIdentifier,
             @NotEmpty(message = ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
             String itemIdentifier) {
         List<ItemPrice> itemPrices = findRecentForServerAndItem(serverIdentifier, itemIdentifier);
-        validateCollectionNotEmpty(itemPrices,
+        notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException(String.format("No item prices found for server identifier %s and item identifier %s", serverIdentifier, itemIdentifier)));
-
-        return auctionHouseMapper.toInfoWithServerAndItem(itemPrices);
+        return itemPriceMapper.toItemPriceList(itemPrices);
     }
 
     @Cacheable("item-price-cache")
-    public ItemPricePagedResponse search(@Valid SearchRequest searchRequest,
-                                         @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
+    public ItemPricePageResponse search(@Valid SearchRequest searchRequest,
+                                        @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
                                          Pageable pageable) {
         Page<ItemPrice> page = findAllForSearch(searchRequest, pageable);
-        validateCollectionNotEmpty(page.getContent(), () -> new ItemPriceNotFoundException("No item prices found for search request"));
+        notEmpty(page.getContent(), () -> new ItemPriceNotFoundException("No item prices found for search request"));
 
-        return itemPriceMapper.toPagedResponse(page);
+        return itemPriceMapper.toPageResponse(page);
     }
 
     @Cacheable("item-price-cache")
-    public PagedAuctionHouseInfo getForServer(
+    public ItemPricePageResponse getForServer(
             @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
             String serverIdentifier,
             @NotEmpty(message = ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
@@ -129,24 +124,21 @@ public class ItemPriceService {
             @NotNull(message = PAGE_CANNOT_BE_NULL)
             Pageable pageable) {
         Page<ItemPrice> page = findForServerAndTimeRange(serverIdentifier, itemIdentifier, timeRange, pageable);
-        validateCollectionNotEmpty(page.getContent(),
+        notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No item prices found for time range %s for server identifier %s and item identifier %s"
                         .formatted(timeRange, serverIdentifier, itemIdentifier)));
-
-        return auctionHouseMapper.toPagedWithServerAndItem(page);
+        return itemPriceMapper.toPageResponse(page);
     }
 @Cacheable("item-price-cache")
-    public ItemPricePagedResponse getRecentForItemListAndServers(
+    public ItemPricePageResponse getRecentForItemListAndServers(
             @Valid ItemPriceRequest request,
             @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
             Pageable pageable) {
-
         Page<ItemPrice> page = findRecentForRequest(request, pageable);
-
-        validateCollectionNotEmpty(page.getContent(),
+        notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No recent prices found for item list"));
 
-        return itemPriceMapper.toPagedResponse(page);
+        return itemPriceMapper.toPageResponse(page);
     }
 
     @Transactional

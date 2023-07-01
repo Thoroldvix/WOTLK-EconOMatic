@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.item.service;
 
-import com.thoroldvix.economatic.item.dto.ItemPagedResponse;
+import com.thoroldvix.economatic.item.dto.ItemPageResponse;
 import com.thoroldvix.economatic.item.dto.ItemRequest;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
 import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
@@ -17,10 +17,10 @@ import static com.thoroldvix.economatic.shared.error.ErrorMessages.PAGEABLE_CANN
 public interface ItemService {
 
 
-    ItemPagedResponse search(@NotNull(message = "Search request cannot be null") SearchRequest searchRequest,
-                             @NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable);
+    ItemPageResponse search(@NotNull(message = "Search request cannot be null") SearchRequest searchRequest,
+                            @NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable);
 
-    ItemPagedResponse getAll(@NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable);
+    ItemPageResponse getAll(@NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable);
 
 
     ItemResponse getItem(@NotEmpty(message = "Item identifier cannot be null or empty") String itemIdentifier);

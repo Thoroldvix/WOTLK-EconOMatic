@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.item.rest;
 
-import com.thoroldvix.economatic.item.dto.ItemPagedResponse;
+import com.thoroldvix.economatic.item.dto.ItemPageResponse;
 import com.thoroldvix.economatic.item.dto.ItemRequest;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
 import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
@@ -39,12 +39,12 @@ public class ItemsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item info",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ItemPagedResponse.class))),
+                            schema = @Schema(implementation = ItemPageResponse.class))),
             @ApiResponse(responseCode = "404", description = "No item info found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @GetMapping
-    public ResponseEntity<ItemPagedResponse> getAll(@ParameterObject @PageableDefault(size = 100, sort = "name",
+    public ResponseEntity<ItemPageResponse> getAll(@ParameterObject @PageableDefault(size = 100, sort = "name",
             direction = Sort.Direction.ASC) Pageable pageable) {
 
         var items = itemService.getAll(pageable);
@@ -77,13 +77,13 @@ public class ItemsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item info",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ItemPagedResponse.class))),
+                            schema = @Schema(implementation = ItemPageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid search criteria", content = @Content),
             @ApiResponse(responseCode = "404", description = "No item info found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @PostMapping("/search")
-    public ResponseEntity<ItemPagedResponse> search(
+    public ResponseEntity<ItemPageResponse> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering items",
                     required = true)
             @RequestBody SearchRequest searchRequest,
