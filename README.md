@@ -37,18 +37,18 @@ EconOMatic API has a bunch of useful features. Let's take a look at some of them
    Get population stats for each server, including the player count and faction distribution. This can help you choose
    the
    right server and get a sense of the game's demographics. Population information is provided
-   by [WarcraftTavern](https://www.warcrafttavern.com/population/wotlk)
+   by [WarcraftTavern](https://www.warcrafttavern.com/population/wotlk).
 
 4. ### Gold price Retrieval for Servers
    Stay updated with the current gold prices for each server. This feature tells you when gold prices go up or down,
    which can help you buy low and sell high or decide which server is better to sell gold on. Gold prices are
-   fetched from [G2G](https://www.g2g.com)
+   fetched from [G2G](https://www.g2g.com).
 
 5. ### Auction House Information Retrieval
    Get detailed auction house information for a specific server. See how much different items are selling for and how
    much supply there is. This can help you spot good deals and stay ahead of the market. Auction House information is
    provided
-   by [NexusHub](https://nexushub.co)
+   by [NexusHub](https://nexushub.co).
 
 6. ### Server Recommendation Retrieval
    Get recommendations on the best servers to farm on based on the items you're planning to farm. The recommendations
@@ -57,7 +57,7 @@ EconOMatic API has a bunch of useful features. Let's take a look at some of them
 7. ### Item Deals Retrieval
    This feature provides a list of the best deals for items on a specific server. It helps you identify items that you
    can buy at a low price and sell at a higher price. The discount percentage is calculated based on the difference
-   between market value and minimum buyout prices
+   between market value and minimum buyout price.
 
 8. ### Data Filtering
    You can customize and filter the data to get exactly the information you want. Look for specific types of items,
