@@ -11,6 +11,4 @@ public record RecommendationResponse(
             BigDecimal itemPriceScore,
             BigDecimal populationScore,
             BigDecimal goldPriceScore
-    ){}
-) {
-}
+){}
