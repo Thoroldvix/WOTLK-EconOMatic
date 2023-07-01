@@ -9,6 +9,7 @@ group = 'com.thoroldvix'
 version = '0.5.1-SNAPSHOT'
 sourceCompatibility = '17'
 
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
