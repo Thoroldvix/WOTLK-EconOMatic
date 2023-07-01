@@ -88,14 +88,11 @@ Before you begin, ensure you have a running local PostgreSQL database. This coul
 installed on your machine.
 Next, set up the environment variables. Defaults are provided, but you can adjust according to your needs:
 
-* DB_URL: URL to your database
-    * Default: jdbc:postgresql://localhost:5432/economatic
-* DB_USERNAME: Username for your database
-    * Default: postgres
-* DB_PASS: Password for your database
-    * pass
-* PORT
-* 8080
+* `DB_URL` - Link to your database. Default: `jdbc:postgresql://localhost:5432/economatic`
+* `DB_USERNAME` - Username for your database. Default: `postgres`
+* `DB_PASS` -  Password for your database. Default: `pass`
+* `PORT` - Port to run application on. Default: `8080`
+
 
 Navigate to the code directory and run:
 
@@ -151,30 +148,15 @@ app_port/swagger-ui/index.html. Ensure the app is operational on your machine be
 
 Below are additional environmental variables that can be configured to adjust the application’s functionality:
 
-* GOLD_PRICE_DEFAULT_WEIGHT: Default weight for gold price recommendation calculation.
-    * Default: 1
-
-* ITEM_PRICE_DEFAULT_WEIGHT: Default weight for item price recommendation calculation.
-  * Default: 1
-
-* POPULATION_DEFAULT_WEIGHT: Default weight for population recommendation calculation.
-    * Default: 0.1
-
-* MIN_ALLOWED_POPULATION: Minimum allowed population when calculating recommendation scores for servers.
-    * Default: 1000
-
-* UPDATE_ON_STARTUP: Defines whether to update gold price, item price, and population data on startup. Useful to avoid
-  redundant fetching of data when the application is restarted frequently.
-  * Default: true
-
-* POPULATION_UPDATE_RATE: Frequency to update population data in days.
-  * Default 1
-
-* ITEM_PRICE_UPDATE_RATE: Frequency to update item price data in hours.
-  * Default: 3
-
-* GOLD_PRICE_UPDATE_RATE: Frequency to update gold price data in minutes.
-  * Default: 60
+* `GOLD_PRICE_DEFAULT_WEIGHT` Default weight for gold price recommendation calculations. Default: `1`
+* `ITEM_PRICE_DEFAULT_WEIGHT` Default weight for item price recommendation calculations. Default: `1`
+* `POPULATION_DEFAULT_WEIGHT`: Default weight for population recommendation calculations. Default: `0.1`
+* `MIN_ALLOWED_POPULATION` Minimum allowed population when calculating recommendation scores for servers. Default: `1000`
+* `UPDATE_ON_STARTUP` Defines whether to update gold price, item price, and population data on startup. Useful to avoid
+  redundant fetching of data when the application is restarted frequently. Default: `true`
+* `POPULATION_UPDATE_RATE`: Frequency to update population data in days. Default: `1`
+* `ITEM_PRICE_UPDATE_RATE`: Frequency to update item price data in hours. Default `3`
+* `GOLD_PRICE_UPDATE_RATE` Frequency to update gold price data in minutes. Default: `60`
 
 When setting up the application, ensure these are considered and adjusted according to your use case. To keep the
 defaults, no action is needed.
