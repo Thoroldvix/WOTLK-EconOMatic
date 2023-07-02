@@ -127,7 +127,7 @@ You have two straightforward options to interact with the EconOMatic API:
    which covers all the endpoints. This way, you can immediately start interacting and experimenting with the API after
    setting it up. Follow these steps:
     * Download the Postman collection using the following
-      link: [EconOMatic Postman Collection](https://api.postman.com/collections/27069629-4238bc33-f1cb-473e-a1ae-78ac80161e3a?access_key=PMAT-01H49D33FCR65VXZAZVXRBVSFV).
+      link: [EconOMatic Postman Collection](https://1drv.ms/u/s!Atmv-T1c16R5jAExTVo_gup4qTpV?e=2ZJS4Y).
     * Import this collection into your Postman application. If you're uncertain about this step, Postman provides a
       comprehensive guide
       available [here](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/).
