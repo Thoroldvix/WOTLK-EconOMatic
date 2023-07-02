@@ -40,9 +40,9 @@ public class RecommendationController {
             @RequestParam(defaultValue = "5")
             @Parameter(description = "Limit of recommendations to retrieve") int limit,
             @Parameter(description = "Whether to use market value or min buyout for item prices")
-            @RequestParam(defaultValue = "true") boolean isMarketValue
+            @RequestParam(defaultValue = "true") boolean marketValue
     ) {
-        var recommendations = recommendationService.getRecommendationsForItemList(request, limit, isMarketValue);
+        var recommendations = recommendationService.getRecommendationsForItemList(request, limit, marketValue);
         return ResponseEntity.ok(recommendations);
     }
 

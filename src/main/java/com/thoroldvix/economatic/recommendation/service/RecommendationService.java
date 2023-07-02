@@ -58,23 +58,23 @@ public class RecommendationService {
             RecommendationRequest request,
             @Min(value = 1, message = "Limit cannot be less that 1")
             int limit,
-            boolean isMarketValue) {
+            boolean marketValue) {
         Map<String, BigDecimal> populationScores = getPopulationScores(request.populationWeight());
         Set<String> servers = populationScores.keySet();
-        Map<String, BigDecimal> itemPriceScores = getItemPriceScores(request.itemList(), request.itemPriceWeight(), servers, isMarketValue);
+        Map<String, BigDecimal> itemPriceScores = getItemPriceScores(request.itemList(), request.itemPriceWeight(), servers, marketValue);
         Map<String, BigDecimal> goldPriceScores = getGoldPriceScores(request.goldPriceWeight(), servers);
 
         return recommendationMapper.toRecommendationResponse(itemPriceScores, populationScores, goldPriceScores, limit);
     }
 
-    private Map<String, BigDecimal> getItemPriceScores(Set<String> itemList, BigDecimal itemPriceWeight, Set<String> servers, boolean isMarketValue) {
+    private Map<String, BigDecimal> getItemPriceScores(Set<String> itemList, BigDecimal itemPriceWeight, Set<String> servers, boolean marketValue) {
         BigDecimal weight = itemPriceWeight == null ? this.prop.itemPriceDefaultWeight() : itemPriceWeight;
         ItemPriceRequest request = buildItemPriceRequest(itemList, servers);
 
         return itemPriceService.getRecentForItemListAndServers(request, Pageable.unpaged()).prices()
                 .stream()
                 .collect(Collectors.toMap(ItemPriceResponse::server,
-                        itemPrice -> calculateWeightedValue(isMarketValue ? itemPrice.marketValue() : itemPrice.minBuyout(), MAX_ITEM_PRICE_COPPER, weight),
+                        itemPrice -> calculateWeightedValue(marketValue ? itemPrice.marketValue() : itemPrice.minBuyout(), MAX_ITEM_PRICE_COPPER, weight),
                         BigDecimal::add)
                 );
     }
