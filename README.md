@@ -84,7 +84,7 @@ The EconOMatic application can be set up in multiple ways. Here are the two most
 
 ### Option 1: Local Postgres Database
 
-Before you begin, ensure you have a running local PostgreSQL database. This could be within a Docker container or
+Before you begin, ensure you have a running local PostgreSQL database, and JDK 17+ installed. Database could be running within a Docker container or
 installed on your machine.
 Next, set up the environment variables. Defaults are provided, but you can adjust according to your needs:
 
@@ -103,7 +103,8 @@ Replace your_value with your values.
 
 ### Option 2: Docker Compose
 
-Alternatively, utilize the Docker compose file provided. In the code directory, use:
+Alternatively, utilize the Docker compose file provided. Before proceeding, please ensure that Docker is installed on your system.
+In the code directory, use:
 
 ```shell
 docker-compose up -d
@@ -144,7 +145,7 @@ at http://localhost:8080/swagger-ui/index.html. If app is running on a port othe
 sure to update the URL accordingly.
 
 Before attempting to access the Swagger UI, please ensure that the application is running as expected on your 
-machine
+machine.
 
 ## Configuration
 
