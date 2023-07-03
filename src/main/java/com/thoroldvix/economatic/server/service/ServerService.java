@@ -5,28 +5,20 @@ import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 
-import static com.thoroldvix.economatic.server.error.ServerErrorMessages.*;
-
+@Validated
 public interface ServerService {
 
-    ServerResponse getServer(
-            @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String serverIdentifier);
+    ServerResponse getServer(String serverIdentifier);
 
-    ServerListResponse search(@Valid @NotNull(message = "Search request cannot be null") SearchRequest searchRequest);
+    ServerListResponse search(@Valid SearchRequest searchRequest);
 
     ServerListResponse getAll();
 
     ServerSummaryResponse getSummary();
 
-    ServerListResponse getAllForRegion(
-            @NotEmpty(message = REGION_NAME_CANNOT_BE_NULL_OR_EMPTY)
-            String regionName);
+    ServerListResponse getAllForRegion(String regionName);
 
-    ServerListResponse getAllForFaction(
-            @NotEmpty(message = FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY)
-            String factionName);
+    ServerListResponse getAllForFaction(String factionName);
 }

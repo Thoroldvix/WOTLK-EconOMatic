@@ -3,7 +3,6 @@ package com.thoroldvix.economatic.error;
 
 import com.thoroldvix.economatic.item.error.ItemAlreadyExistsException;
 import com.thoroldvix.economatic.item.error.ItemDoesNotExistException;
-import com.thoroldvix.economatic.shared.error.NumberNotPositiveException;
 import feign.FeignException;
 import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -87,6 +86,9 @@ class ControllerAdvice {
     }
 
     private String extractErrorMessage(ConstraintViolationException e) {
+        if (e.getConstraintViolations() == null) {
+            return "";
+        }
         return e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));

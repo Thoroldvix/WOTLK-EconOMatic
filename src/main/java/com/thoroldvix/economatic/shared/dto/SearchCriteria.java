@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 @Schema(description = "Search criteria for filtering")
 public record SearchCriteria(
-        @Schema(description = "Column itemName for the search criteria")
+        @Schema(description = "Column name for the search criteria")
         String column,
         @Schema(description = "Value to compare against")
         String value,

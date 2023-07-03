@@ -3,14 +3,14 @@ package com.thoroldvix.economatic.shared.util;
 
 import com.thoroldvix.economatic.error.NotFoundException;
 
-import static com.thoroldvix.economatic.shared.util.Utils.hasText;
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.isNonEmptyString;
 
 public final class StringEnumConverter {
 
     private StringEnumConverter() {}
 
     public static <T extends Enum<T>> T fromString(String str, Class<T> enumClass) {
-        if (!hasText(str)) {
+        if (!isNonEmptyString(str)) {
             throw new IllegalArgumentException("Cannot convert blank or null string to enum");
         }
         for (T value : enumClass.getEnumConstants()) {

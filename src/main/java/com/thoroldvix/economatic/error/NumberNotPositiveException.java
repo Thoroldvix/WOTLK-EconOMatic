@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.shared.error;
+package com.thoroldvix.economatic.error;
 
 public class NumberNotPositiveException extends RuntimeException{
 

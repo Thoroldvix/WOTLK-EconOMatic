@@ -10,4 +10,6 @@ public interface StatsProjection {
     Number getMedian();
 
     long getCount();
+
+
 }

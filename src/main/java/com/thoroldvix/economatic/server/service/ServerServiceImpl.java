@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.server.service;
 
+import com.thoroldvix.economatic.error.ErrorMessages;
 import com.thoroldvix.economatic.server.dto.ServerListResponse;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
@@ -15,8 +16,6 @@ import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.service.SearchSpecification;
 import com.thoroldvix.economatic.shared.util.StringEnumConverter;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,10 +27,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.thoroldvix.economatic.server.error.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.shared.util.Utils.notEmpty;
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.notEmpty;
+import static java.util.Objects.requireNonNull;
 
 @Service
 @Validated
+@Cacheable("server-cache")
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ServerServiceImpl implements ServerService {
@@ -43,26 +44,27 @@ public class ServerServiceImpl implements ServerService {
 
 
     @Override
-    @Cacheable("server-cache")
-    public ServerResponse getServer(
-            @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String serverIdentifier) {
+    public ServerResponse getServer(String serverIdentifier) {
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+
         Optional<Server> server = findServer(serverIdentifier);
+
         return server.map(serverMapper::toResponse)
                 .orElseThrow(() -> new ServerNotFoundException("No server found for identifier: " + serverIdentifier));
     }
 
     @Override
-    public ServerListResponse search(@Valid @NotNull(message = "Search request cannot be null") SearchRequest searchRequest) {
-        Specification<Server> spec =
-                searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
-        List<Server> servers = serverRepository.findAll(spec);
+    public ServerListResponse search(@Valid SearchRequest searchRequest) {
+        requireNonNull(searchRequest, ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL);
+
+        List<Server> servers = findForSearch(searchRequest);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
+
         return serverMapper.toServerListResponse(servers);
     }
 
+
     @Override
-    @Cacheable("server-cache")
     public ServerListResponse getAll() {
         List<Server> servers = serverRepository.findAll();
         notEmpty(servers, () -> new ServerNotFoundException("No servers found"));
@@ -77,21 +79,29 @@ public class ServerServiceImpl implements ServerService {
     }
 
     @Override
-    public ServerListResponse getAllForRegion(
-            @NotEmpty(message = REGION_NAME_CANNOT_BE_NULL_OR_EMPTY)
-            String regionName) {
+    public ServerListResponse getAllForRegion(String regionName) {
+        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+
         List<Server> servers = findAllByRegion(regionName);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + regionName));
+
         return serverMapper.toServerListResponse(servers);
     }
 
     @Override
-    public ServerListResponse getAllForFaction(
-            @NotEmpty(message = FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY)
-            String factionName) {
+    public ServerListResponse getAllForFaction(String factionName) {
+        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+
         List<Server> servers = findAllByFaction(factionName);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for faction: " + factionName));
+
         return serverMapper.toServerListResponse(servers);
+    }
+
+    private List<Server> findForSearch(SearchRequest searchRequest) {
+        Specification<Server> spec =
+                searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
+        return serverRepository.findAll(spec);
     }
 
     private List<Server> findAllByRegion(String regionName) {

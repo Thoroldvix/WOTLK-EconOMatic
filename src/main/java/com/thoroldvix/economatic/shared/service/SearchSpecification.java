@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.shared.service;
 
+import com.thoroldvix.economatic.error.InvalidSearchCriteriaException;
 import com.thoroldvix.economatic.shared.dto.SearchCriteria;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -12,8 +13,10 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.thoroldvix.economatic.error.ErrorMessages.SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY;
 import static com.thoroldvix.economatic.shared.util.PredicateUtils.getPredicateFromOperation;
-import static com.thoroldvix.economatic.shared.util.Utils.hasText;
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.isNonEmptyString;
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.notEmpty;
 
 
 @Component
@@ -21,9 +24,8 @@ public class SearchSpecification<E> {
 
     public Specification<E> create(SearchRequest.GlobalOperator globalOperator,
                                    SearchCriteria... searchCriteria) {
-        if (searchCriteria == null || searchCriteria.length == 0) {
-            throw new IllegalArgumentException("You must provide valid search criteria");
-        }
+        notEmpty(searchCriteria,
+                () -> new InvalidSearchCriteriaException(SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY));
         return getSpecification(globalOperator, searchCriteria);
     }
 
@@ -50,10 +52,7 @@ public class SearchSpecification<E> {
     }
 
     private Path<?> getColumnPath(Root<E> root, SearchCriteria searchCriteria) {
-        if (searchCriteria == null) {
-            throw new IllegalArgumentException("You must provide valid search criteria");
-        }
-        if (hasText(searchCriteria.joinTable())) {
+        if (isNonEmptyString(searchCriteria.joinTable())) {
             return root.join(searchCriteria.joinTable()).get(searchCriteria.column());
         }
         return root.get(searchCriteria.column());

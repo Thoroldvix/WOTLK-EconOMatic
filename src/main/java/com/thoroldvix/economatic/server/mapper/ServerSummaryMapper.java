@@ -2,16 +2,13 @@ package com.thoroldvix.economatic.server.mapper;
 
 import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
 import com.thoroldvix.economatic.server.repository.ServerSummaryProjection;
-import jakarta.validation.constraints.NotNull;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class ServerSummaryMapper {
 
-    public ServerSummaryResponse toResponse(
-            @NotNull(message = "Server summary projection cannot be null")
-            ServerSummaryProjection summaryProjection) {
+    public ServerSummaryResponse toResponse(ServerSummaryProjection summaryProjection) {
         ServerSummaryResponse.Summary summary = getSummary(summaryProjection);
         return ServerSummaryResponse.builder()
                 .summary(summary)

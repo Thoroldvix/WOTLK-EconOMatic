@@ -31,6 +31,18 @@ public class CachingConfig {
     }
 
     @Bean
+    CacheManager goldPriceStatsCache() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCacheNames(Collections.singletonList(("gold-price-stats-cache")));
+        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
+                .initialCapacity(100)
+                .maximumSize(20000)
+                .expireAfterWrite(60, TimeUnit.SECONDS);
+        cacheManager.setCaffeine(cacheBuilder);
+        return cacheManager;
+    }
+
+    @Bean
     CacheManager itemPriceCache() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCacheNames(Collections.singletonList(("item-price-cache")));
@@ -82,7 +94,13 @@ public class CachingConfig {
     @Bean
     public CacheManager cacheManagerComposite() {
         CompositeCacheManager cacheManager = new CompositeCacheManager();
-        cacheManager.setCacheManagers(Arrays.asList(serverCache(), itemCache(), itemPriceCache(), goldPriceCache(), populationCache()));
+        cacheManager.setCacheManagers(Arrays.asList(
+                serverCache(),
+                itemCache(),
+                itemPriceCache(),
+                goldPriceCache(),
+                populationCache(),
+                goldPriceStatsCache()));
         return cacheManager;
     }
 }

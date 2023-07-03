@@ -12,12 +12,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Validated
 @Tag(name = "Servers API", description = "API for retrieving server information")
 @RequestMapping("/wow-classic/api/v1/servers")
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class ServerController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering servers",
                     required = true)
             @RequestBody
+            @Valid
             SearchRequest searchRequest) {
         var searchResult = serverServiceImpl.search(searchRequest);
         return ResponseEntity.ok(searchResult);
@@ -74,7 +78,7 @@ public class ServerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of all servers",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                           schema = @Schema(implementation = ServerListResponse.class))),
+                            schema = @Schema(implementation = ServerListResponse.class))),
             @ApiResponse(responseCode = "404", description = "No servers found", content = @Content),
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })

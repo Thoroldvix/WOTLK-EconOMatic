@@ -1,11 +1,10 @@
 package com.thoroldvix.economatic.shared.dto;
 
 import jakarta.validation.constraints.Min;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 
-@Validated
+
 public record TimeRange(
         LocalDateTime start,
         LocalDateTime end

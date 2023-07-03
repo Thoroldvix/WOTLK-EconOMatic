@@ -3,15 +3,13 @@ package com.thoroldvix.economatic.shared.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.Arrays;
 
 @Builder
-@Validated
 @Schema(description = "Request body for filtering")
 public record SearchRequest(
-        @Schema(description = "Search criteria")
+        @Schema(description = "Search criteria list for searching")
         @NotEmpty(message = "Search criteria cannot be null or empty")
         SearchCriteria[] searchCriteria,
 
@@ -36,9 +34,9 @@ public record SearchRequest(
     @Override
     public String toString() {
         return "SearchRequest{" +
-                "searchCriteria=" + Arrays.toString(searchCriteria) +
-                ", globalOperator=" + globalOperator +
-                '}';
+               "searchCriteria=" + Arrays.toString(searchCriteria) +
+               ", globalOperator=" + globalOperator +
+               '}';
     }
 
     public enum GlobalOperator {
