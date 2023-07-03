@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.item.service;
 
+import com.thoroldvix.economatic.error.InvalidSearchCriteriaException;
 import com.thoroldvix.economatic.item.dto.ItemPageResponse;
 import com.thoroldvix.economatic.item.dto.ItemRequest;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
@@ -15,8 +16,6 @@ import com.thoroldvix.economatic.item.repository.ItemSummaryProjection;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.service.SearchSpecification;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,47 +24,56 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
 
-import static com.thoroldvix.economatic.shared.error.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.shared.util.Utils.notEmpty;
+import static com.thoroldvix.economatic.error.ErrorMessages.*;
+import static com.thoroldvix.economatic.item.error.ItemErrorMessages.ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.notEmpty;
+import static java.util.Objects.requireNonNull;
 
 @Service
-@Validated
+@Cacheable("item-cache")
 @Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
     public static final String ITEMS_NOT_FOUND = "Items not found";
+
     private final ItemMapper itemMapper;
     private final ItemSummaryMapper itemSummaryMapper;
     private final SearchSpecification<Item> searchSpecification;
     private final ItemRepository itemRepository;
 
-
     @Override
-    public ItemPageResponse search(@NotNull(message = "Search request cannot be null") SearchRequest searchRequest,
-                                   @NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable) {
+    public ItemPageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
+        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        notEmpty(searchRequest.searchCriteria(),
+                () -> new InvalidSearchCriteriaException(SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY));
+
         Page<Item> items = findAllForSearch(searchRequest, pageable);
         notEmpty(items.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
+
         return itemMapper.toPageResponse(items);
     }
 
     @Override
-    @Cacheable("item-cache")
-    public ItemPageResponse getAll(@NotNull(message = PAGEABLE_CANNOT_BE_NULL) Pageable pageable) {
+    public ItemPageResponse getAll(Pageable pageable) {
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+
         Page<Item> page = itemRepository.findAll(pageable);
         notEmpty(page.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
+
         return itemMapper.toPageResponse(page);
     }
 
 
     @Override
-    @Cacheable("item-cache")
-    public ItemResponse getItem(@NotEmpty(message = "Item identifier cannot be null or empty") String itemIdentifier) {
+    public ItemResponse getItem(String itemIdentifier) {
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+
         Optional<Item> item = findItem(itemIdentifier);
         return item.map(itemMapper::toResponse)
                 .orElseThrow(() -> new ItemNotFoundException("No item found for identifier " + itemIdentifier));
@@ -77,22 +85,30 @@ public class ItemServiceImpl implements ItemService {
         return itemSummaryMapper.toSummaryResponse(summaryProjection);
     }
 
+
+
     @Override
     @Transactional
-    public ItemResponse addItem(@Valid @NotNull(message = "Item request cannot be null") ItemRequest itemRequest) {
+    public ItemResponse addItem(@Valid ItemRequest itemRequest) {
+        requireNonNull(itemRequest, "Item request cannot be null");
+
         Item item = itemMapper.fromRequest(itemRequest);
         itemRepository.findById(item.getId()).ifPresent(i -> {
             throw new ItemAlreadyExistsException("Item with id " + item.getId() + " already exists");
         });
+
         return itemMapper.toResponse(itemRepository.save(item));
     }
 
     @Override
     @Transactional
-    public ItemResponse deleteItem(@NotEmpty(message = "Item identifier cannot be null or empty") String itemIdentifier) {
+    public ItemResponse deleteItem(String itemIdentifier) {
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+
         Item item = findItem(itemIdentifier)
                 .orElseThrow(() -> new ItemDoesNotExistException("No item exists with identifier " + itemIdentifier));
         itemRepository.delete(item);
+
         return itemMapper.toResponse(item);
     }
 

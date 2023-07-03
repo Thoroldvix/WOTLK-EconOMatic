@@ -21,6 +21,10 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ItemMapper {
 
+    private static <T extends Enum<T>> T getEnumValue(String enumString, Class<T> enumType) {
+        return enumString != null ? StringEnumConverter.fromString(enumString, enumType) : null;
+    }
+
     @Mapping(target = "id", source = "id")
     ItemResponse toResponse(Item item);
 
@@ -38,17 +42,17 @@ public interface ItemMapper {
 
     @Named("getType")
     default ItemType getType(String type) {
-        return type != null ? StringEnumConverter.fromString(type, ItemType.class) : null;
+        return getEnumValue(type, ItemType.class);
     }
 
     @Named("getQuality")
     default ItemQuality getQuality(String quality) {
-        return quality != null ? StringEnumConverter.fromString(quality, ItemQuality.class) : null;
+        return getEnumValue(quality, ItemQuality.class);
     }
 
     @Named("getSlot")
     default ItemSlot getSlot(String slot) {
-        return slot != null ? StringEnumConverter.fromString(slot, ItemSlot.class) : null;
+        return getEnumValue(slot, ItemSlot.class);
     }
 }
 

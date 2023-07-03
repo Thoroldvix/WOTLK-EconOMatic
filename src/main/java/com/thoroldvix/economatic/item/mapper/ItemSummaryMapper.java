@@ -1,37 +1,21 @@
 package com.thoroldvix.economatic.item.mapper;
 
-import com.thoroldvix.economatic.item.repository.ItemSummaryProjection;
 import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
-import jakarta.validation.constraints.NotNull;
+import com.thoroldvix.economatic.item.repository.ItemSummaryProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.springframework.validation.annotation.Validated;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-@Validated
 public interface ItemSummaryMapper {
 
-    default ItemSummaryResponse toSummaryResponse(
-            @NotNull(message = "Item summary projection cannot be null")
-            ItemSummaryProjection summaryProjection) {
+    default ItemSummaryResponse toSummaryResponse(ItemSummaryProjection summaryProjection) {
+
         ItemSummaryResponse.Type type = getSummaryType(summaryProjection);
         ItemSummaryResponse.Quality quality = getSummaryQuality(summaryProjection);
         ItemSummaryResponse.Slot slot = getSummarySlot(summaryProjection);
-        ItemSummaryResponse.Summary summary = getSummary(type, quality, slot, summaryProjection.getTotal());
+        ItemSummaryResponse.Summary summary = new ItemSummaryResponse.Summary(quality, slot, type, summaryProjection.getTotal());
 
         return new ItemSummaryResponse(summary);
-    }
-
-    private ItemSummaryResponse.Summary getSummary(ItemSummaryResponse.Type type,
-                                                   ItemSummaryResponse.Quality quality,
-                                                   ItemSummaryResponse.Slot slot,
-                                                   int total) {
-        return ItemSummaryResponse.Summary.builder()
-                .type(type)
-                .quality(quality)
-                .slot(slot)
-                .total(total)
-                .build();
     }
 
     private ItemSummaryResponse.Slot getSummarySlot(ItemSummaryProjection summaryProjection) {

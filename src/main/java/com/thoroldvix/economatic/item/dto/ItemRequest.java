@@ -1,29 +1,22 @@
 package com.thoroldvix.economatic.item.dto;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
-import org.springframework.validation.annotation.Validated;
 
 @Builder
-@Validated
 public record ItemRequest(
-        @Min(1)
+        @Min(value = 1, message = "Id cannot be less than 1")
         int id,
-        @NotBlank(message = "Item itemName cannot be blank")
-        @NotNull(message = "Item itemName cannot be null")
+        @NotEmpty(message = "Item name cannot be null or empty")
         String name,
-        @Min(0)
+        @Min(value = 0, message = "Vendor price cannot be less than 0")
         long vendorPrice,
-        @NotBlank(message = "Item type cannot be blank")
-        @NotNull(message = "Item type cannot be null")
+        @NotEmpty(message = "Item type cannot be null or empty")
         String type,
-        @NotBlank(message = "Item slot cannot be blank")
-        @NotNull(message = "Item slot cannot be null")
+        @NotEmpty(message = "Item slot cannot be null or empty")
         String slot,
-        @NotBlank(message = "Item quality cannot be blank")
-        @NotNull(message = "Item quality cannot be null")
+        @NotEmpty(message = "Item quality cannot be null or empty")
         String quality
 ) {
 

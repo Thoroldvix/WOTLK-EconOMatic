@@ -86,7 +86,7 @@ public class ItemsController {
     public ResponseEntity<ItemPageResponse> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering items",
                     required = true)
-            @RequestBody SearchRequest searchRequest,
+            @RequestBody @Valid SearchRequest searchRequest,
             @ParameterObject @PageableDefault(size = 100, sort = "name",
                     direction = Sort.Direction.ASC) Pageable pageable) {
         var searchResult = itemService.search(searchRequest, pageable);
@@ -110,9 +110,9 @@ public class ItemsController {
 
     @Operation(summary = "Adds a new item",
             description = "Adds a new item to the database. Returns the item that was added." +
-                    " Make sure to add only items that are tradeable," +
-                    " because non-tradeable items aren't used in any other functionality like retrieving item prices or deal," +
-                    " which makes them effectively useless", tags = {"Items"})
+                          " Make sure to add only items that are tradeable," +
+                          " because non-tradeable items aren't used in any other functionality like retrieving item prices or deal," +
+                          " which makes them effectively useless", tags = {"Items"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Item added successfully",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
