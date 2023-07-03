@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.thoroldvix.economatic.population.model.Population;
 import com.thoroldvix.economatic.population.dto.TotalPopResponse;
 import com.thoroldvix.economatic.population.error.PopulationParsingException;
+import com.thoroldvix.economatic.population.model.Population;
 import com.thoroldvix.economatic.population.rest.WarcraftTavernClient;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.model.Faction;
@@ -28,7 +28,7 @@ import static com.thoroldvix.economatic.shared.util.Utils.elapsedTimeInMillis;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public  class PopulationUpdateService {
+public class PopulationUpdateService {
 
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.population.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.population.update-rate}";
@@ -41,12 +41,14 @@ public  class PopulationUpdateService {
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.DAYS)
     @Retryable(maxAttempts = 5)
-    protected  void update() {
+    protected void update() {
         log.info("Updating population");
         Instant start = Instant.now();
+
         String populationJson = warcraftTavernClient.getAll();
         List<Population> populations = retrievePopulations(populationJson);
         populationService.saveAll(populations);
+
         log.info("Finished updating population in {} ms", elapsedTimeInMillis(start));
     }
 
@@ -88,7 +90,7 @@ public  class PopulationUpdateService {
     private List<TotalPopResponse> extractFromJson(String populationJson) {
         ObjectMapper mapper = new ObjectMapper();
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, TotalPopResponse.class);
-         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             return mapper.readValue(populationJson, collectionType);
         } catch (JsonProcessingException e) {

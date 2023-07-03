@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.population.mapper;
 
-import com.thoroldvix.economatic.population.dto.PopulationPageResponse;
 import com.thoroldvix.economatic.population.dto.PopulationListResponse;
+import com.thoroldvix.economatic.population.dto.PopulationPageResponse;
 import com.thoroldvix.economatic.population.dto.PopulationResponse;
 import com.thoroldvix.economatic.population.dto.TotalPopResponse;
 import com.thoroldvix.economatic.population.model.Population;
@@ -15,6 +15,8 @@ import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.checkNullAndGet;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PopulationMapper {
@@ -45,6 +47,6 @@ public interface PopulationMapper {
 
     @Named("serverName")
     default String serverName(Server server) {
-        return server != null ? server.getUniqueName() : null;
+        return checkNullAndGet(server::getUniqueName);
     }
 }

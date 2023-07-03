@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +23,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@Validated
 @Tag(name = "Populations API", description = "API for retrieving server population")
 @RequiredArgsConstructor
 @RequestMapping("/wow-classic/api/v1/servers/populations")
@@ -155,7 +158,7 @@ public class PopulationController {
     public ResponseEntity<PopulationPageResponse> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering populations",
             required = true)
-            @RequestBody SearchRequest searchRequest,
+            @RequestBody @Valid SearchRequest searchRequest,
             @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
             @ParameterObject Pageable pageable) {
         var responseForSearch = populationService.search(searchRequest, pageable);
