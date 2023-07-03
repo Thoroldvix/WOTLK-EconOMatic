@@ -1,9 +1,9 @@
 package com.thoroldvix.economatic.goldprice.rest;
 
+import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
+import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceRequest;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
 import com.thoroldvix.economatic.goldprice.service.GoldPriceService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +23,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Validated
 @Tag(name = "Prices API", description = "API for retrieving server gold prices")
 @RequestMapping("/wow-classic/api/v1/servers/prices")
 @RequiredArgsConstructor
@@ -82,7 +85,7 @@ public class GoldPriceController {
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @PostMapping(value = "/recent", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GoldPriceListResponse> getRecentForServers(@RequestBody GoldPriceRequest request) {
+    public ResponseEntity<GoldPriceListResponse> getRecentForServers(@RequestBody @Valid GoldPriceRequest request) {
         var prices = goldPriceService.getRecentForServerList(request);
         return ResponseEntity.ok(prices);
     }
@@ -152,7 +155,7 @@ public class GoldPriceController {
     public ResponseEntity<GoldPricePageResponse> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering prices",
                     required = true)
-            @RequestBody SearchRequest searchRequest,
+            @Valid @RequestBody SearchRequest searchRequest,
             @ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
         var responseDto = goldPriceService.search(searchRequest, pageable);
         return ResponseEntity.ok(responseDto);

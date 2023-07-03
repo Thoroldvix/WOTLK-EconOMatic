@@ -3,6 +3,7 @@ package com.thoroldvix.economatic.goldprice.repository;
 import com.thoroldvix.economatic.goldprice.model.GoldPrice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -28,7 +29,7 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             """, nativeQuery = true)
     List<GoldPrice> findAllRecent();
 
-//    @EntityGraph(attributePaths = {"server"})
+    @EntityGraph(attributePaths = {"server"})
     @Query("""
             select gp
             from GoldPrice gp
@@ -36,7 +37,7 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             """)
     Page<GoldPrice> findAllForServerAndTimeRange(int serverId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-//    @EntityGraph(attributePaths = {"server"})
+    @EntityGraph(attributePaths = {"server"})
     @Query("""
             select gp
             from GoldPrice gp
@@ -62,7 +63,7 @@ public interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, Jpa
             """, nativeQuery = true)
     List<GoldPrice> findRecentForFaction(int ordinal);
 
-//    @EntityGraph(attributePaths = {"server"})
+    @EntityGraph(attributePaths = {"server"})
     @Query(value = """
             select gp
             from GoldPrice gp

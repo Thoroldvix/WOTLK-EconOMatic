@@ -6,7 +6,6 @@ import java.util.List;
 
 @Builder
 public record GoldPriceListResponse(
-
         List<GoldPriceResponse> prices
 ) {
 }

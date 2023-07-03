@@ -1,8 +1,8 @@
 package com.thoroldvix.economatic.goldprice.mapper;
 
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
+import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.model.GoldPrice;
 import com.thoroldvix.economatic.server.model.Server;
 import com.thoroldvix.economatic.shared.dto.PaginationInfo;
@@ -13,6 +13,8 @@ import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.checkNullAndGet;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface GoldPriceMapper {
@@ -35,6 +37,6 @@ public interface GoldPriceMapper {
 
     @Named("serverName")
     default String serverName(Server server) {
-        return server != null ? server.getUniqueName() : null;
+        return checkNullAndGet(server::getUniqueName);
     }
 }
