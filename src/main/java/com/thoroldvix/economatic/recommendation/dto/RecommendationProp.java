@@ -12,14 +12,25 @@ public record RecommendationProp(
         BigDecimal goldPriceDefaultWeight,
         int minAllowedPopulation
 ) {
-    public RecommendationProp  {
+    public RecommendationProp {
+        validate(itemPriceDefaultWeight, populationDefaultWeight, goldPriceDefaultWeight, minAllowedPopulation);
+    }
+
+    private static void validate(BigDecimal itemPriceDefaultWeight,
+                                 BigDecimal populationDefaultWeight,
+                                 BigDecimal goldPriceDefaultWeight,
+                                 int minAllowedPopulation) {
+
         if (itemPriceDefaultWeight.compareTo(BigDecimal.ZERO) < 0) {
             throw new InvalidRecommendationPropertyException("Item price weight cannot be negative");
-        } else if(populationDefaultWeight.compareTo(BigDecimal.ZERO) < 0) {
+        }
+        if (populationDefaultWeight.compareTo(BigDecimal.ZERO) < 0) {
             throw new InvalidRecommendationPropertyException("Population weight cannot be negative");
-        } else if (goldPriceDefaultWeight.compareTo(BigDecimal.ZERO) < 0) {
-             throw new InvalidRecommendationPropertyException("Gold price weight cannot be negative");
-        } else if (minAllowedPopulation < 0) {
+        }
+        if (goldPriceDefaultWeight.compareTo(BigDecimal.ZERO) < 0) {
+            throw new InvalidRecommendationPropertyException("Gold price weight cannot be negative");
+        }
+        if (minAllowedPopulation < 0) {
             throw new InvalidRecommendationPropertyException("Min population cannot be negative");
         }
     }

@@ -5,7 +5,6 @@ import lombok.Builder;
 import java.math.BigDecimal;
 @Builder
 public record RecommendationResponse(
-
             String serverName,
             BigDecimal totalScore,
             BigDecimal itemPriceScore,

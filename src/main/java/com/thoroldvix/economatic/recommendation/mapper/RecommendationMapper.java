@@ -17,6 +17,7 @@ import java.util.Optional;
 public interface RecommendationMapper {
 
     BigDecimal DEFAULT_SCORE = BigDecimal.ZERO;
+    int SCALE = 6;
 
 
     default RecommendationListResponse toRecommendationResponse(
@@ -51,7 +52,7 @@ public interface RecommendationMapper {
     }
 
     private BigDecimal getOrDefault(Map<String, BigDecimal> scores, String key) {
-        return Optional.ofNullable(scores.get(key)).orElse(DEFAULT_SCORE).setScale(6, RoundingMode.HALF_UP);
+        return Optional.ofNullable(scores.get(key)).orElse(DEFAULT_SCORE).setScale(SCALE, RoundingMode.HALF_UP);
     }
 
     private RecommendationResponse createRecommendation(String serverName,
@@ -60,12 +61,6 @@ public interface RecommendationMapper {
                                                         BigDecimal goldPriceScore) {
 
         BigDecimal totalScore = itemPriceScore.add(populationScore).add(goldPriceScore);
-        return RecommendationResponse.builder()
-                .totalScore(totalScore)
-                .serverName(serverName)
-                .itemPriceScore(itemPriceScore)
-                .goldPriceScore(goldPriceScore)
-                .populationScore(populationScore)
-                .build();
+        return new RecommendationResponse(serverName, itemPriceScore, populationScore, goldPriceScore, totalScore);
     }
 }
