@@ -1,14 +1,14 @@
 package com.thoroldvix.economatic.itemprice.service;
 
 import com.google.common.util.concurrent.RateLimiter;
-import com.thoroldvix.economatic.item.model.Item;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
+import com.thoroldvix.economatic.item.model.Item;
 import com.thoroldvix.economatic.item.service.ItemService;
-import com.thoroldvix.economatic.itemprice.model.ItemPrice;
 import com.thoroldvix.economatic.itemprice.dto.NexusHubResponse;
+import com.thoroldvix.economatic.itemprice.model.ItemPrice;
 import com.thoroldvix.economatic.itemprice.rest.NexusHubClient;
-import com.thoroldvix.economatic.server.model.Server;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
+import com.thoroldvix.economatic.server.model.Server;
 import com.thoroldvix.economatic.server.service.ServerService;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -72,11 +72,13 @@ public class ItemPriceUpdateService {
     protected void update() {
         log.info("Updating item prices");
         Instant start = Instant.now();
+
         serverIdentifiers.keySet().parallelStream()
                 .forEach(serverName -> {
                     List<ItemPrice> itemPrices = retrieveItemPrices(serverName);
                     itemPriceService.saveAll(itemPrices);
                 });
+
         log.info("Finished updating item prices in {} ms", elapsedTimeInMillis(start));
     }
 
@@ -86,12 +88,14 @@ public class ItemPriceUpdateService {
         NexusHubResponse nexusHubResponse = nexusHubClient.fetchAllItemPricesForServer(serverName);
         Server server = getServer(nexusHubResponse.slug());
         List<NexusHubResponse.NexusHubPrice> filteredPrices = filterPrices(nexusHubResponse.data());
+
         return getItemPrices(server, filteredPrices);
     }
 
 
     private Server getServer(String uniqueServerName) {
         int serverId = serverIdentifiers.get(uniqueServerName);
+
         return entityManager.getReference(Server.class, serverId);
     }
 

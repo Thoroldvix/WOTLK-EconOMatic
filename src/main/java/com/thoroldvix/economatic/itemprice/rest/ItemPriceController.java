@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +21,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/wow-classic/api/v1/items/prices")
 @RestController
+@Validated
 @Tag(name = "Item Prices API", description = "API for retrieving item prices")
 @RequiredArgsConstructor
 public class ItemPriceController {
@@ -122,11 +125,12 @@ public class ItemPriceController {
     })
     @PostMapping("/search")
     public ResponseEntity<ItemPricePageResponse> search(@RequestBody
-                                                         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering prices")
-                                                         SearchRequest searchRequest,
+                                                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering prices")
+                                                        @Valid
+                                                        SearchRequest searchRequest,
                                                         @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
-                                                         @ParameterObject
-                                                         Pageable pageable) {
+                                                        @ParameterObject
+                                                        Pageable pageable) {
         var itemPrices = itemPriceService.search(searchRequest, pageable);
         return ResponseEntity.ok(itemPrices);
     }
@@ -146,9 +150,9 @@ public class ItemPriceController {
             @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
     })
     @PostMapping("/recent")
-    public ResponseEntity<ItemPricePageResponse> getRecentForItemList(@RequestBody ItemPriceRequest itemList,
+    public ResponseEntity<ItemPricePageResponse> getRecentForItemList(@RequestBody @Valid ItemPriceRequest itemList,
                                                                       @PageableDefault(sort = "updated_at", direction = Sort.Direction.DESC, size = 100)
-                                                                       @ParameterObject Pageable pageable) {
+                                                                      @ParameterObject Pageable pageable) {
         var itemPrices = itemPriceService.getRecentForItemListAndServers(itemList, pageable);
         return ResponseEntity.ok(itemPrices);
     }

@@ -2,8 +2,8 @@ package com.thoroldvix.economatic.itemprice.mapper;
 
 import com.thoroldvix.economatic.item.model.Item;
 import com.thoroldvix.economatic.itemprice.dto.ItemPriceListResponse;
-import com.thoroldvix.economatic.itemprice.dto.ItemPriceResponse;
 import com.thoroldvix.economatic.itemprice.dto.ItemPricePageResponse;
+import com.thoroldvix.economatic.itemprice.dto.ItemPriceResponse;
 import com.thoroldvix.economatic.itemprice.model.ItemPrice;
 import com.thoroldvix.economatic.server.model.Server;
 import com.thoroldvix.economatic.shared.dto.PaginationInfo;
@@ -14,6 +14,8 @@ import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.checkNullAndGet;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -39,16 +41,16 @@ public interface ItemPriceMapper {
 
     @Named("serverName")
     default String serverName(Server server) {
-        return server != null ? server.getUniqueName() : null;
+        return checkNullAndGet(server::getUniqueName);
     }
 
     @Named("itemName")
     default String itemName(Item item) {
-        return item != null ? item.getName() : null;
+        return checkNullAndGet(item::getName);
     }
 
     @Named("id")
     default Integer itemId(Item item) {
-        return item != null ? item.getId() : null;
+        return checkNullAndGet(item::getId);
     }
 }

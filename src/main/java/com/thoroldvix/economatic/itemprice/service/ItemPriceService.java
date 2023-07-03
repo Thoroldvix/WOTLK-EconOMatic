@@ -12,12 +12,10 @@ import com.thoroldvix.economatic.server.model.Faction;
 import com.thoroldvix.economatic.server.model.Region;
 import com.thoroldvix.economatic.server.service.ServerService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
+import com.thoroldvix.economatic.shared.dto.TimeRange;
 import com.thoroldvix.economatic.shared.service.SearchSpecification;
 import com.thoroldvix.economatic.shared.util.StringEnumConverter;
-import com.thoroldvix.economatic.shared.dto.TimeRange;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,19 +31,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.thoroldvix.economatic.error.ErrorMessages.*;
+import static com.thoroldvix.economatic.item.error.ItemErrorMessages.ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
 import static com.thoroldvix.economatic.server.error.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.shared.error.ErrorMessages.*;
-import static com.thoroldvix.economatic.shared.util.Utils.notEmpty;
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.isCollectionEmpty;
+import static com.thoroldvix.economatic.shared.util.ValidationUtils.notEmpty;
+import static java.util.Objects.requireNonNull;
 
 
 @Service
+@Cacheable("item-price-cache")
 @Validated
 @Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemPriceService {
 
-    public static final String ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY = "Item identifier cannot be null or empty";
+
     private final ItemService itemService;
     private final ServerService serverService;
     private final ItemPriceRepository itemPriceRepository;
@@ -53,24 +55,23 @@ public class ItemPriceService {
     private final SearchSpecification<ItemPrice> searchSpecification;
     private final JdbcTemplate jdbcTemplate;
 
-    @Cacheable("item-price-cache")
-    public ItemPricePageResponse getRecentForServer(
-            @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String serverIdentifier,
-            @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
-            Pageable pageable) {
+
+    public ItemPricePageResponse getRecentForServer(String serverIdentifier, Pageable pageable) {
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+
         Page<ItemPrice> page = findRecentForServer(serverIdentifier, pageable);
         notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No recent item prices found for server identifier " + serverIdentifier));
+
         return itemPriceMapper.toPageResponse(page);
     }
 
 
-    public ItemPriceListResponse getRecentForRegion(
-            @NotEmpty(message = REGION_NAME_CANNOT_BE_NULL_OR_EMPTY)
-            String regionName,
-            @NotEmpty(message = ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String itemIdentifier) {
+    public ItemPriceListResponse getRecentForRegion(String regionName, String itemIdentifier) {
+        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+
         List<ItemPrice> itemPrices = findRecentForRegionAndItem(regionName, itemIdentifier);
         notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for region and item identifier " + regionName + " " + itemIdentifier));
@@ -79,11 +80,10 @@ public class ItemPriceService {
     }
 
 
-    public ItemPriceListResponse getRecentForFaction(
-            @NotEmpty(message = FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY)
-            String factionName,
-            @NotEmpty(message = ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String itemIdentifier) {
+    public ItemPriceListResponse getRecentForFaction(String factionName, String itemIdentifier) {
+        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+
         List<ItemPrice> itemPrices = findRecentForFactionAndItem(factionName, itemIdentifier);
         notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for faction and item identifier " + factionName + " " + itemIdentifier));
@@ -92,48 +92,49 @@ public class ItemPriceService {
     }
 
 
-    public ItemPriceListResponse getRecentForServer(
-            @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String serverIdentifier,
-            @NotEmpty(message = ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String itemIdentifier) {
+    public ItemPriceListResponse getRecentForServer(String serverIdentifier, String itemIdentifier) {
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+
         List<ItemPrice> itemPrices = findRecentForServerAndItem(serverIdentifier, itemIdentifier);
         notEmpty(itemPrices,
-                () -> new ItemPriceNotFoundException(String.format("No item prices found for server identifier %s and item identifier %s", serverIdentifier, itemIdentifier)));
+                () -> new ItemPriceNotFoundException("No item prices found for server identifier %s and item identifier %s"
+                        .formatted(serverIdentifier, itemIdentifier)));
+
         return itemPriceMapper.toItemPriceList(itemPrices);
     }
 
-    @Cacheable("item-price-cache")
-    public ItemPricePageResponse search(@Valid SearchRequest searchRequest,
-                                        @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
-                                         Pageable pageable) {
+
+    public ItemPricePageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
+
         Page<ItemPrice> page = findAllForSearch(searchRequest, pageable);
         notEmpty(page.getContent(), () -> new ItemPriceNotFoundException("No item prices found for search request"));
 
         return itemPriceMapper.toPageResponse(page);
     }
 
-    @Cacheable("item-price-cache")
-    public ItemPricePageResponse getForServer(
-            @NotEmpty(message = SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String serverIdentifier,
-            @NotEmpty(message = ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY)
-            String itemIdentifier,
-            @NotNull(message = TIME_RANGE_CANNOT_BE_NULL)
-            TimeRange timeRange,
-            @NotNull(message = PAGE_CANNOT_BE_NULL)
-            Pageable pageable) {
+
+    public ItemPricePageResponse getForServer(String serverIdentifier, String itemIdentifier, TimeRange timeRange, Pageable pageable) {
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+
         Page<ItemPrice> page = findForServerAndTimeRange(serverIdentifier, itemIdentifier, timeRange, pageable);
         notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No item prices found for time range %s for server identifier %s and item identifier %s"
                         .formatted(timeRange, serverIdentifier, itemIdentifier)));
+
         return itemPriceMapper.toPageResponse(page);
     }
-@Cacheable("item-price-cache")
-    public ItemPricePageResponse getRecentForItemListAndServers(
-            @Valid ItemPriceRequest request,
-            @NotNull(message = PAGEABLE_CANNOT_BE_NULL)
-            Pageable pageable) {
+
+
+    public ItemPricePageResponse getRecentForItemListAndServers(@Valid ItemPriceRequest request, Pageable pageable) {
+        requireNonNull(request, "Item price request cannot be null");
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+
         Page<ItemPrice> page = findRecentForRequest(request, pageable);
         notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No recent prices found for item list"));
@@ -142,9 +143,9 @@ public class ItemPriceService {
     }
 
     @Transactional
-    public void saveAll(
-            @NotNull(message = "Item prices cannot be null")
-            List<ItemPrice> itemPricesToSave) {
+    public void saveAll(List<ItemPrice> itemPricesToSave) {
+        requireNonNull(itemPricesToSave, "Item prices cannot be null");
+
         itemPriceRepository.saveAll(itemPricesToSave, jdbcTemplate);
     }
 
@@ -166,6 +167,7 @@ public class ItemPriceService {
                                                       Pageable pageable) {
         int itemId = itemService.getItem(itemIdentifier).id();
         int serverId = serverService.getServer(serverIdentifier).id();
+
         return itemPriceRepository.findForServerAndTimeRange(serverId, itemId, timeRange.start(), timeRange.end(), pageable);
     }
 
@@ -173,6 +175,7 @@ public class ItemPriceService {
     private List<ItemPrice> findRecentForServerAndItem(String serverIdentifier, String itemIdentifier) {
         int itemId = itemService.getItem(itemIdentifier).id();
         int serverId = serverService.getServer(serverIdentifier).id();
+
         return itemPriceRepository.findRecentForServerAndItem(serverId, itemId);
     }
 
@@ -180,6 +183,7 @@ public class ItemPriceService {
     private List<ItemPrice> findRecentForRegionAndItem(String regionName, String itemIdentifier) {
         Region region = StringEnumConverter.fromString(regionName, Region.class);
         int itemId = itemService.getItem(itemIdentifier).id();
+
         return itemPriceRepository.findRecentForRegionAndItem(region.ordinal(), itemId);
     }
 
@@ -187,18 +191,22 @@ public class ItemPriceService {
     private List<ItemPrice> findRecentForFactionAndItem(String factionName, String itemIdentifier) {
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
         int itemId = itemService.getItem(itemIdentifier).id();
+
         return itemPriceRepository.findRecentForFactionAndItem(faction.ordinal(), itemId);
     }
 
 
     private Page<ItemPrice> findRecentForRequest(ItemPriceRequest request, Pageable pageable) {
         Set<Integer> itemIds = getItemIds(request.itemList());
-        if (request.serverList() == null || request.serverList().isEmpty()) {
+        if (isCollectionEmpty(request.serverList())) {
             return itemPriceRepository.findRecentForItemList(itemIds, pageable);
         }
         Set<Integer> serverIds = getServerIds(request.serverList());
+
         return itemPriceRepository.findRecentForItemListAndServers(itemIds, serverIds, pageable);
     }
+
+
 
     private Set<Integer> getServerIds(Set<String> serverList) {
         return serverList.parallelStream()
