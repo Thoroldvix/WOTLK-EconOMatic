@@ -1,0 +1,14 @@
+ext {
+    versions = [
+            'testContainers'    : '1.17.6',
+            'mapStruct'         : "1.5.3.Final",
+            'springCloud': "2022.0.0",
+            'caffeineCache'     : "3.1.6",
+            'springRetry'       : "2.0.2",
+            'liquibase'         : "4.23.0",
+            'guava'             : "32.0.1-jre",
+            'springdoc'         : "2.0.4",
+            'lombok'            : "1.18.26",
+            'postgresql'        : "42.5.4"
+    ]
+}

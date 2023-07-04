@@ -9,6 +9,7 @@ group = 'com.thoroldvix'
 version = '0.5.1-SNAPSHOT'
 sourceCompatibility = '17'
 
+apply from: 'version.gradle'
 
 configurations {
     compileOnly {
@@ -24,20 +25,15 @@ jib {
         image = "registry.hub.docker.com/thorold/economatic"
     }
 }
-ext {
-    testContainers = '1.17.6'
-    mapStruct = "1.5.3.Final"
-    springCloudVersion = "2022.0.0"
-    caffeineCache = "3.1.6"
-}
+
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${versions.springCloud}"
     }
 }
 
 dependencies {
-    implementation 'com.google.guava:guava:32.0.1-jre'
+    implementation "com.google.guava:guava:${versions.guava}"
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -45,21 +41,21 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-devtools'
-    implementation 'org.liquibase:liquibase-core:4.23.0'
-    implementation "org.mapstruct:mapstruct:${mapStruct}"
-    implementation "com.github.ben-manes.caffeine:caffeine:${caffeineCache}"
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
-    implementation 'org.springframework.retry:spring-retry:2.0.2'
+    implementation "org.liquibase:liquibase-core:${versions.liquibase}"
+    implementation "org.mapstruct:mapstruct:${versions.mapStruct}"
+    implementation "com.github.ben-manes.caffeine:caffeine:${versions.caffeineCache}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${versions.springdoc}"
+    implementation "org.springframework.retry:spring-retry:${versions.springRetry}"
 
 
-    compileOnly 'org.projectlombok:lombok:1.18.26'
-    runtimeOnly 'org.postgresql:postgresql:42.5.4'
+    compileOnly "org.projectlombok:lombok:${versions.lombok}"
+    runtimeOnly "org.postgresql:postgresql:${versions.postgresql}"
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapStruct}"
-    testImplementation "org.testcontainers:postgresql:${testContainers}"
-    testImplementation "org.testcontainers:junit-jupiter:${testContainers}"
+    annotationProcessor "org.projectlombok:lombok:${versions.lombok}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${versions.mapStruct}"
+    testImplementation "org.testcontainers:postgresql:${versions.testContainers}"
+    testImplementation "org.testcontainers:junit-jupiter:${versions.testContainers}"
 }
 
 test {
