@@ -7,9 +7,8 @@ import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
-import org.springframework.validation.annotation.Validated;
 
-@Validated
+
 public interface ItemService {
 
 
@@ -22,7 +21,7 @@ public interface ItemService {
 
     ItemSummaryResponse getSummary();
 
-    ItemResponse addItem(ItemRequest itemRequest);
+    ItemResponse addItem(@Valid ItemRequest itemRequest);
 
     ItemResponse deleteItem(String itemIdentifier);
 }
