@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public interface GoldPriceStatRepository extends JpaRepository<GoldPrice, Long> {
     String STAT_SQL = """
             SELECT
-            (SELECT AVG(gp.value) FROM gold_prices gp) AS mean,
-            (SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY gp.value) FROM gold_prices gp) AS median,
+            (SELECT CAST(AVG(gp.value) AS DECIMAL(7, 6)) FROM gold_prices gp) AS mean,
+            CAST((SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY gp.value) FROM gold_prices gp)  AS DECIMAL(7, 6)) AS median,
             (SELECT gp.id FROM gold_prices gp WHERE gp.value = (SELECT MIN(gp1.value) FROM gold_prices gp1) ORDER BY gp.updated_at DESC LIMIT 1) AS minId,
             (SELECT gp.id FROM gold_prices gp WHERE gp.value = (SELECT MAX(gp1.value) FROM gold_prices gp1) ORDER BY gp.updated_at DESC LIMIT 1) AS maxId,
             (SELECT COUNT(gp.id) FROM gold_prices gp) AS count;
@@ -32,7 +32,7 @@ public interface GoldPriceStatRepository extends JpaRepository<GoldPrice, Long> 
             WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
             FROM gold_price gp
             JOIN server s ON s.id = gp.server_id
-            WHERE s.region = ?1 and gp.updated_at >= ?2 and gp.updated_at <= ?3
+            WHERE s.faction = ?1 and gp.updated_at >= ?2 and gp.updated_at <= ?3
     )
     """ + STAT_SQL, nativeQuery = true)
     StatsProjection findForFaction(int faction, LocalDateTime start, LocalDateTime end);
