@@ -41,7 +41,7 @@ public class Item {
     private String uniqueName;
 
     @Column(nullable = false)
-    private long sellPrice;
+    private long vendorPrice;
 
     @Override
     public boolean equals(Object o) {

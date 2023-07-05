@@ -13,7 +13,7 @@ public interface PopulationStatRepository extends JpaRepository<Population, Long
 
     String STAT_SQL = """
             SELECT
-            (SELECT AVG(rp.value) FROM filteredPopulations rp) AS mean,
+            (SELECT cast(AVG(gp.value) as decimal(7, 6)) FROM filteredPopulations rp) AS mean,
                                        (SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY rp.value) FROM filteredPopulations rp) AS median,
                                        (SELECT rp.id FROM filteredPopulations rp WHERE rp.value = (SELECT MIN(rp1.value) FROM filteredPopulations rp1) ORDER BY rp.updated_at DESC LIMIT 1) AS minId,
                                        (SELECT rp.id FROM filteredPopulations rp WHERE rp.value = (SELECT MAX(rp1.value) FROM filteredPopulations rp1) ORDER BY rp.updated_at DESC LIMIT 1) AS maxId,

@@ -15,8 +15,7 @@ import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-
-import static com.thoroldvix.economatic.shared.util.ValidationUtils.checkNullAndGet;
+import java.util.function.Supplier;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PopulationMapper {
@@ -47,6 +46,10 @@ public interface PopulationMapper {
 
     @Named("serverName")
     default String serverName(Server server) {
-        return checkNullAndGet(server::getUniqueName);
+        try {
+            return ((Supplier<String>) server::getUniqueName).get();
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 }

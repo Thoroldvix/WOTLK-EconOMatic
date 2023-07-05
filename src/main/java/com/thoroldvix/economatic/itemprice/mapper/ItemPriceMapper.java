@@ -41,16 +41,16 @@ public interface ItemPriceMapper {
 
     @Named("serverName")
     default String serverName(Server server) {
-        return checkNullAndGet(server::getUniqueName);
+       return checkNullAndGet(server::getUniqueName);
     }
 
     @Named("itemName")
     default String itemName(Item item) {
-        return checkNullAndGet(item::getName);
+        return checkNullAndGet(item::getUniqueName);
     }
 
     @Named("id")
     default Integer itemId(Item item) {
-        return checkNullAndGet(item::getId);
+       return checkNullAndGet(item::getId);
     }
 }
