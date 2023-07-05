@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GoldPriceRepositoryTest implements PostgresqlContainerInitializer {
 
     public static final int SERVER_ID = 41037;
-    private final LocalDateTime updateDate = LocalDateTime.parse("2023-07-04T16:07:53.195131");
+     private final LocalDateTime updateDate = LocalDateTime.parse("2023-07-04T16:07:53.195131");
     GoldPrice goldPrice1;
     GoldPrice goldPrice2;
     GoldPrice goldPrice3;

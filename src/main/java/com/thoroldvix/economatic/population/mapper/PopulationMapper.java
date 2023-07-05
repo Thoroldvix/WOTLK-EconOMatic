@@ -26,7 +26,7 @@ public interface PopulationMapper {
 
     List<PopulationResponse> toList(List<Population> populations);
 
-    default PopulationListResponse toPopulationList(List<Population> populations) {
+     default PopulationListResponse toPopulationList(List<Population> populations) {
         return new PopulationListResponse(toList(populations));
     }
 

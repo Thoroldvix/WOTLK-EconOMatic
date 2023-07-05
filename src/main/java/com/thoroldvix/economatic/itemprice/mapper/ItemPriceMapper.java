@@ -27,7 +27,7 @@ public interface ItemPriceMapper {
     ItemPriceResponse toResponse(ItemPrice itemPrice);
 
 
-    List<ItemPriceResponse> toList(List<ItemPrice> prices);
+     List<ItemPriceResponse> toList(List<ItemPrice> prices);
 
 
     default ItemPriceListResponse toItemPriceList(List<ItemPrice> prices) {

@@ -51,7 +51,7 @@ class GoldPriceControllerTest {
         goldPriceResponse1 = GoldPriceResponse.builder()
                 .price(BigDecimal.valueOf(0.000823))
                 .server("nethergarde-keep-horde")
-                .updatedAt(UPDATED_AT)
+                 .updatedAt(UPDATED_AT)
                 .build();
         goldPriceResponse2 = GoldPriceResponse.builder()
                 .price(BigDecimal.valueOf(0.000809))

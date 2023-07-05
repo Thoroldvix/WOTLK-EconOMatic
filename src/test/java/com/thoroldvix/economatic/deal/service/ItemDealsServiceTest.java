@@ -45,7 +45,7 @@ class ItemDealsServiceTest extends BaseItemDealTest {
 
     @BeforeEach
     void setup() {
-        itemDealsList = getItemDealsList();
+        itemDealsList =  getItemDealsList();
         server = getServer();
         dealProjectionList = List.of(getDealProjection());
     }

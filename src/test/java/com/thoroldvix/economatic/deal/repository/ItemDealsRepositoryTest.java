@@ -35,7 +35,7 @@ class ItemDealsRepositoryTest extends BaseItemDealTest implements PostgresqlCont
         assertThat(dealsForServer).isEmpty();
     }
 
-    @Test
+     @Test
     void findDealsForServer_returnsCorrectDealsSize_WhenFilteredByMinQuality() {
         List<ItemDealProjection> dealsForServer = itemDealsRepository.findDealsForServer(SERVER_ID, 1, 0, 4);
         assertThat(dealsForServer).hasSize(4);

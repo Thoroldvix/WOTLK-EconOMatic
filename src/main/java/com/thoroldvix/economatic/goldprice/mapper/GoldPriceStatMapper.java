@@ -20,7 +20,7 @@ public interface GoldPriceStatMapper {
     @Mapping(target = "mean", qualifiedByName = "mapMean")
     @Mapping(target = "count", qualifiedByName = "mapCount")
     @Mapping(target = "minimum", source = "min")
-    @Mapping(target = "maximum", source = "max")
+     @Mapping(target = "maximum", source = "max")
     GoldPriceStatResponse toResponse(StatsProjection statProj, GoldPriceResponse min, GoldPriceResponse max);
 
 

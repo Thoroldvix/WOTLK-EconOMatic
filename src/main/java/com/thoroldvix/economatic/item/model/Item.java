@@ -28,7 +28,7 @@ public class Item {
     @Enumerated(EnumType.ORDINAL)
     private ItemType type;
 
-    @Column(nullable = false)
+     @Column(nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private ItemQuality quality;
 

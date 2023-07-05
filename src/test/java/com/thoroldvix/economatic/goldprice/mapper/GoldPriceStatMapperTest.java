@@ -26,7 +26,7 @@ class GoldPriceStatMapperTest {
     @Test
     void toResponse_returnsValidGoldPriceStatResponse_whenValidStatProjectionProvided() {
         StatsProjection statsProjection = getStatProjection();
-        LocalDateTime now = LocalDateTime.now();
+         LocalDateTime now = LocalDateTime.now();
         GoldPriceResponse min = new GoldPriceResponse(MIN_PRICE, SERVER_NAME, now);
         GoldPriceResponse max = new GoldPriceResponse(MAX_PRICE, SERVER_NAME, now);
         GoldPriceStatResponse expected = getGoldPriceStatResponse(max, min);

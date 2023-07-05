@@ -14,7 +14,7 @@ public interface PostgresqlContainerInitializer {
         POSTGRES_CONTAINER.start();
         registry.add("spring.datasource.url", POSTGRES_CONTAINER::getJdbcUrl);
         registry.add("spring.datasource.driver-class-name", POSTGRES_CONTAINER::getDriverClassName);
-        registry.add("spring.datasource.username", POSTGRES_CONTAINER::getUsername);
+         registry.add("spring.datasource.username", POSTGRES_CONTAINER::getUsername);
         registry.add("spring.datasource.password", POSTGRES_CONTAINER::getPassword);
     }
 }

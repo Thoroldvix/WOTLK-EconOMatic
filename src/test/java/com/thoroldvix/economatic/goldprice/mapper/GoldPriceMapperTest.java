@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 class GoldPriceMapperTest {
-    public static final BigDecimal PRICE1_VALUE = new BigDecimal("0.2");
+     public static final BigDecimal PRICE1_VALUE = new BigDecimal("0.2");
     public static final BigDecimal PRICE2_VALUE = new BigDecimal("0.1");
     public static final String SERVER1_UNIQUE_NAME = "everlook-alliance";
     public static final String SERVER2_UNIQUE_NAME = "gehennas-horde";

@@ -35,7 +35,7 @@ CREATE TABLE item
     type        INT                                                   NOT NULL,
     name        VARCHAR(255)                                          NOT NULL,
     slot        INT                                                   NOT NULL,
-    vendor_price  INT,
+     vendor_price  INT,
     unique_name VARCHAR(64) GENERATED ALWAYS AS (REPLACE(REPLACE(REPLACE(LOWER(name), ' ', '-'), '''', ''), ':',
                                                           '')) STORED NOT NULL);
 

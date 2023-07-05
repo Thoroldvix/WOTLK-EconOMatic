@@ -20,7 +20,7 @@ import static com.thoroldvix.economatic.shared.util.ValidationUtils.checkNullAnd
 public interface GoldPriceMapper {
 
     default GoldPriceListResponse toGoldPriceList(List<GoldPrice> prices) {
-        return new GoldPriceListResponse(toList(prices));
+         return new GoldPriceListResponse(toList(prices));
     }
 
     default GoldPricePageResponse toPageResponse(Page<GoldPrice> page) {

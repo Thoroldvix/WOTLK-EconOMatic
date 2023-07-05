@@ -6,5 +6,5 @@ databaseChangeLog:
   - include:
       file: classpath:db/changelog/4-create-indexes.sql
   - include:
-      file: classpath:db/changelog/5-add-server-data.sql
+       file: classpath:db/changelog/5-add-server-data.sql
 

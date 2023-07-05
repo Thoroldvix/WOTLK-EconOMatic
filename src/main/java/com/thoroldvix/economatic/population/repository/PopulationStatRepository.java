@@ -20,7 +20,7 @@ public interface PopulationStatRepository extends JpaRepository<Population, Long
                                        (SELECT COUNT(rp.id) FROM filteredPopulations rp) AS count;
             """;
 
-    @Query(value = """
+     @Query(value = """
             WITH filteredPopulations AS (SELECT p.value, p.id, p.updated_at
             FROM population p
             JOIN server s ON s.id = p.server_id
