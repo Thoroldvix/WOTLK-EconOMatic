@@ -23,6 +23,7 @@ configurations {
 jib {
     to {
         image = "registry.hub.docker.com/thorold/economatic"
+        tags = ['latest']
     }
 }
 
