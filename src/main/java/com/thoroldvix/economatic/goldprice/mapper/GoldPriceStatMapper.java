@@ -13,7 +13,8 @@ import java.math.RoundingMode;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = GoldPriceMapper.class)
 public interface GoldPriceStatMapper {
-
+    int SCALE = 6;
+    RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
 
     @Mapping(target = "median", qualifiedByName = "mapMedian")
     @Mapping(target = "mean", qualifiedByName = "mapMean")
@@ -31,12 +32,12 @@ public interface GoldPriceStatMapper {
     @Named("mapMean")
     default BigDecimal mapMean(Number mean) {
         return BigDecimal.valueOf(mean.doubleValue())
-                .setScale(6, RoundingMode.HALF_UP);
+                .setScale(SCALE, ROUNDING_MODE);
     }
 
     @Named("mapMedian")
     default BigDecimal mapMedian(Number median) {
         return BigDecimal.valueOf(median.doubleValue())
-                .setScale(6, RoundingMode.HALF_UP);
+                .setScale(6, ROUNDING_MODE);
     }
 }

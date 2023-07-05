@@ -16,7 +16,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts = "/add-item-price-data.sql")
+@Sql(scripts = "/sql/deals/deals-repository-data.sql")
 class ItemDealsRepositoryTest extends BaseItemDealTest implements PostgresqlContainerInitializer {
 
     @Autowired
@@ -36,13 +36,13 @@ class ItemDealsRepositoryTest extends BaseItemDealTest implements PostgresqlCont
     }
 
     @Test
-   void findDealsForServer_returnsCorrectDealsSize_WhenFilteredByMinQuality() {
+    void findDealsForServer_returnsCorrectDealsSize_WhenFilteredByMinQuality() {
         List<ItemDealProjection> dealsForServer = itemDealsRepository.findDealsForServer(SERVER_ID, 1, 0, 4);
         assertThat(dealsForServer).hasSize(4);
     }
 
     @Test
-     void findDealsForServer_returnsCorrectDealsSize_whenFilteredByMinQuantity() {
+    void findDealsForServer_returnsCorrectDealsSize_whenFilteredByMinQuantity() {
         List<ItemDealProjection> dealsForServer = itemDealsRepository.findDealsForServer(SERVER_ID, 500, 0, 4);
         assertThat(dealsForServer).hasSize(2);
     }
@@ -62,8 +62,6 @@ class ItemDealsRepositoryTest extends BaseItemDealTest implements PostgresqlCont
             softly.assertAll();
         });
     }
-
-
 
 
 }

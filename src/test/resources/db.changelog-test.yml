@@ -4,6 +4,7 @@ databaseChangeLog:
   - include:
       file: classpath:db/changelog/2-create-functions.sql
   - include:
-      file: classpath:db/changelog/3-create-triggers.sql
-  - include:
       file: classpath:db/changelog/4-create-indexes.sql
+  - include:
+      file: classpath:db/changelog/5-add-server-data.sql
+

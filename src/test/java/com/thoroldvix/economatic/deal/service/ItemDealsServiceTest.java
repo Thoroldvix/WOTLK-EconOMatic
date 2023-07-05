@@ -73,8 +73,8 @@ class ItemDealsServiceTest extends BaseItemDealTest {
 
     @ParameterizedTest
     @ValueSource(ints = {-1, 6})
-    void getDealsForServer_throwsIllegalArgumentException_whenItemQualityInvalid(int quantity) {
-        assertThatThrownBy(() -> itemDealsService.getDealsForServer(SERVER_NAME, MINIMUM_ITEM_QUANTITY, quantity, ITEM_LIMIT))
+    void getDealsForServer_throwsIllegalArgumentException_whenItemQualityInvalid(int quality) {
+        assertThatThrownBy(() -> itemDealsService.getDealsForServer(SERVER_NAME, MINIMUM_ITEM_QUANTITY, quality, ITEM_LIMIT))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

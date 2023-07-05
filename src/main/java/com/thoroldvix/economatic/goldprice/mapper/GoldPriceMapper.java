@@ -29,14 +29,14 @@ public interface GoldPriceMapper {
     }
 
     @Mapping(target = "price", source = "value")
-    @Mapping(target = "server", source = "server", qualifiedByName = "serverName")
+    @Mapping(target = "server", source = "server", qualifiedByName = "mapServerName")
     GoldPriceResponse toResponse(GoldPrice goldPrice);
 
 
     List<GoldPriceResponse> toList(List<GoldPrice> prices);
 
-    @Named("serverName")
-    default String serverName(Server server) {
+    @Named("mapServerName")
+    default String mapServerName(Server server) {
         return checkNullAndGet(server::getUniqueName);
     }
 }

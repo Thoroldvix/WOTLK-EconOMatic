@@ -3,20 +3,18 @@ package com.thoroldvix.economatic;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 
-@Testcontainers
 public interface PostgresqlContainerInitializer {
-    @Container
-    PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres");
+
+    PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres");
 
     @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry dymDynamicPropertyRegistry) {
-        dymDynamicPropertyRegistry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        dymDynamicPropertyRegistry.add("spring.datasource.driver-class-name", postgreSQLContainer::getDriverClassName);
-        dymDynamicPropertyRegistry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        dymDynamicPropertyRegistry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+    static void setProperties(DynamicPropertyRegistry registry) {
+        POSTGRES_CONTAINER.start();
+        registry.add("spring.datasource.url", POSTGRES_CONTAINER::getJdbcUrl);
+        registry.add("spring.datasource.driver-class-name", POSTGRES_CONTAINER::getDriverClassName);
+        registry.add("spring.datasource.username", POSTGRES_CONTAINER::getUsername);
+        registry.add("spring.datasource.password", POSTGRES_CONTAINER::getPassword);
     }
 }
