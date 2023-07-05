@@ -1,5 +1,5 @@
 --items
-INSERT INTO public.item (id, quality, type, name, slot, sell_price)
+INSERT INTO public.item (id, quality, type, name, slot, vendor_price)
 VALUES (22449, 2, 7, 'Large Prismatic Shard', 0, 0),
        (22446, 1, 7, 'Greater Planar Essence', 0, 0),
        (22445, 0, 7, 'Arcane Dust', 0, 0),
