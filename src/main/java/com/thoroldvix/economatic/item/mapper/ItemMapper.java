@@ -31,6 +31,7 @@ public interface ItemMapper {
     @Mapping(target = "type", source = "type", qualifiedByName = "getType")
     @Mapping(target = "quality", source = "quality", qualifiedByName = "getQuality")
     @Mapping(target = "slot", source = "slot", qualifiedByName = "getSlot")
+    @Mapping(target = "uniqueName", source = "name")
     Item fromRequest(ItemRequest itemRequest);
 
     List<ItemResponse> toResponseList(List<Item> items);
