@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
+import com.thoroldvix.economatic.goldprice.error.GoldPriceParsingException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
@@ -36,6 +38,11 @@ public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceRespons
         super(vc);
     }
 
+    private static JsonNode getJsonNodeOrThrow(JsonNode rootNode, String nodeName) {
+        return Optional.ofNullable(rootNode.get(nodeName))
+                .orElseThrow(() -> new GoldPriceParsingException("Received JSON doesn't contain expected node: " + nodeName));
+    }
+
     @Override
     public List<GoldPriceResponse> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
@@ -47,7 +54,8 @@ public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceRespons
     }
 
     private List<GoldPriceResponse> processRootNode(JsonNode rootNode) {
-        JsonNode resultsNode = rootNode.get(ROOT_NODE_PAYLOAD).get(RESULTS_ARRAY);
+        JsonNode payload = getJsonNodeOrThrow(rootNode, ROOT_NODE_PAYLOAD);
+        JsonNode resultsNode = getJsonNodeOrThrow(payload, RESULTS_ARRAY);
 
         return resultsNode.isArray() ? StreamSupport.stream(resultsNode.spliterator(), false)
                 .map(this::buildServerPrice)
@@ -55,11 +63,12 @@ public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceRespons
     }
 
     private GoldPriceResponse buildServerPrice(JsonNode resultNode) {
-        String serverName = formatServerName(resultNode.get(NODE_TITLE).asText());
-        BigDecimal price = resultNode.get(NODE_PRICE).decimalValue();
+        String serverName = getJsonNodeOrThrow(resultNode, NODE_TITLE).asText();
+        BigDecimal price = getJsonNodeOrThrow(resultNode, NODE_PRICE).decimalValue();
 
+        String formattedServerName = formatServerName(serverName);
         return GoldPriceResponse.builder()
-                .server(serverName)
+                .server(formattedServerName)
                 .price(price)
                 .build();
     }
@@ -67,11 +76,10 @@ public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceRespons
     private String formatServerName(String serverName) {
         Matcher serverNameMatcher = SERVER_NAME_PATTERN.matcher(serverName.replace("'", ""));
 
-        if (serverNameMatcher.find()) {
-            return buildFormattedServerName(serverNameMatcher);
-        }
-
-        return serverName;
+        return Optional.of(serverNameMatcher)
+                .filter(Matcher::find)
+                .map(this::buildFormattedServerName)
+                .orElse(serverName);
     }
 
     private String buildFormattedServerName(Matcher serverNameMatcher) {

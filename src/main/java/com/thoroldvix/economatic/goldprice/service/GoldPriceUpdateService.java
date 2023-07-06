@@ -41,7 +41,7 @@ public class GoldPriceUpdateService {
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
             timeUnit = TimeUnit.MINUTES)
     @Retryable(maxAttempts = 5)
-    protected  void update() {
+    protected void update() {
         log.info("Updating gold prices");
         Instant start = Instant.now();
 

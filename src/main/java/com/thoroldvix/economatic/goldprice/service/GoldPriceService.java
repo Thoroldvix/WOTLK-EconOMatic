@@ -82,7 +82,7 @@ public class GoldPriceService {
         return goldPriceMapper.toPageResponse(prices);
     }
 
-    public GoldPricePageResponse getAllForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
+    public GoldPricePageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
         validateInputs(timeRange, pageable);
 

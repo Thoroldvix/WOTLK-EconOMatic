@@ -113,7 +113,7 @@ public class GoldPriceController {
             @RequestParam(defaultValue = "7") int timeRange,
             @ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
 
-        var priceResponse = goldPriceService.getAllForServer(serverIdentifier, new TimeRange(timeRange), pageable);
+        var priceResponse = goldPriceService.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(priceResponse);
     }
 
