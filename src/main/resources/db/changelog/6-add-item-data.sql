@@ -1,7 +1,7 @@
 --liquibase formatted sql
 
 --changeset thoroldvix:1
-INSERT INTO item (id, type, name, quality, sell_price, slot)
+INSERT INTO item (id, type, name, quality, vendor_price, slot)
 VALUES  (25, 2, 'Worn Shortsword', 0, 7, 21),
         (35, 2, 'Bent Staff', 0, 9, 17),
         (36, 2, 'Worn Mace', 0, 7, 21),
