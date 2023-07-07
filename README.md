@@ -78,6 +78,7 @@ trading decisions and farm gold more effectively.
 * ### Postgresql
 * ### Hibernate
 * ### Liquibase
+* ### Gradle
 
 ## Installation
 
