@@ -2,9 +2,5 @@ databaseChangeLog:
   - include:
       file: classpath:db/changelog/1-database-ddl.sql
   - include:
-      file: classpath:db/changelog/2-create-functions.sql
-  - include:
       file: classpath:db/changelog/4-create-indexes.sql
-  - include:
-       file: classpath:db/changelog/5-add-server-data.sql
 

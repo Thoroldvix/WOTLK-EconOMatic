@@ -1,8 +1,9 @@
-package com.thoroldvix.economatic.deal.mapper;
+package com.thoroldvix.economatic.deal.unit.mapper;
 
 import com.thoroldvix.economatic.deal.BaseItemDealTest;
 import com.thoroldvix.economatic.deal.dto.ItemDealResponse;
 import com.thoroldvix.economatic.deal.dto.ItemDealsList;
+import com.thoroldvix.economatic.deal.mapper.ItemDealsMapper;
 import com.thoroldvix.economatic.deal.repository.ItemDealProjection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

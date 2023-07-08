@@ -1,7 +1,8 @@
-package com.thoroldvix.economatic.deal.rest;
+package com.thoroldvix.economatic.deal.unit.rest;
 
 import com.thoroldvix.economatic.deal.BaseItemDealTest;
 import com.thoroldvix.economatic.deal.dto.ItemDealsList;
+import com.thoroldvix.economatic.deal.rest.ItemDealsController;
 import com.thoroldvix.economatic.deal.service.ItemDealsService;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,7 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ItemDealsController.class)
 class ItemDealsControllerTest extends BaseItemDealTest {
-
 
     public static final String ITEM_DEALS_API_ENDPOINT = "/wow-classic/api/v1/items/deals";
 
@@ -54,7 +54,6 @@ class ItemDealsControllerTest extends BaseItemDealTest {
         mockMvc.perform(get(ITEM_DEALS_API_ENDPOINT + "/" + SERVER_NAME))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJsonResponse));
-
     }
 
     @Test

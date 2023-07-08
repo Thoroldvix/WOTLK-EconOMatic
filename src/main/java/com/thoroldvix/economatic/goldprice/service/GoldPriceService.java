@@ -8,7 +8,6 @@ import com.thoroldvix.economatic.goldprice.error.GoldPriceNotFoundException;
 import com.thoroldvix.economatic.goldprice.mapper.GoldPriceMapper;
 import com.thoroldvix.economatic.goldprice.model.GoldPrice;
 import com.thoroldvix.economatic.goldprice.repository.GoldPriceRepository;
-import com.thoroldvix.economatic.population.error.PopulationNotFoundException;
 import com.thoroldvix.economatic.server.model.Faction;
 import com.thoroldvix.economatic.server.model.Region;
 import com.thoroldvix.economatic.server.service.ServerService;
@@ -88,10 +87,19 @@ public class GoldPriceService {
 
         Page<GoldPrice> prices = findAllForServer(serverIdentifier, timeRange, pageable);
         notEmpty(prices.getContent(),
-                () -> new PopulationNotFoundException(String.format("No prices found for server identifier %s and time range: %s-%s",
+                () -> new GoldPriceNotFoundException("No prices found for server identifier %s and time range: %s-%s".formatted(
                         serverIdentifier, timeRange.start(), timeRange.end())));
 
         return goldPriceMapper.toPageResponse(prices);
+    }
+
+    public GoldPriceResponse getRecentForServer(String serverIdentifier) {
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+
+        GoldPrice price = findRecentForServer(serverIdentifier)
+                .orElseThrow(() -> new GoldPriceNotFoundException("No prices found for server " + serverIdentifier));
+
+        return goldPriceMapper.toResponse(price);
     }
 
     public GoldPriceListResponse getRecentForRegion(String regionName) {
@@ -113,15 +121,6 @@ public class GoldPriceService {
         return goldPriceMapper.toGoldPriceList(prices);
     }
 
-
-    public GoldPriceResponse getRecentForServer(String serverIdentifier) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-
-        GoldPrice price = findRecentForServer(serverIdentifier)
-                .orElseThrow(() -> new GoldPriceNotFoundException("No prices found for server " + serverIdentifier));
-
-        return goldPriceMapper.toResponse(price);
-    }
 
     public GoldPriceListResponse getRecentForServerList(@Valid GoldPriceRequest request) {
         requireNonNull(request, "Gold price request cannot be null");

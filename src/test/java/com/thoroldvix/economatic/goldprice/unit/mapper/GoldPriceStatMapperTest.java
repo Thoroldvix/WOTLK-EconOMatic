@@ -1,7 +1,8 @@
-package com.thoroldvix.economatic.goldprice.mapper;
+package com.thoroldvix.economatic.goldprice.unit.mapper;
 
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceStatResponse;
+import com.thoroldvix.economatic.goldprice.mapper.GoldPriceStatMapper;
 import com.thoroldvix.economatic.shared.StatsProjection;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -26,7 +27,7 @@ class GoldPriceStatMapperTest {
     @Test
     void toResponse_returnsValidGoldPriceStatResponse_whenValidStatProjectionProvided() {
         StatsProjection statsProjection = getStatProjection();
-         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         GoldPriceResponse min = new GoldPriceResponse(MIN_PRICE, SERVER_NAME, now);
         GoldPriceResponse max = new GoldPriceResponse(MAX_PRICE, SERVER_NAME, now);
         GoldPriceStatResponse expected = getGoldPriceStatResponse(max, min);

@@ -19,12 +19,15 @@ public interface ItemDealsRepository extends JpaRepository<ItemPrice, Long> {
                         ip.market_value as marketValue,
                         ip.min_buyout as minBuyout,
                         (ip.market_value - ip.min_buyout) as dealDiff,
-                        (cast((ip.market_value - ip.min_buyout) as numeric) / ip.market_value) * 100 as discountPercentage
+                        cast((cast((ip.market_value - ip.min_buyout) as numeric) / ip.market_value) as decimal(5, 2)) * 100 as discountPercentage
                         from item_price ip
                         join item i on ip.item_id = i.id
                         join server s on s.id = ip.server_id
-                        where s.id = ?1 and ip.quantity >= ?2 and i.quality >= ?3 and ip.market_value > 0
-                        order by (discountPercentage) desc
+                        where s.id = ?1 and ip.quantity >= ?2
+                        and i.quality >= ?3
+                        and ip.market_value > 0
+                        and ip.min_buyout < ip.market_value
+                        order by discountPercentage desc
                         limit ?4
             """, nativeQuery = true)
     List<ItemDealProjection> findDealsForServer(int serverId, int minQuantity, int minQuality, int limit);

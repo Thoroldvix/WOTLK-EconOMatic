@@ -1,7 +1,8 @@
-package com.thoroldvix.economatic.goldprice.rest;
+package com.thoroldvix.economatic.goldprice.unit.rest;
 
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceStatResponse;
+import com.thoroldvix.economatic.goldprice.rest.GoldPriceStatController;
 import com.thoroldvix.economatic.goldprice.service.GoldPriceStatsService;
 import com.thoroldvix.economatic.server.model.Faction;
 import com.thoroldvix.economatic.server.model.Region;

@@ -1,10 +1,11 @@
-package com.thoroldvix.economatic.deal.service;
+package com.thoroldvix.economatic.deal.unit.service;
 
 import com.thoroldvix.economatic.deal.BaseItemDealTest;
 import com.thoroldvix.economatic.deal.dto.ItemDealsList;
 import com.thoroldvix.economatic.deal.mapper.ItemDealsMapper;
 import com.thoroldvix.economatic.deal.repository.ItemDealProjection;
 import com.thoroldvix.economatic.deal.repository.ItemDealsRepository;
+import com.thoroldvix.economatic.deal.service.ItemDealsService;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.service.ServerService;
 import org.junit.jupiter.api.BeforeEach;

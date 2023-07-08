@@ -1,8 +1,9 @@
-package com.thoroldvix.economatic.goldprice.mapper;
+package com.thoroldvix.economatic.goldprice.unit.mapper;
 
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
+import com.thoroldvix.economatic.goldprice.mapper.GoldPriceMapper;
 import com.thoroldvix.economatic.goldprice.model.GoldPrice;
 import com.thoroldvix.economatic.server.model.Faction;
 import com.thoroldvix.economatic.server.model.Region;
@@ -24,15 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 class GoldPriceMapperTest {
-     public static final BigDecimal PRICE1_VALUE = new BigDecimal("0.2");
-    public static final BigDecimal PRICE2_VALUE = new BigDecimal("0.1");
-    public static final String SERVER1_UNIQUE_NAME = "everlook-alliance";
-    public static final String SERVER2_UNIQUE_NAME = "gehennas-horde";
 
-    public static final String SERVER1_NAME = "Everlook";
-    public static final String SERVER2_NAME = "Gehennas";
-    public static final int SERVER1_ID = 41003;
-    public static final int SERVER2_ID = 41023;
     private final GoldPriceMapper goldPriceMapper = Mappers.getMapper(GoldPriceMapper.class);
     private final LocalDateTime now = LocalDateTime.now();
     private GoldPrice goldPrice1;
@@ -42,18 +35,23 @@ class GoldPriceMapperTest {
 
     @BeforeEach
     public void setUp() {
-        Server server1 = buildServer(Faction.ALLIANCE, SERVER1_ID,
-                ServerType.PVE, Locale.GERMAN, SERVER1_NAME, SERVER1_UNIQUE_NAME);
+        String server1UniqueName = "server1-alliance";
+        String server2UniqueName = "server2-horde";
+        BigDecimal price1 = new BigDecimal("0.2");
+        BigDecimal price2 = new BigDecimal("0.1");
 
-        Server server2 = buildServer(Faction.HORDE, SERVER2_ID, ServerType.PVP,
-                Locale.ENGLISH, SERVER2_NAME, SERVER2_UNIQUE_NAME);
+        Server server1 = buildServer(Faction.ALLIANCE, 1,
+                ServerType.PVE, Locale.GERMAN, "server1", server1UniqueName);
+
+        Server server2 = buildServer(Faction.HORDE, 2, ServerType.PVP,
+                Locale.ENGLISH, "server2", server2UniqueName);
 
 
-        goldPrice1 = new GoldPrice(1L, PRICE1_VALUE, now, server1);
-        goldPrice2 = new GoldPrice(2L, PRICE2_VALUE, now, server2);
+        goldPrice1 = new GoldPrice(1L, price1, now, server1);
+        goldPrice2 = new GoldPrice(2L, price2, now, server2);
 
-        goldPriceResponse1 = new GoldPriceResponse(PRICE1_VALUE, SERVER1_UNIQUE_NAME, now);
-        goldPriceResponse2 =  new GoldPriceResponse(PRICE2_VALUE, SERVER2_UNIQUE_NAME, now);
+        goldPriceResponse1 = new GoldPriceResponse(price1, server1UniqueName, now);
+        goldPriceResponse2 = new GoldPriceResponse(price2, server2UniqueName, now);
     }
 
     @Test

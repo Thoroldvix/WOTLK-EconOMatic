@@ -1,10 +1,11 @@
-package com.thoroldvix.economatic.goldprice.service;
+package com.thoroldvix.economatic.goldprice.unit.service;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.error.GoldPriceParsingException;
+import com.thoroldvix.economatic.goldprice.service.GoldPriceDeserializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

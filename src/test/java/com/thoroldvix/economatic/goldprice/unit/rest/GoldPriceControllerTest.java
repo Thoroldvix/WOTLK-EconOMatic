@@ -1,10 +1,11 @@
-package com.thoroldvix.economatic.goldprice.rest;
+package com.thoroldvix.economatic.goldprice.unit.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceRequest;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
+import com.thoroldvix.economatic.goldprice.rest.GoldPriceController;
 import com.thoroldvix.economatic.goldprice.service.GoldPriceService;
 import com.thoroldvix.economatic.server.model.Faction;
 import com.thoroldvix.economatic.server.model.Region;
