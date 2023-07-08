@@ -2,6 +2,7 @@ package com.thoroldvix.economatic.goldprice.unit.service;
 
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
+import com.thoroldvix.economatic.goldprice.dto.GoldPriceRequest;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.error.GoldPriceNotFoundException;
 import com.thoroldvix.economatic.goldprice.mapper.GoldPriceMapper;
@@ -19,7 +20,7 @@ import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
 import com.thoroldvix.economatic.shared.service.SearchSpecification;
 import jakarta.validation.constraints.NotNull;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,38 +41,36 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 class GoldPriceServiceTest {
     public static final String SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY = "Server identifier cannot be null or empty";
-    private final LocalDateTime UPDATE_DATE = LocalDateTime.now();
+    private static final LocalDateTime UPDATE_DATE = LocalDateTime.now();
+    private static List<GoldPriceResponse> priceResponses;
+    private static List<GoldPrice> prices;
+    private static PageImpl<GoldPrice> page;
+    private static PageRequest pageRequest;
+    private static TimeRange timeRange;
 
+    private static SearchRequest searchRequest;
     @Mock
     private ServerService serverService;
     @Mock
     private GoldPriceRepository goldPriceRepository;
-
     @Mock
     private GoldPriceMapper goldPriceMapper;
     @Mock
     private SearchSpecification<GoldPrice> searchSpecification;
-
     @InjectMocks
     private GoldPriceService goldPriceService;
-
-    private PageRequest pageRequest;
-    private GoldPriceResponse goldPriceResponse1;
-    private GoldPriceResponse goldPriceResponse2;
-    private GoldPrice goldPrice1;
-    private GoldPrice goldPrice2;
-
 
     private static GoldPriceListResponse buildGoldPriceListResponse(List<GoldPriceResponse> prices) {
         return GoldPriceListResponse.builder()
@@ -106,27 +105,44 @@ class GoldPriceServiceTest {
         return new PageImpl<>(Collections.emptyList());
     }
 
-    @BeforeEach
-    void setUp() {
+    private static ServerResponse getServerResponse() {
+        return ServerResponse.builder()
+                .id(1)
+                .build();
+    }
+
+    @BeforeAll
+    static void setUp() {
         Server server1 = createServer(1, Region.EU, Faction.ALLIANCE);
         Server server2 = createServer(2, Region.US, Faction.HORDE);
 
 
-        goldPrice1 = new GoldPrice(1L, BigDecimal.valueOf(0.1), UPDATE_DATE, server1);
-        goldPrice2 = new GoldPrice(2L, BigDecimal.valueOf(0.2), UPDATE_DATE, server2);
+        GoldPrice goldPrice1 = new GoldPrice(1L, BigDecimal.valueOf(0.1), UPDATE_DATE, server1);
+        GoldPrice goldPrice2 = new GoldPrice(2L, BigDecimal.valueOf(0.2), UPDATE_DATE, server2);
 
         pageRequest = PageRequest.of(0, 100);
 
-        goldPriceResponse1 = convertToResponse(goldPrice1);
-        goldPriceResponse2 = convertToResponse(goldPrice2);
+        GoldPriceResponse goldPriceResponse1 = convertToResponse(goldPrice1);
+        GoldPriceResponse goldPriceResponse2 = convertToResponse(goldPrice2);
+
+        timeRange = new TimeRange(7);
+        searchRequest = getSearchRequest();
+        priceResponses = List.of(goldPriceResponse1, goldPriceResponse2);
+        prices = List.of(goldPrice1, goldPrice2);
+        page = new PageImpl<>(List.of(goldPrice1, goldPrice2));
+    }
+
+    private static GoldPriceResponse convertToResponse(GoldPrice price) {
+        String server = price.getServer().getUniqueName();
+        LocalDateTime updatedAt = price.getUpdatedAt();
+        BigDecimal value = price.getValue();
+
+        return new GoldPriceResponse(value, server, updatedAt);
     }
 
     @Test
     void getAll_returnsCorrectGoldPricePageResponse() {
-        TimeRange timeRange = new TimeRange(7);
-        List<GoldPriceResponse> prices = List.of(goldPriceResponse1, goldPriceResponse2);
-        PageImpl<GoldPrice> page = new PageImpl<>(List.of(goldPrice1, goldPrice2));
-        GoldPricePageResponse expected = buildGoldPricePageResponse(prices, page);
+        GoldPricePageResponse expected = buildGoldPricePageResponse(priceResponses, page);
 
         when(goldPriceMapper.toPageResponse(any())).thenReturn(expected);
         when(goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageRequest)).thenReturn(page);
@@ -145,8 +161,6 @@ class GoldPriceServiceTest {
 
     @Test
     void getAll_throwsNullPointerException_whenPageableIsNull() {
-        TimeRange timeRange = new TimeRange(7);
-
         assertThatThrownBy(() -> goldPriceService.getAll(timeRange, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("Pageable cannot be null");
@@ -154,8 +168,6 @@ class GoldPriceServiceTest {
 
     @Test
     void getAll_throwsGoldPriceNotFoundException_whenRepositoryReturnsEmptyGoldPricePage() {
-        TimeRange timeRange = new TimeRange(7);
-
         when(goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageRequest))
                 .thenReturn(getEmptyPage());
 
@@ -166,8 +178,6 @@ class GoldPriceServiceTest {
 
     @Test
     void getAllRecent_returnsCorrectGoldPriceListResponse() {
-        List<GoldPriceResponse> priceResponses = List.of(goldPriceResponse1, goldPriceResponse2);
-        List<GoldPrice> prices = List.of(goldPrice1, goldPrice2);
         GoldPriceListResponse expected = buildGoldPriceListResponse(priceResponses);
 
         when(goldPriceMapper.toGoldPriceList(prices)).thenReturn(expected);
@@ -189,11 +199,8 @@ class GoldPriceServiceTest {
 
     @Test
     void search_returnsCorrectGoldPricePageResponse() {
-        SearchRequest searchRequest = getSearchRequest();
-        List<GoldPriceResponse> prices = List.of(goldPriceResponse1, goldPriceResponse2);
-        PageImpl<GoldPrice> page = new PageImpl<>(List.of(goldPrice1, goldPrice2));
         Specification<GoldPrice> specification = Specification.where(null);
-        GoldPricePageResponse expected = buildGoldPricePageResponse(prices, page);
+        GoldPricePageResponse expected = buildGoldPricePageResponse(priceResponses, page);
 
         when(goldPriceMapper.toPageResponse(page)).thenReturn(expected);
         when(searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria())).thenReturn(specification);
@@ -206,8 +213,6 @@ class GoldPriceServiceTest {
 
     @Test
     void search_throwsNullPointerException_whenPageableIsNull() {
-        SearchRequest searchRequest = getSearchRequest();
-
         assertThatThrownBy(() -> goldPriceService.search(searchRequest, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("Pageable cannot be null");
@@ -222,8 +227,6 @@ class GoldPriceServiceTest {
 
     @Test
     void search_throwsGoldPriceNotFoundException_whenRepositoryReturnsEmptyGoldPricePage() {
-        SearchRequest searchRequest = getSearchRequest();
-
         when(goldPriceRepository.findAll(ArgumentMatchers.<Specification<GoldPrice>>any(), any(Pageable.class)))
                 .thenReturn(getEmptyPage());
 
@@ -239,10 +242,7 @@ class GoldPriceServiceTest {
                 .id(123)
                 .build();
 
-        TimeRange timeRange = new TimeRange(7);
-        List<GoldPriceResponse> prices = List.of(goldPriceResponse1, goldPriceResponse2);
-        PageImpl<GoldPrice> page = new PageImpl<>(List.of(goldPrice1, goldPrice2));
-        GoldPricePageResponse expected = buildGoldPricePageResponse(prices, page);
+        GoldPricePageResponse expected = buildGoldPricePageResponse(priceResponses, page);
 
         when(goldPriceMapper.toPageResponse(page)).thenReturn(expected);
         when(serverService.getServer(serverIdentifier)).thenReturn(server);
@@ -256,8 +256,6 @@ class GoldPriceServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void getForServer_throwsIllegalArgumentException_whenServeIdentifierIsInvalid(String serverIdentifier) {
-        TimeRange timeRange = new TimeRange(7);
-
         assertThatThrownBy(() -> goldPriceService.getForServer(serverIdentifier, timeRange, pageRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
@@ -288,7 +286,6 @@ class GoldPriceServiceTest {
         ServerResponse server = ServerResponse.builder()
                 .id(123)
                 .build();
-        TimeRange timeRange = new TimeRange(7);
 
         when(serverService.getServer(serverIdentifier)).thenReturn(server);
         when(goldPriceRepository.findAllForServerAndTimeRange(server.id(), timeRange.start(), timeRange.end(), pageRequest))
@@ -304,6 +301,8 @@ class GoldPriceServiceTest {
     void getRecentForServer_returnsCorrectGoldPriceResponse() {
         String serverIdentifier = "1";
         ServerResponse server = getServerResponse();
+        GoldPrice goldPrice1 = prices.get(0);
+        GoldPriceResponse goldPriceResponse1 = priceResponses.get(0);
 
         when(goldPriceMapper.toResponse(goldPrice1)).thenReturn(goldPriceResponse1);
         when(serverService.getServer(serverIdentifier)).thenReturn(server);
@@ -335,25 +334,150 @@ class GoldPriceServiceTest {
                 .hasMessage("No prices found for server " + serverIdentifier);
     }
 
-    private static ServerResponse getServerResponse() {
-        return ServerResponse.builder()
-                .id(1)
+    @Test
+    void getRecentForRegion_returnsCorrectGoldPriceListResponse_whenEuRegion() {
+        checkGetRecentForRegion("eu", Region.EU);
+    }
+
+    @Test
+    void getRecentForRegion_returnsCorrectGoldPriceListResponse_whenUsRegion() {
+        checkGetRecentForRegion("us", Region.US);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void getRecentForRegion_throwsIllegalArgumentException_whenRegionNameIsInvalid(String regionName) {
+        assertThatThrownBy(() -> goldPriceService.getRecentForRegion(regionName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Region name cannot be null or empty");
+    }
+
+    @Test
+    void getRecentForRegion_throwsGoldPriceNotFoundException_whenRepositoryReturnsEmptyGoldPriceList() {
+        String regionName = "eu";
+        Region region = Region.EU;
+        when(goldPriceRepository.findRecentForRegion(region.ordinal())).thenReturn(Collections.emptyList());
+
+        assertThatThrownBy(() -> goldPriceService.getRecentForRegion(regionName))
+                .isInstanceOf(GoldPriceNotFoundException.class)
+                .hasMessage("No prices found for region " + regionName);
+    }
+
+    @Test
+    void getRecentForFaction_returnsCorrectGoldPriceListResponse_whenAllianceFaction() {
+        checkGetRecentForFaction("Alliance", Faction.ALLIANCE);
+    }
+
+    @Test
+    void getRecentForRegion_returnsCorrectGoldPriceListResponse_whenHordeFaction() {
+        checkGetRecentForFaction("Horde", Faction.HORDE);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void getRecentForFaction_throwsIllegalArgumentException_whenFactionNameIsInvalid(String factionName) {
+        assertThatThrownBy(() -> goldPriceService.getRecentForFaction(factionName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Faction name cannot be null or empty");
+    }
+
+    @Test
+    void getRecentForFaction_throwsGoldPriceNotFoundException_whenRepositoryReturnsEmptyGoldPriceList() {
+        String factionName = "Alliance";
+        Faction faction = Faction.ALLIANCE;
+        when(goldPriceRepository.findRecentForFaction(faction.ordinal())).thenReturn(Collections.emptyList());
+
+        assertThatThrownBy(() -> goldPriceService.getRecentForFaction(factionName))
+                .isInstanceOf(GoldPriceNotFoundException.class)
+                .hasMessage("No prices found for faction " + factionName);
+    }
+
+    @Test
+    void getRecentForServerList_returnsCorrectGoldPriceListResponse() {
+        Set<Integer> serverIds = Set.of(1, 2);
+        String server1Id = "1";
+        String server2Id = "2";
+        GoldPriceRequest request = GoldPriceRequest.builder()
+                .serverList(Set.of(server1Id, server2Id))
                 .build();
+        ServerResponse server1 = ServerResponse.builder().id(1).build();
+        ServerResponse server2 = ServerResponse.builder().id(2).build();
+        GoldPriceListResponse expected = buildGoldPriceListResponse(priceResponses);
+
+        when(goldPriceMapper.toGoldPriceList(prices)).thenReturn(expected);
+        when(serverService.getServer(server1Id)).thenReturn(server1);
+        when(serverService.getServer(server2Id)).thenReturn(server2);
+        when(goldPriceRepository.findRecentForServers(serverIds)).thenReturn(prices);
+
+        GoldPriceListResponse actual = goldPriceService.getRecentForServerList(request);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
-    GoldPriceResponse convertToResponse(GoldPrice price) {
-        String server = price.getServer().getUniqueName();
-        LocalDateTime updatedAt = price.getUpdatedAt();
-        BigDecimal value = price.getValue();
-
-        return new GoldPriceResponse(value, server, updatedAt);
+    @Test
+    void getRecentForServerList_throwsNullPointerException_whenGoldPriceRequestIsNull() {
+        assertThatThrownBy(() -> goldPriceService.getRecentForServerList(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Gold price request cannot be null");
     }
 
-    GoldPricePageResponse buildGoldPricePageResponse(List<GoldPriceResponse> prices, Page<GoldPrice> page) {
+    @Test
+    void getRecentForServerList_throwsGoldPriceNotFoundException_whenRepositoryReturnsEmptyGoldPriceList() {
+        ServerResponse server = ServerResponse.builder().id(1).build();
+        String server1Id = "1";
+        GoldPriceRequest request = GoldPriceRequest.builder()
+                .serverList(Set.of(server1Id))
+                .build();
+        when(serverService.getServer(server1Id)).thenReturn(server);
+        when(goldPriceRepository.findRecentForServers(Set.of(1))).thenReturn(Collections.emptyList());
+        assertThatThrownBy(() -> goldPriceService.getRecentForServerList(request))
+                .isInstanceOf(GoldPriceNotFoundException.class)
+                .hasMessage("No prices found for server list");
+    }
+
+    @Test
+    void saveAll_savesPricesToDB() {
+        goldPriceService.saveAll(prices);
+        verify(goldPriceRepository, times(1)).saveAll(prices);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void saveAll_throwsIllegalArgumentException_whenGoldPriceListIsInvalid(List<GoldPrice> prices) {
+        assertThatThrownBy(() -> goldPriceService.saveAll(prices))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Prices cannot be null or empty");
+
+    }
+
+    private GoldPricePageResponse buildGoldPricePageResponse(List<GoldPriceResponse> prices, Page<GoldPrice> page) {
         PaginationInfo paginationInfo = new PaginationInfo(page);
         return GoldPricePageResponse.builder()
                 .prices(prices)
                 .paginationInfo(paginationInfo)
                 .build();
     }
+
+    private void checkGetRecentForRegion(String regionName, Region region) {
+        GoldPriceListResponse expected = buildGoldPriceListResponse(priceResponses);
+
+        when(goldPriceMapper.toGoldPriceList(prices)).thenReturn(expected);
+        when(goldPriceRepository.findRecentForRegion(region.ordinal())).thenReturn(prices);
+
+        GoldPriceListResponse actual = goldPriceService.getRecentForRegion(regionName);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    private void checkGetRecentForFaction(String factionName, Faction faction) {
+        GoldPriceListResponse expected = buildGoldPriceListResponse(priceResponses);
+
+        when(goldPriceMapper.toGoldPriceList(prices)).thenReturn(expected);
+        when(goldPriceRepository.findRecentForFaction(faction.ordinal())).thenReturn(prices);
+
+        GoldPriceListResponse actual = goldPriceService.getRecentForFaction(factionName);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
 }
