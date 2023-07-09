@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.goldprice.dto;
 
-import com.thoroldvix.economatic.goldprice.error.InvalidGoldPricePropertyException;
+import com.thoroldvix.economatic.goldprice.InvalidGoldPricePropertyException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 

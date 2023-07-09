@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.itemprice.dto;
 
-import com.thoroldvix.economatic.itemprice.error.InvalidItemPricePropertyException;
+import com.thoroldvix.economatic.itemprice.InvalidItemPricePropertyException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 

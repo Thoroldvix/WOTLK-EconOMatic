@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.server.dto;
 
-import com.thoroldvix.economatic.server.model.Faction;
-import com.thoroldvix.economatic.server.model.Region;
+import com.thoroldvix.economatic.server.Faction;
+import com.thoroldvix.economatic.server.Region;
 import lombok.Builder;
 
 @Builder

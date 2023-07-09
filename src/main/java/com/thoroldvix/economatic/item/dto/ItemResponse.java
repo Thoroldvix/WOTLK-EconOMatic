@@ -1,8 +1,8 @@
 package com.thoroldvix.economatic.item.dto;
 
-import com.thoroldvix.economatic.item.model.ItemQuality;
-import com.thoroldvix.economatic.item.model.ItemSlot;
-import com.thoroldvix.economatic.item.model.ItemType;
+import com.thoroldvix.economatic.item.ItemQuality;
+import com.thoroldvix.economatic.item.ItemSlot;
+import com.thoroldvix.economatic.item.ItemType;
 import lombok.Builder;
 
 @Builder

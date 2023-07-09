@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.population.dto;
 
-import com.thoroldvix.economatic.population.error.InvalidPopulationPropertyException;
+import com.thoroldvix.economatic.population.InvalidPopulationPropertyException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 

@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.recommendation.dto;
 
-import com.thoroldvix.economatic.recommendation.error.InvalidRecommendationPropertyException;
+import com.thoroldvix.economatic.recommendation.InvalidRecommendationPropertyException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.math.BigDecimal;
