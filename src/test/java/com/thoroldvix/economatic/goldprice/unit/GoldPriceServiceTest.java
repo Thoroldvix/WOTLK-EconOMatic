@@ -1,24 +1,19 @@
 package com.thoroldvix.economatic.goldprice.unit;
 
+import com.thoroldvix.economatic.goldprice.*;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceRequest;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.goldprice.GoldPriceNotFoundException;
-import com.thoroldvix.economatic.goldprice.GoldPriceMapper;
-import com.thoroldvix.economatic.goldprice.GoldPrice;
-import com.thoroldvix.economatic.goldprice.GoldPriceRepository;
-import com.thoroldvix.economatic.goldprice.GoldPriceService;
-import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerService;
+import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.shared.dto.PaginationInfo;
 import com.thoroldvix.economatic.shared.dto.SearchCriteria;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
-import com.thoroldvix.economatic.shared.SearchSpecification;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -67,8 +62,7 @@ class GoldPriceServiceTest {
     private GoldPriceRepository goldPriceRepository;
     @Mock
     private GoldPriceMapper goldPriceMapper;
-    @Mock
-    private SearchSpecification<GoldPrice> searchSpecification;
+
     @InjectMocks
     private GoldPriceService goldPriceService;
 
@@ -199,12 +193,10 @@ class GoldPriceServiceTest {
 
     @Test
     void search_returnsCorrectGoldPricePageResponse() {
-        Specification<GoldPrice> specification = Specification.where(null);
         GoldPricePageResponse expected = buildGoldPricePageResponse(priceResponses, page);
 
         when(goldPriceMapper.toPageResponse(page)).thenReturn(expected);
-        when(searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria())).thenReturn(specification);
-        when(goldPriceRepository.findAll(specification, pageRequest)).thenReturn(page);
+        when(goldPriceRepository.findAll(ArgumentMatchers.<Specification<GoldPrice>>any(), eq(pageRequest))).thenReturn(page);
 
         GoldPricePageResponse actual = goldPriceService.search(searchRequest, pageRequest);
 

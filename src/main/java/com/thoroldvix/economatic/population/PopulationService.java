@@ -9,7 +9,7 @@ import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
-import com.thoroldvix.economatic.shared.SearchSpecification;
+import com.thoroldvix.economatic.shared.SpecificationBuilder;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,6 @@ public class PopulationService {
     private final PopulationRepository populationRepository;
     private final ServerService serverService;
     private final PopulationMapper populationMapper;
-    private final SearchSpecification<Population> searchSpecification;
 
     private static void validateTotalPopProj(TotalPopProjection totalPopProjection, String serverName) {
         boolean isInvalid = totalPopProjection.getPopTotal() == null
@@ -145,9 +144,7 @@ public class PopulationService {
 
 
     private Page<Population> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<Population> spec = searchSpecification.create(searchRequest.globalOperator(),
-                searchRequest.searchCriteria());
-
+        Specification<Population> spec = SpecificationBuilder.from(searchRequest);
         return populationRepository.findAll(spec, pageable);
     }
 

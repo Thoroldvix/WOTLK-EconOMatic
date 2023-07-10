@@ -9,7 +9,7 @@ import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
-import com.thoroldvix.economatic.shared.SearchSpecification;
+import com.thoroldvix.economatic.shared.SpecificationBuilder;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class GoldPriceService {
     private final ServerService serverService;
     private final GoldPriceRepository goldPriceRepository;
     private final GoldPriceMapper goldPriceMapper;
-    private final SearchSpecification<GoldPrice> searchSpecification;
+
 
     private static void validateInputs(TimeRange timeRange, Pageable pageable) {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
@@ -141,8 +141,7 @@ public class GoldPriceService {
     }
 
     private Page<GoldPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<GoldPrice> spec = searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
-
+        Specification<GoldPrice> spec = SpecificationBuilder.from(searchRequest);
         return goldPriceRepository.findAll(spec, pageable);
     }
 

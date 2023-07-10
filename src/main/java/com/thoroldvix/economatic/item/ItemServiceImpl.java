@@ -4,7 +4,7 @@ import com.thoroldvix.economatic.item.dto.ItemPageResponse;
 import com.thoroldvix.economatic.item.dto.ItemRequest;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
 import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
-import com.thoroldvix.economatic.shared.SearchSpecification;
+import com.thoroldvix.economatic.shared.SpecificationBuilder;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,6 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemMapper itemMapper;
     private final ItemSummaryMapper itemSummaryMapper;
-    private final SearchSpecification<Item> searchSpecification;
     private final ItemRepository itemRepository;
 
     @Override
@@ -76,7 +75,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-
     @Override
     @Transactional
     public ItemResponse addItem(@Valid ItemRequest itemRequest) {
@@ -103,8 +101,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Page<Item> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<Item> spec = searchSpecification.create(searchRequest.globalOperator(),
-                searchRequest.searchCriteria());
+        Specification<Item> spec = SpecificationBuilder.from(searchRequest);
         return itemRepository.findAll(spec, pageable);
     }
 

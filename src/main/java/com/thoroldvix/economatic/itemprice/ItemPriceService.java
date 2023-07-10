@@ -9,7 +9,7 @@ import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
-import com.thoroldvix.economatic.shared.SearchSpecification;
+import com.thoroldvix.economatic.shared.SpecificationBuilder;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,6 @@ public class ItemPriceService {
     private final ServerService serverService;
     private final ItemPriceRepository itemPriceRepository;
     private final ItemPriceMapper itemPriceMapper;
-    private final SearchSpecification<ItemPrice> searchSpecification;
     private final JdbcTemplate jdbcTemplate;
 
 
@@ -146,7 +145,7 @@ public class ItemPriceService {
     }
 
     private Page<ItemPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<ItemPrice> specification = searchSpecification.create(searchRequest.globalOperator(), searchRequest.searchCriteria());
+        Specification<ItemPrice> specification = SpecificationBuilder.from(searchRequest);
         return itemPriceRepository.findAll(specification, pageable);
     }
 
