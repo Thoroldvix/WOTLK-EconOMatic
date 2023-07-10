@@ -1,58 +1,57 @@
 package com.thoroldvix.economatic.item;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
+import lombok.*;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
 
 import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class Item {
 
     @Id
+    @Column(name = "id")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "type",nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private ItemType type;
 
-     @Column(nullable = false)
+     @Column(name = "quality",nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private ItemQuality quality;
 
-    @Column(nullable = false)
+    @Column(name = "slot",nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private ItemSlot slot;
 
-    @Column(nullable = false, insertable = false, updatable = false)
+    @Column(name = "unique_name",nullable = false, insertable = false, updatable = false)
     @Generated(GenerationTime.INSERT)
     private String uniqueName;
 
-    @Column(nullable = false)
+    @Column(name = "vendor_price",nullable = false)
     private long vendorPrice;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Item item = (Item) o;
-        return getId() != null && Objects.equals(getId(), item.getId());
+        return Objects.equals(id, item.id);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(id);
     }
 }

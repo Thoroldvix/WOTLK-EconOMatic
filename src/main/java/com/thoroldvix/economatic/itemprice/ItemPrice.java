@@ -20,13 +20,17 @@ import java.util.Objects;
 public class ItemPrice {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "min_buyout")
     private long minBuyout;
 
+    @Column(name = "historical_value")
     private long historicalValue;
 
+    @Column(name = "market_value")
     private long marketValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,10 +43,13 @@ public class ItemPrice {
     @ToString.Exclude
     private Server server;
 
+    @Column(name = "quantity")
     private int quantity;
 
+    @Column(name = "num_auctions")
     private int numAuctions;
 
+    @Column(name = "updated_at", nullable = false)
     @CreationTimestamp
     private LocalDateTime updatedAt;
 

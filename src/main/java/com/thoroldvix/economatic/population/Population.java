@@ -3,7 +3,6 @@ package com.thoroldvix.economatic.population;
 import com.thoroldvix.economatic.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -18,13 +17,14 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Population {
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "value")
     private int value;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,13 +35,13 @@ public class Population {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Population that = (Population) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(id);
     }
 }
