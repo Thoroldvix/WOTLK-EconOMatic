@@ -1,12 +1,11 @@
 package com.thoroldvix.economatic.item;
 
-import com.thoroldvix.economatic.error.InvalidSearchCriteriaException;
 import com.thoroldvix.economatic.item.dto.ItemPageResponse;
 import com.thoroldvix.economatic.item.dto.ItemRequest;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
 import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.SearchSpecification;
+import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.thoroldvix.economatic.error.ErrorMessages.*;
+import static com.thoroldvix.economatic.error.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
+import static com.thoroldvix.economatic.error.ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.item.ItemErrorMessages.ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
 import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
@@ -42,8 +42,6 @@ public class ItemServiceImpl implements ItemService {
     public ItemPageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
         requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
-        notEmpty(searchRequest.searchCriteria(),
-                () -> new InvalidSearchCriteriaException(SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY));
 
         Page<Item> items = findAllForSearch(searchRequest, pageable);
         notEmpty(items.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));

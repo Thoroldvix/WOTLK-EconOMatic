@@ -23,8 +23,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-import static com.thoroldvix.economatic.error.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.error.ErrorMessages.TIME_RANGE_CANNOT_BE_NULL;
+import static com.thoroldvix.economatic.error.ErrorMessages.*;
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
 import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
@@ -85,7 +84,7 @@ public class PopulationService {
     }
 
     public PopulationPageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
-        requireNonNull(searchRequest, "Search request cannot be null");
+        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
 
         Page<Population> populations = findAllForSearch(searchRequest, pageable);
