@@ -4,16 +4,15 @@ import com.thoroldvix.economatic.error.ErrorMessages;
 import com.thoroldvix.economatic.server.dto.ServerListResponse;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import com.thoroldvix.economatic.shared.SpecificationBuilder;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
+import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +22,6 @@ import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
 
 @Service
-@Validated
 @Cacheable("server-cache")
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
