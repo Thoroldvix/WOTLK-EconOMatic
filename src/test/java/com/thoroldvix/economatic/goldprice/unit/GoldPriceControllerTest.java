@@ -1,17 +1,18 @@
 package com.thoroldvix.economatic.goldprice.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoroldvix.economatic.goldprice.GoldPriceController;
+import com.thoroldvix.economatic.goldprice.GoldPriceService;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceRequest;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.goldprice.GoldPriceController;
-import com.thoroldvix.economatic.goldprice.GoldPriceService;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.shared.dto.PaginationInfo;
 import com.thoroldvix.economatic.shared.dto.SearchCriteria;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,27 +38,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class GoldPriceControllerTest {
 
-    private static final LocalDateTime UPDATED_AT = LocalDateTime.parse("2023-07-05T19:05:14.846761");
-
     private static final String GOLD_PRICE_API_ENDPOINT = "/wow-classic/api/v1/servers/prices";
 
-    private final GoldPriceResponse goldPriceResponse1 = GoldPriceResponse.builder()
-            .price(BigDecimal.valueOf(0.000823))
-            .server("nethergarde-keep-horde")
-            .updatedAt(UPDATED_AT)
-            .build();
+    private  GoldPriceResponse goldPriceResponse1;
 
-    private final GoldPriceResponse goldPriceResponse2 = GoldPriceResponse.builder()
-            .price(BigDecimal.valueOf(0.000809))
-            .server("giantstalker-horde")
-            .updatedAt(UPDATED_AT.minusDays(1))
-            .build();
+    private  GoldPriceResponse goldPriceResponse2;
 
-    private final GoldPriceResponse goldPriceResponse3 = GoldPriceResponse.builder()
-            .price(BigDecimal.valueOf(0.00099))
-            .server("mograine-horde")
-            .updatedAt(UPDATED_AT.minusDays(2))
-            .build();
+    private GoldPriceResponse goldPriceResponse3;
 
     @Autowired
     private MockMvc mockMvc;
@@ -67,6 +54,39 @@ class GoldPriceControllerTest {
 
     @MockBean
     private GoldPriceService goldPriceService;
+
+    private static SearchRequest buildSearchRequest(SearchCriteria searchCriteria) {
+        return SearchRequest.builder()
+                .globalOperator(SearchRequest.GlobalOperator.AND)
+                .searchCriteria(Collections.singletonList(searchCriteria))
+                .build();
+    }
+
+    private static SearchCriteria buildSearchCriteria() {
+        return SearchCriteria.builder()
+                .column("region")
+                .value("eu")
+                .joinTable("server")
+                .operation(SearchCriteria.Operation.EQUALS)
+                .build();
+    }
+
+    @BeforeEach
+    void setUp() {
+        LocalDateTime updatedAt = LocalDateTime.parse("2023-07-05T19:05:14.846761");
+        goldPriceResponse1 = buildGoldPriceResponse("nethergarde-keep-horde", 0.000823, updatedAt);
+        goldPriceResponse2 = buildGoldPriceResponse("giantstalker-horde", 0.000809, updatedAt.minusDays(1));
+        goldPriceResponse3 = buildGoldPriceResponse("mograine-horde", 0.00099, updatedAt.minusDays(2));
+    }
+
+    private GoldPriceResponse buildGoldPriceResponse(String server, double priceValue, LocalDateTime updatedAt) {
+        BigDecimal price = BigDecimal.valueOf(priceValue);
+        return GoldPriceResponse.builder()
+                .server(server)
+                .price(price)
+                .updatedAt(updatedAt)
+                .build();
+    }
 
     @Test
     void getAll_returnsCorrectGoldPricePageResponse() throws Exception {
@@ -307,21 +327,6 @@ class GoldPriceControllerTest {
                 .andExpect(content().json(expectedJson));
     }
 
-    private static SearchRequest buildSearchRequest(SearchCriteria searchCriteria) {
-        return SearchRequest.builder()
-                .globalOperator(SearchRequest.GlobalOperator.AND)
-                .searchCriteria(Collections.singletonList(searchCriteria))
-                .build();
-    }
-
-    private static SearchCriteria buildSearchCriteria() {
-        return SearchCriteria.builder()
-                .column("region")
-                .value("eu")
-                .joinTable("server")
-                .operation(SearchCriteria.Operation.EQUALS)
-                .build();
-    }
     private GoldPricePageResponse buildGoldPricePageResponse(List<GoldPriceResponse> prices) {
         PaginationInfo paginationInfo = new PaginationInfo(0, 100, 1, prices.size());
         return GoldPricePageResponse.builder()
@@ -330,7 +335,7 @@ class GoldPriceControllerTest {
                 .build();
     }
 
-      private GoldPriceListResponse buildGoldPriceListResponse(List<GoldPriceResponse> prices) {
+    private GoldPriceListResponse buildGoldPriceListResponse(List<GoldPriceResponse> prices) {
         return GoldPriceListResponse.builder()
                 .prices(prices)
                 .build();

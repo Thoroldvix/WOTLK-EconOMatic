@@ -17,7 +17,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class GoldPriceRepositoryTest extends AbstractGoldPriceRepositoryTest {
+class GoldPriceRepositoryTest extends GoldPriceDataInitializer {
 
     @Autowired
     private GoldPriceRepository goldPriceRepository;

@@ -18,7 +18,7 @@ import java.util.Locale;
 
 
 @ActiveProfiles(profiles = {"test", "integration"})
-abstract class AbstractGoldPriceRepositoryTest implements PostgresqlContainerInitializer {
+abstract class GoldPriceDataInitializer implements PostgresqlContainerInitializer {
     protected final static LocalDateTime UPDATE_DATE = LocalDateTime.now();
     protected GoldPrice goldPrice1;
     protected GoldPrice goldPrice2;
