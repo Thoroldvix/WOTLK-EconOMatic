@@ -310,7 +310,7 @@ class GoldPriceControllerTest {
     private static SearchRequest buildSearchRequest(SearchCriteria searchCriteria) {
         return SearchRequest.builder()
                 .globalOperator(SearchRequest.GlobalOperator.AND)
-                .searchCriteria(new SearchCriteria[]{searchCriteria})
+                .searchCriteria(Collections.singletonList(searchCriteria))
                 .build();
     }
 

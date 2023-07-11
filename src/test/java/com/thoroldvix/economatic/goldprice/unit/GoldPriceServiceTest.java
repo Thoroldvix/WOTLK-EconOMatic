@@ -49,6 +49,7 @@ import static org.mockito.Mockito.*;
 class GoldPriceServiceTest {
     public static final String SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY = "Server identifier cannot be null or empty";
     private static final LocalDateTime UPDATE_DATE = LocalDateTime.now();
+    public static final String PAGEABLE_CANNOT_BE_NULL = "Pageable cannot be null";
     private static List<GoldPriceResponse> priceResponses;
     private static List<GoldPrice> prices;
     private static PageImpl<GoldPrice> page;
@@ -89,7 +90,7 @@ class GoldPriceServiceTest {
                 .build();
 
         return SearchRequest.builder()
-                .searchCriteria(new SearchCriteria[]{criteria})
+                .searchCriteria(Collections.singletonList(criteria))
                 .globalOperator(SearchRequest.GlobalOperator.AND)
                 .build();
     }
@@ -207,7 +208,7 @@ class GoldPriceServiceTest {
     void search_throwsNullPointerException_whenPageableIsNull() {
         assertThatThrownBy(() -> goldPriceService.search(searchRequest, null))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessage("Pageable cannot be null");
+                .hasMessage(PAGEABLE_CANNOT_BE_NULL);
     }
 
     @Test
@@ -269,7 +270,7 @@ class GoldPriceServiceTest {
 
         assertThatThrownBy(() -> goldPriceService.getForServer(serverIdentifier, timeRange, null))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessage("Pageable cannot be null");
+                .hasMessage(PAGEABLE_CANNOT_BE_NULL);
     }
 
     @Test

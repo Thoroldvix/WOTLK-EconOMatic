@@ -9,7 +9,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.thoroldvix.economatic.error.ErrorMessages.SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY;
@@ -29,15 +28,15 @@ public class SpecificationBuilder {
         return getSpecification(request.globalOperator(), request.searchCriteria());
     }
 
-    private static <E> Specification<E> getSpecification(SearchRequest.GlobalOperator globalOperator, SearchCriteria[] searchCriteria) {
+    private static <E> Specification<E> getSpecification(SearchRequest.GlobalOperator globalOperator, List<SearchCriteria> searchCriteria) {
         return (root, query, cb) -> {
             List<Predicate> predicates = getPredicates(root, cb, searchCriteria);
             return getSpecFromPredicates(globalOperator, cb, predicates);
         };
     }
 
-    private static <E> List<Predicate> getPredicates(Root<E> root, CriteriaBuilder cb, SearchCriteria[] searchCriteria) {
-        return Arrays.stream(searchCriteria).map(criteria -> {
+    private static <E> List<Predicate> getPredicates(Root<E> root, CriteriaBuilder cb, List<SearchCriteria> searchCriteria) {
+        return searchCriteria.stream().map(criteria -> {
             Path<?> columnPath = getColumnPath(root, criteria);
             return getPredicateFromOperation(cb, criteria, columnPath);
         }).toList();
