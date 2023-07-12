@@ -35,8 +35,7 @@ public class GoldPriceController {
     private final GoldPriceService goldPriceService;
 
     @Operation(summary = "Retrieve all prices",
-            description = "Returns all prices within the specified time range",
-            tags = {"Gold prices"})
+            description = "Returns all prices within the specified time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -58,8 +57,7 @@ public class GoldPriceController {
     }
 
     @Operation(summary = "Retrieve most recent prices for all servers",
-            description = "Returns the most recent prices for all servers",
-            tags = {"Gold prices"})
+            description = "Returns the most recent prices for all servers")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -74,8 +72,7 @@ public class GoldPriceController {
     }
 
      @Operation(summary = "Retrieve most recent prices for the given server list",
-            description = "Returns the most recent prices for the given server list",
-            tags = {"Gold prices"})
+            description = "Returns the most recent prices for the given server list")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -90,8 +87,7 @@ public class GoldPriceController {
     }
 
     @Operation(summary = "Retrieve prices for a server",
-            description = "Returns all prices for the specified server within the given time range",
-            tags = {"Gold prices"})
+            description = "Returns all prices for the specified server within the given time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -117,7 +113,7 @@ public class GoldPriceController {
     }
 
     @Operation(summary = "Retrieve most recent price for a server",
-            description = "Returns most recent price for the specified server", tags = {"Gold prices"})
+            description = "Returns most recent price for the specified server")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server price",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -139,7 +135,7 @@ public class GoldPriceController {
     }
 
     @Operation(summary = "Retrieve prices for specified search request",
-            description = "Returns all prices that match the given search request", tags = {"Gold prices"})
+            description = "Returns all prices that match the given search request")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the given search request",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -161,7 +157,7 @@ public class GoldPriceController {
     }
 
     @Operation(summary = "Retrieve prices for the specified region name",
-            description = "Returns recent prices that match the given region name", tags = {"Gold prices"})
+            description = "Returns recent prices that match the given region name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the region name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -182,7 +178,7 @@ public class GoldPriceController {
     }
 
     @Operation(summary = "Retrieve prices for the specified faction name",
-            description = "Returns recent prices that match the given faction name", tags = {"Gold prices"})
+            description = "Returns recent prices that match the given faction name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices for the faction name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

@@ -23,8 +23,7 @@ public class ItemDealsController {
 
 
     @Operation(summary = "Retrieve deals for server",
-            description = "Returns a list of deals for a specific server",
-            tags = {"Deals"})
+            description = "Returns a list of deals for a specific server")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = ItemDealsList.class))),

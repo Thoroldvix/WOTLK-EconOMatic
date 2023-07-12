@@ -33,7 +33,7 @@ public class ItemsController {
     private final ItemService itemService;
 
     @Operation(summary = "Retrieves basic item info for all items",
-            description = "Returns basic item info for all items", tags = {"Items"})
+            description = "Returns basic item info for all items")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item info",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -50,7 +50,7 @@ public class ItemsController {
     }
 
     @Operation(summary = "Retrieves basic item info for a given item identifier",
-            description = "Returns basic item info for item identifier", tags = {"Items"})
+            description = "Returns basic item info for item identifier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item info",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -71,7 +71,7 @@ public class ItemsController {
     }
 
     @Operation(summary = "Retrieves basic item info for a given search criteria",
-            description = "Returns basic item info for search criteria. Allows for more fine-grained filtering", tags = {"Items"})
+            description = "Returns basic item info for search criteria. Allows for more fine-grained filtering")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item info",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -91,14 +91,11 @@ public class ItemsController {
         return ResponseEntity.ok(searchResult);
     }
 
-
-
-
     @Operation(summary = "Adds a new item",
             description = "Adds a new item to the database. Returns the item that was added." +
                           " Make sure to add only items that are tradeable," +
                           " because non-tradeable items aren't used in any other functionality like retrieving item prices or deal," +
-                          " which makes them effectively useless", tags = {"Items"})
+                          " which makes them effectively useless")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Item added successfully",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -114,7 +111,7 @@ public class ItemsController {
     }
 
     @Operation(summary = "Deletes item with given item identifier",
-            description = "Deletes item with given item identifier. Returns item that was deleted", tags = {"Items"})
+            description = "Deletes item with given item identifier. Returns item that was deleted")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful deletion of item",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

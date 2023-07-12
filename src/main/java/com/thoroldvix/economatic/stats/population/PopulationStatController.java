@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Tag(name = "Populations Stats API", description = "API for retrieving population stats")
+@Tag(name = "Populations Stats API", description = "API for retrieving population statistics")
 @RequiredArgsConstructor
 @RequestMapping("/wow-classic/api/v1/servers/populations/stats")
 public class PopulationStatController {
@@ -22,7 +22,7 @@ public class PopulationStatController {
     private final PopulationStatsService populationStatsService;
 
     @Operation(summary = "Retrieves basic population statistics for all servers",
-            description = "The statistics are based on all server population scans and the time range in days", tags = {"Population stats"})
+            description = "The statistics are based on all server population scans and the time range in days")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PopulationStatResponse.class))),
@@ -41,7 +41,7 @@ public class PopulationStatController {
     }
 
     @Operation(summary = "Retrieves basic population statistics for a server identifier",
-            description = "The statistics are based on the provided identifier and the time range in days", tags = {"Population stats"})
+            description = "The statistics are based on the provided identifier and the time range in days")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -66,7 +66,7 @@ public class PopulationStatController {
     }
 
     @Operation(summary = "Retrieve basic population statistics for a region",
-            description = "Retrieves basic population statistics based on the provided region name and time range", tags = {"Population stats"})
+            description = "Retrieves basic population statistics based on the provided region name and time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -90,7 +90,7 @@ public class PopulationStatController {
     }
 
     @Operation(summary = "Retrieve basic population statistics for a faction",
-            description = "Retrieves basic population statistics based on the provided faction name and time range", tags = {"Population stats"})
+            description = "Retrieves basic population statistics based on the provided faction name and time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

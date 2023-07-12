@@ -27,7 +27,7 @@ public class SummaryController {
     private final ServerSummaryService serverSummaryService;
 
     @Operation(summary = "Retrieves summary for all items",
-            description = "Returns summary of all items. Includes amount of items in each category", tags = {"Items"})
+            description = "Returns summary of all items. Includes amount of items in each category", tags = {"Summary API", "Items API"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of item summary",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -41,7 +41,7 @@ public class SummaryController {
     }
 
     @Operation(summary = "Retrieves summary for all servers",
-            description = "Returns summary of all servers. Includes amount of servers in each category")
+            description = "Returns summary of all servers. Includes amount of servers in each category", tags = {"Summary API", "Servers API"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server summary",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

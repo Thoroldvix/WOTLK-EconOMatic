@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Tag(name = "Gold price statistics API", description = "API for retrieving statistics of gold prices")
+@Tag(name = "Gold Price Stats API", description = "API for retrieving gold price statistics")
 @RequestMapping("/wow-classic/api/v1/servers/prices/stats")
 @RequiredArgsConstructor
 public class GoldPriceStatController {
@@ -22,7 +22,7 @@ public class GoldPriceStatController {
     private final GoldPriceStatsService goldPriceStatsService;
 
     @Operation(summary = "Retrieve basic price statistics for all servers",
-            description = "Retrieves basic price statistics based on all gold price scans and the specified time range", tags = {"Gold price stats"})
+            description = "Retrieves basic price statistics based on all gold price scans and the specified time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -41,7 +41,7 @@ public class GoldPriceStatController {
     }
 
     @Operation(summary = "Retrieve basic price statistics for a server",
-            description = "Retrieves basic price statistics based on the provided server identifier and time range", tags = {"Gold price stats"})
+            description = "Retrieves basic price statistics based on the provided server identifier and time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -65,7 +65,7 @@ public class GoldPriceStatController {
     }
 
     @Operation(summary = "Retrieve basic price statistics for a region",
-            description = "Retrieves basic price statistics based on the provided region name and time range", tags = {"Gold price stats"})
+            description = "Retrieves basic price statistics based on the provided region name and time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -89,7 +89,7 @@ public class GoldPriceStatController {
     }
 
     @Operation(summary = "Retrieve basic price statistics for a faction",
-            description = "Retrieves basic price statistics based on the provided faction name and time range", tags = {"Gold price stats"})
+            description = "Retrieves basic price statistics based on the provided faction name and time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of statistics",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

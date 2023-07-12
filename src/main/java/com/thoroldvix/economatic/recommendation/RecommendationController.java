@@ -27,7 +27,7 @@ public class RecommendationController {
     @Operation(summary = "Retrieve recommendations for item list",
             description = """
                     Returns a list of recommended servers based on the input item list.
-                     Up to 'limit' servers are returned""", tags = {"Recommendation"},
+                     Up to 'limit' servers are returned""",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successful retrieval of recommendations",
                             content = @Content(schema = @Schema(implementation = RecommendationListResponse.class))),

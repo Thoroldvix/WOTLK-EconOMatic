@@ -37,7 +37,7 @@ public class PopulationController {
 
 
     @Operation(summary = "Retrieve all populations",
-            description = "Returns all populations within the specified time range", tags = {"Populations"})
+            description = "Returns all populations within the specified time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -57,7 +57,7 @@ public class PopulationController {
     }
 
     @Operation(summary = "Retrieve most recent populations for all servers",
-            description = "Returns the most recent populations for all servers", tags = {"Populations"})
+            description = "Returns the most recent populations for all servers")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of populations",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -73,7 +73,7 @@ public class PopulationController {
     }
 
     @Operation(summary = "Retrieve populations for a server",
-            description = "Returns all populations for the specified server within the given time range", tags = {"Populations"})
+            description = "Returns all populations for the specified server within the given time range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server populations",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -99,7 +99,7 @@ public class PopulationController {
     }
 
         @Operation(summary = "Retrieve most recent population for a server",
-            description = "Returns most recent population for the specified server", tags = {"Populations"})
+            description = "Returns most recent population for the specified server")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server population",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -121,7 +121,7 @@ public class PopulationController {
     }
 
     @Operation(summary = "Retrieve total population for server",
-            description = "Returns the most recent population for server name", tags = {"Populations"})
+            description = "Returns the most recent population for server name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server population",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -142,7 +142,7 @@ public class PopulationController {
     }
 
     @Operation(summary = "Retrieve populations for specified search request",
-            description = "Returns all populations that match the given search request", tags = {"Populations"})
+            description = "Returns all populations that match the given search request")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of populations for the given search request",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -165,7 +165,7 @@ public class PopulationController {
     }
 
     @Operation(summary = "Retrieve populations for the specified region name",
-            description = "Returns recent populations that match the given region name", tags = {"Populations"})
+            description = "Returns recent populations that match the given region name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of populations for the region name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -185,7 +185,7 @@ public class PopulationController {
     }
     
     @Operation(summary = "Retrieve populations for the specified faction name",
-            description = "Returns recent populations that match the given faction name", tags = {"Populations"})
+            description = "Returns recent populations that match the given faction name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of populations for the faction name",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
