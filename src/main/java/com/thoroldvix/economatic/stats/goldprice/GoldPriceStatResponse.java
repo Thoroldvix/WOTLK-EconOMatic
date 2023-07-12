@@ -1,5 +1,6 @@
-package com.thoroldvix.economatic.goldprice.dto;
+package com.thoroldvix.economatic.stats.goldprice;
 
+import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import lombok.Builder;
 
 import java.math.BigDecimal;

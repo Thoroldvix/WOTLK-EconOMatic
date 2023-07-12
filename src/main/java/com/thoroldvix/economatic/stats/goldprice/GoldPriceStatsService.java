@@ -1,13 +1,14 @@
-package com.thoroldvix.economatic.goldprice;
+package com.thoroldvix.economatic.stats.goldprice;
 
+import com.thoroldvix.economatic.goldprice.GoldPriceMapper;
+import com.thoroldvix.economatic.goldprice.GoldPriceNotFoundException;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceStatResponse;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.shared.StatsProjection;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
+import com.thoroldvix.economatic.stats.StatsProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

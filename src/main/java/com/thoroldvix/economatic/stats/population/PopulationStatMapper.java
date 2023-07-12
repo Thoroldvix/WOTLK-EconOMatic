@@ -1,8 +1,8 @@
-package com.thoroldvix.economatic.population;
+package com.thoroldvix.economatic.stats.population;
 
+import com.thoroldvix.economatic.population.PopulationMapper;
 import com.thoroldvix.economatic.population.dto.PopulationResponse;
-import com.thoroldvix.economatic.population.dto.PopulationStatResponse;
-import com.thoroldvix.economatic.shared.StatsProjection;
+import com.thoroldvix.economatic.stats.StatsProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

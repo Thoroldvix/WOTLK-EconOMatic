@@ -1,9 +1,9 @@
 package com.thoroldvix.economatic.goldprice.unit;
 
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceStatResponse;
-import com.thoroldvix.economatic.goldprice.GoldPriceStatController;
-import com.thoroldvix.economatic.goldprice.GoldPriceStatsService;
+import com.thoroldvix.economatic.stats.goldprice.GoldPriceStatResponse;
+import com.thoroldvix.economatic.stats.goldprice.GoldPriceStatController;
+import com.thoroldvix.economatic.stats.goldprice.GoldPriceStatsService;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import org.junit.jupiter.api.Test;

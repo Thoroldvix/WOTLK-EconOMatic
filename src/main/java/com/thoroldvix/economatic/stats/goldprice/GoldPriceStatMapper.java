@@ -1,8 +1,8 @@
-package com.thoroldvix.economatic.goldprice;
+package com.thoroldvix.economatic.stats.goldprice;
 
+import com.thoroldvix.economatic.goldprice.GoldPriceMapper;
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceStatResponse;
-import com.thoroldvix.economatic.shared.StatsProjection;
+import com.thoroldvix.economatic.stats.StatsProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.server.dto;
+package com.thoroldvix.economatic.summary.server;
 
 import lombok.Builder;
 

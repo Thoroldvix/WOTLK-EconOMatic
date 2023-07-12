@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.item;
+package com.thoroldvix.economatic.summary.item;
 
 public interface ItemSummaryProjection {
     int getCommon();

@@ -3,7 +3,6 @@ package com.thoroldvix.economatic.item;
 import com.thoroldvix.economatic.item.dto.ItemPageResponse;
 import com.thoroldvix.economatic.item.dto.ItemRequest;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
-import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -93,19 +92,7 @@ public class ItemsController {
     }
 
 
-    @Operation(summary = "Retrieves summary for all items",
-            description = "Returns summary of all items. Includes amount of items in each category", tags = {"Items"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval of item summary",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ItemSummaryResponse.class))),
-            @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
-    })
-    @GetMapping("/summary")
-    public ResponseEntity<ItemSummaryResponse> getItemSummary() {
-        var itemSummaryResponse = itemService.getSummary();
-        return ResponseEntity.ok(itemSummaryResponse);
-    }
+
 
     @Operation(summary = "Adds a new item",
             description = "Adds a new item to the database. Returns the item that was added." +

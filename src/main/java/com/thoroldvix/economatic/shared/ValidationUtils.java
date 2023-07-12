@@ -1,6 +1,7 @@
 package com.thoroldvix.economatic.shared;
 
 import com.thoroldvix.economatic.error.StatisticsNotFoundException;
+import com.thoroldvix.economatic.stats.StatsProjection;
 
 import java.util.Collection;
 import java.util.Objects;

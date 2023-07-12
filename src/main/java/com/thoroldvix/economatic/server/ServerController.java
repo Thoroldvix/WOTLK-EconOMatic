@@ -2,7 +2,6 @@ package com.thoroldvix.economatic.server;
 
 import com.thoroldvix.economatic.server.dto.ServerListResponse;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
-import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -87,19 +86,6 @@ public class ServerController {
         return ResponseEntity.ok(all);
     }
 
-    @Operation(summary = "Retrieves summary for all servers",
-            description = "Returns summary of all servers. Includes amount of servers in each category")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval of server summary",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ServerSummaryResponse.class))),
-            @ApiResponse(responseCode = "500", description = "An unexpected exception occurred", content = @Content)
-    })
-    @GetMapping("/summary")
-    public ResponseEntity<ServerSummaryResponse> getSummary() {
-        var summary = serverServiceImpl.getSummary();
-        return ResponseEntity.ok(summary);
-    }
 
     @Operation(summary = "Retrieves all servers for a specified region",
             description = "Returns all servers for a specified region name")

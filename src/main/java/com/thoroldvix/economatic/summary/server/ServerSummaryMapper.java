@@ -1,6 +1,5 @@
-package com.thoroldvix.economatic.server;
+package com.thoroldvix.economatic.summary.server;
 
-import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

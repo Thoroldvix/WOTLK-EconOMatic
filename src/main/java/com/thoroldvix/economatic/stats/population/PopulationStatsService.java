@@ -1,13 +1,14 @@
-package com.thoroldvix.economatic.population;
+package com.thoroldvix.economatic.stats.population;
 
+import com.thoroldvix.economatic.population.PopulationMapper;
+import com.thoroldvix.economatic.population.PopulationNotFoundException;
 import com.thoroldvix.economatic.population.dto.PopulationResponse;
-import com.thoroldvix.economatic.population.dto.PopulationStatResponse;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.shared.StatsProjection;
 import com.thoroldvix.economatic.shared.dto.TimeRange;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
+import com.thoroldvix.economatic.stats.StatsProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

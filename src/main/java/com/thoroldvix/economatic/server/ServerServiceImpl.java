@@ -3,7 +3,6 @@ package com.thoroldvix.economatic.server;
 import com.thoroldvix.economatic.error.ErrorMessages;
 import com.thoroldvix.economatic.server.dto.ServerListResponse;
 import com.thoroldvix.economatic.server.dto.ServerResponse;
-import com.thoroldvix.economatic.server.dto.ServerSummaryResponse;
 import com.thoroldvix.economatic.shared.SpecificationBuilder;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
@@ -28,7 +27,6 @@ import static java.util.Objects.requireNonNull;
 public class ServerServiceImpl implements ServerService {
 
     private final ServerRepository serverRepository;
-    private final ServerSummaryMapper serverSummaryMapper;
     private final ServerMapper serverMapper;
 
 
@@ -60,12 +58,6 @@ public class ServerServiceImpl implements ServerService {
         return serverMapper.toServerListResponse(servers);
     }
 
-
-    @Override
-    public ServerSummaryResponse getSummary() {
-        ServerSummaryProjection summaryProjection = serverRepository.getSummary();
-        return serverSummaryMapper.toResponse(summaryProjection);
-    }
 
     @Override
     public ServerListResponse getAllForRegion(String regionName) {

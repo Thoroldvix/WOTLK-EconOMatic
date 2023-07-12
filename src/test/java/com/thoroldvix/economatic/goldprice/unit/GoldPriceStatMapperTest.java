@@ -1,9 +1,9 @@
 package com.thoroldvix.economatic.goldprice.unit;
 
 import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceStatResponse;
-import com.thoroldvix.economatic.goldprice.GoldPriceStatMapper;
-import com.thoroldvix.economatic.shared.StatsProjection;
+import com.thoroldvix.economatic.stats.goldprice.GoldPriceStatResponse;
+import com.thoroldvix.economatic.stats.goldprice.GoldPriceStatMapper;
+import com.thoroldvix.economatic.stats.StatsProjection;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

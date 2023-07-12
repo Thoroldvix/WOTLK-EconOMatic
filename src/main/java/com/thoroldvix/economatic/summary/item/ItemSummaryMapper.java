@@ -1,6 +1,5 @@
-package com.thoroldvix.economatic.item;
+package com.thoroldvix.economatic.summary.item;
 
-import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

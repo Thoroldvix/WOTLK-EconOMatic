@@ -3,7 +3,6 @@ package com.thoroldvix.economatic.item;
 import com.thoroldvix.economatic.item.dto.ItemPageResponse;
 import com.thoroldvix.economatic.item.dto.ItemRequest;
 import com.thoroldvix.economatic.item.dto.ItemResponse;
-import com.thoroldvix.economatic.item.dto.ItemSummaryResponse;
 import com.thoroldvix.economatic.shared.SpecificationBuilder;
 import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import jakarta.validation.Valid;
@@ -34,7 +33,6 @@ public class ItemServiceImpl implements ItemService {
     public static final String ITEMS_NOT_FOUND = "Items not found";
 
     private final ItemMapper itemMapper;
-    private final ItemSummaryMapper itemSummaryMapper;
     private final ItemRepository itemRepository;
 
     @Override
@@ -68,11 +66,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ItemNotFoundException("No item found for identifier " + itemIdentifier));
     }
 
-    @Override
-    public ItemSummaryResponse getSummary() {
-        ItemSummaryProjection summaryProjection = itemRepository.getSummary();
-        return itemSummaryMapper.toSummaryResponse(summaryProjection);
-    }
+
 
 
     @Override

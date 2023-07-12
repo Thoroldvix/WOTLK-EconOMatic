@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.item.dto;
+package com.thoroldvix.economatic.summary.item;
 
 import lombok.Builder;
 

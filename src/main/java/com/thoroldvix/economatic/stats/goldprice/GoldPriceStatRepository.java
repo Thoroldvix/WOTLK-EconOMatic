@@ -1,7 +1,7 @@
-package com.thoroldvix.economatic.goldprice;
+package com.thoroldvix.economatic.stats.goldprice;
 
 import com.thoroldvix.economatic.goldprice.GoldPrice;
-import com.thoroldvix.economatic.shared.StatsProjection;
+import com.thoroldvix.economatic.stats.StatsProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

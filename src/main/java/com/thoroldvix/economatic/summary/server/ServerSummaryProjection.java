@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.server;
+package com.thoroldvix.economatic.summary.server;
 
 public interface ServerSummaryProjection {
     int getAlliance();
