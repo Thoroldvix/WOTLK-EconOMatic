@@ -1,10 +1,7 @@
 package com.thoroldvix.economatic.goldprice;
 
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 import com.thoroldvix.economatic.server.Server;
-import com.thoroldvix.economatic.shared.dto.PaginationInfo;
+import com.thoroldvix.economatic.shared.PaginationInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

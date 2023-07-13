@@ -1,11 +1,7 @@
 package com.thoroldvix.economatic.population;
 
-import com.thoroldvix.economatic.population.dto.PopulationListResponse;
-import com.thoroldvix.economatic.population.dto.PopulationPageResponse;
-import com.thoroldvix.economatic.population.dto.PopulationResponse;
-import com.thoroldvix.economatic.population.dto.TotalPopResponse;
 import com.thoroldvix.economatic.server.Server;
-import com.thoroldvix.economatic.shared.dto.PaginationInfo;
+import com.thoroldvix.economatic.shared.PaginationInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -13,7 +9,6 @@ import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PopulationMapper {
@@ -45,7 +40,7 @@ public interface PopulationMapper {
     @Named("serverName")
     default String serverName(Server server) {
         try {
-            return ((Supplier<String>) server::getUniqueName).get();
+            return server.getUniqueName();
         } catch (NullPointerException e) {
             return null;
         }

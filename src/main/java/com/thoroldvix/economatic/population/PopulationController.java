@@ -1,11 +1,7 @@
 package com.thoroldvix.economatic.population;
 
-import com.thoroldvix.economatic.population.dto.PopulationResponse;
-import com.thoroldvix.economatic.population.dto.PopulationPageResponse;
-import com.thoroldvix.economatic.population.dto.PopulationListResponse;
-import com.thoroldvix.economatic.population.dto.TotalPopResponse;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
-import com.thoroldvix.economatic.shared.dto.TimeRange;
+import com.thoroldvix.economatic.shared.SearchRequest;
+import com.thoroldvix.economatic.shared.TimeRange;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -31,9 +27,9 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Populations API", description = "API for retrieving server population")
 @RequiredArgsConstructor
 @RequestMapping("/wow-classic/api/v1/servers/populations")
-public class PopulationController {
+class PopulationController {
 
-    private final PopulationService populationService;
+    private final PopulationService populationServiceImpl;
 
 
     @Operation(summary = "Retrieve all populations",
@@ -52,7 +48,7 @@ public class PopulationController {
                                                            @RequestParam(defaultValue = "7") int timeRange,
                                                          @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
                                                            @ParameterObject Pageable pageable) {
-        var allPopulations = populationService.getAll(new TimeRange(timeRange), pageable);
+        var allPopulations = populationServiceImpl.getAll(new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(allPopulations);
     }
 
@@ -68,7 +64,7 @@ public class PopulationController {
     @GetMapping(value = "/recent",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PopulationListResponse> getAllRecent() {
-        var allPopulations = populationService.getAllRecent();
+        var allPopulations = populationServiceImpl.getAllRecent();
         return ResponseEntity.ok(allPopulations);
     }
 
@@ -94,7 +90,7 @@ public class PopulationController {
             @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
             @ParameterObject Pageable pageable) {
 
-        var populationsForServer = populationService.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
+        var populationsForServer = populationServiceImpl.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(populationsForServer);
     }
 
@@ -116,7 +112,7 @@ public class PopulationController {
                     required = true)
             @PathVariable String serverIdentifier) {
 
-        var priceResponse = populationService.getRecentForServer(serverIdentifier);
+        var priceResponse = populationServiceImpl.getRecentForServer(serverIdentifier);
         return ResponseEntity.ok(priceResponse);
     }
 
@@ -137,7 +133,7 @@ public class PopulationController {
             example = "everlook",
             required = true)
             @PathVariable String serverName) {
-        var totalPopulation = populationService.getTotalPopulation(serverName);
+        var totalPopulation = populationServiceImpl.getTotalPopulation(serverName);
         return ResponseEntity.ok(totalPopulation);
     }
 
@@ -160,7 +156,7 @@ public class PopulationController {
             @RequestBody @Valid SearchRequest searchRequest,
             @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
             @ParameterObject Pageable pageable) {
-        var responseForSearch = populationService.search(searchRequest, pageable);
+        var responseForSearch = populationServiceImpl.search(searchRequest, pageable);
         return ResponseEntity.ok(responseForSearch);
     }
 
@@ -180,7 +176,7 @@ public class PopulationController {
                     example = "eu",
                     required = true)
             @PathVariable String regionName) {
-        var populationForRegion = populationService.getRecentForRegion(regionName);
+        var populationForRegion = populationServiceImpl.getRecentForRegion(regionName);
         return ResponseEntity.ok(populationForRegion);
     }
     
@@ -200,7 +196,7 @@ public class PopulationController {
                     example = "alliance",
                     required = true)
             @PathVariable String factionName) {
-        var populationForFaction = populationService.getRecentForFaction(factionName);
+        var populationForFaction = populationServiceImpl.getRecentForFaction(factionName);
         return ResponseEntity.ok(populationForFaction);
     }
 }

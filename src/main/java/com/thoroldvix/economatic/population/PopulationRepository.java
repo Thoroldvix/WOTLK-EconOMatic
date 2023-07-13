@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PopulationRepository extends JpaRepository<Population, Long>, JpaSpecificationExecutor<Population> {
+interface PopulationRepository extends JpaRepository<Population, Long>, JpaSpecificationExecutor<Population> {
 
     @Query(value = """
             WITH populations AS (

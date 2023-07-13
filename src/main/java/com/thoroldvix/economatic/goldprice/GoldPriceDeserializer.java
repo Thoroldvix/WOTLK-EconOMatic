@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -18,7 +17,7 @@ import java.util.stream.StreamSupport;
 import static java.util.Objects.requireNonNull;
 
 
-public class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
+class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
 
     private static final Pattern SERVER_NAME_PATTERN = Pattern.compile("^(\\w+(?:\\s\\w+)?)\\s.*-\\s(\\w+)$");
     private static final String SERVER_NAME_REPLACE_REGEX = "\\s+";

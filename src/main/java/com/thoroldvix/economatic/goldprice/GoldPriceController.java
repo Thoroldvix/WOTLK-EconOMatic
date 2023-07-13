@@ -1,11 +1,7 @@
 package com.thoroldvix.economatic.goldprice;
 
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceListResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPricePageResponse;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceRequest;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
-import com.thoroldvix.economatic.shared.dto.TimeRange;
+import com.thoroldvix.economatic.shared.SearchRequest;
+import com.thoroldvix.economatic.shared.TimeRange;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -30,9 +26,9 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Prices API", description = "API for retrieving server gold prices")
 @RequestMapping("/wow-classic/api/v1/servers/prices")
 @RequiredArgsConstructor
-public class GoldPriceController {
+class GoldPriceController {
 
-    private final GoldPriceService goldPriceService;
+    private final GoldPriceService goldPriceServiceImpl;
 
     @Operation(summary = "Retrieve all prices",
             description = "Returns all prices within the specified time range")
@@ -52,7 +48,7 @@ public class GoldPriceController {
             @ParameterObject
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
             Pageable pageable) {
-        var prices = goldPriceService.getAll(new TimeRange(timeRange), pageable);
+        var prices = goldPriceServiceImpl.getAll(new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(prices);
     }
 
@@ -67,7 +63,7 @@ public class GoldPriceController {
     })
     @GetMapping(value = "/recent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GoldPriceListResponse> getAllRecent() {
-        var prices = goldPriceService.getAllRecent();
+        var prices = goldPriceServiceImpl.getAllRecent();
         return ResponseEntity.ok(prices);
     }
 
@@ -82,7 +78,7 @@ public class GoldPriceController {
     })
     @PostMapping(value = "/recent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GoldPriceListResponse> getRecentForServers(@RequestBody @Valid GoldPriceRequest request) {
-        var prices = goldPriceService.getRecentForServerList(request);
+        var prices = goldPriceServiceImpl.getRecentForServerList(request);
         return ResponseEntity.ok(prices);
     }
 
@@ -108,7 +104,7 @@ public class GoldPriceController {
             @RequestParam(defaultValue = "7") int timeRange,
             @ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
 
-        var priceResponse = goldPriceService.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
+        var priceResponse = goldPriceServiceImpl.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(priceResponse);
     }
 
@@ -130,7 +126,7 @@ public class GoldPriceController {
                     required = true)
             @PathVariable String serverIdentifier) {
 
-        var priceResponse = goldPriceService.getRecentForServer(serverIdentifier);
+        var priceResponse = goldPriceServiceImpl.getRecentForServer(serverIdentifier);
         return ResponseEntity.ok(priceResponse);
     }
 
@@ -152,7 +148,7 @@ public class GoldPriceController {
                     required = true)
             @Valid @RequestBody SearchRequest searchRequest,
             @ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
-        var responseDto = goldPriceService.search(searchRequest, pageable);
+        var responseDto = goldPriceServiceImpl.search(searchRequest, pageable);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -173,7 +169,7 @@ public class GoldPriceController {
                     required = true)
             @PathVariable String regionName) {
 
-        var prices = goldPriceService.getRecentForRegion(regionName);
+        var prices = goldPriceServiceImpl.getRecentForRegion(regionName);
         return ResponseEntity.ok(prices);
     }
 
@@ -194,7 +190,7 @@ public class GoldPriceController {
                     required = true)
             @PathVariable String factionName) {
 
-        var prices = goldPriceService.getRecentForFaction(factionName);
+        var prices = goldPriceServiceImpl.getRecentForFaction(factionName);
         return ResponseEntity.ok(prices);
     }
 

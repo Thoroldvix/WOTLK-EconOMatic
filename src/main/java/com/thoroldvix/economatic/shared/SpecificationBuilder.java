@@ -1,8 +1,6 @@
 package com.thoroldvix.economatic.shared;
 
 import com.thoroldvix.economatic.error.InvalidSearchCriteriaException;
-import com.thoroldvix.economatic.shared.dto.SearchCriteria;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;

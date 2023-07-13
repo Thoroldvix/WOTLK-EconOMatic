@@ -3,11 +3,11 @@ package com.thoroldvix.economatic.goldprice;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
-import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.Server;
-import com.thoroldvix.economatic.server.ServerRepository;
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Retryable;
@@ -25,13 +25,14 @@ import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GoldPriceUpdateService {
+class GoldPriceUpdateService {
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.gold-price.update-rate}";
-    private final ServerRepository serverRepository;
+    @PersistenceContext
+    private final EntityManager entityManager;
     private final G2GPriceClient g2gPriceClient;
     private final ServerService serverServiceImpl;
-    private final GoldPriceService goldPriceServiceImpl;
+    private final GoldPriceServiceImpl goldPriceServiceImpl;
 
     @Scheduled(fixedRateString = UPDATE_RATE,
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
@@ -71,7 +72,7 @@ public class GoldPriceUpdateService {
     }
 
     private GoldPrice mapToGoldPriceEntity(ServerResponse server, BigDecimal price) {
-        Server serverEntity = serverRepository.getReferenceById(server.id());
+        Server serverEntity = entityManager.getReference(Server.class, server.id());
         return GoldPrice.builder()
                 .value(price)
                 .server(serverEntity)

@@ -1,11 +1,9 @@
 package com.thoroldvix.economatic.server;
 
 import com.thoroldvix.economatic.error.ErrorMessages;
-import com.thoroldvix.economatic.server.dto.ServerListResponse;
-import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.shared.SpecificationBuilder;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
+import com.thoroldvix.economatic.shared.SearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,11 +22,10 @@ import static java.util.Objects.requireNonNull;
 @Cacheable("server-cache")
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ServerServiceImpl implements ServerService {
+class ServerServiceImpl implements ServerService {
 
     private final ServerRepository serverRepository;
     private final ServerMapper serverMapper;
-
 
     @Override
     public ServerResponse getServer(String serverIdentifier) {
@@ -50,14 +47,12 @@ public class ServerServiceImpl implements ServerService {
         return serverMapper.toServerListResponse(servers);
     }
 
-
     @Override
     public ServerListResponse getAll() {
         List<Server> servers = serverRepository.findAll();
         notEmpty(servers, () -> new ServerNotFoundException("No servers found"));
         return serverMapper.toServerListResponse(servers);
     }
-
 
     @Override
     public ServerListResponse getAllForRegion(String regionName) {

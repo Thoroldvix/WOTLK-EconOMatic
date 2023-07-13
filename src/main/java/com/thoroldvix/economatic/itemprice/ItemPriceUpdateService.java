@@ -1,14 +1,14 @@
 package com.thoroldvix.economatic.itemprice;
 
 import com.google.common.util.concurrent.RateLimiter;
-import com.thoroldvix.economatic.item.dto.ItemResponse;
+import com.thoroldvix.economatic.item.ItemResponse;
 import com.thoroldvix.economatic.item.Item;
 import com.thoroldvix.economatic.item.ItemService;
-import com.thoroldvix.economatic.itemprice.dto.NexusHubResponse;
-import com.thoroldvix.economatic.server.dto.ServerResponse;
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -28,28 +28,28 @@ import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 
 @Service
 @Slf4j
-public class ItemPriceUpdateService {
+class ItemPriceUpdateService {
     private static final RateLimiter RATE_LIMITER = RateLimiter.create(4);
     public static final String UPDATE_RATE = "${economatic.item-price.update-rate}";
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.item-price.update-rate}}";
-
+    @PersistenceContext
     private final EntityManager entityManager;
     private final NexusHubClient nexusHubClient;
-    private final ItemPriceService itemPriceService;
+    private final ItemPriceService itemPriceServiceImpl;
     private final Set<Integer> itemIds;
     private final Map<String, Integer> serverIdentifiers;
 
     @Autowired
     public ItemPriceUpdateService(EntityManager entityManager,
                                    NexusHubClient nexusHubClient,
-                                   ServerService serverService,
-                                   ItemService itemService,
-                                   ItemPriceService itemPriceService) {
+                                   ServerService serverServiceImpl,
+                                   ItemService itemServiceImpl,
+                                   ItemPriceService itemPriceServiceImpl) {
         this.entityManager = entityManager;
         this.nexusHubClient = nexusHubClient;
-        this.itemPriceService = itemPriceService;
-        serverIdentifiers = getServerIds(serverService);
-        itemIds = getItemIds(itemService);
+        this.itemPriceServiceImpl = itemPriceServiceImpl;
+        serverIdentifiers = getServerIds(serverServiceImpl);
+        itemIds = getItemIds(itemServiceImpl);
     }
 
     private static Set<Integer> getItemIds(ItemService itemService) {
@@ -74,7 +74,7 @@ public class ItemPriceUpdateService {
         serverIdentifiers.keySet().parallelStream()
                 .forEach(serverName -> {
                     List<ItemPrice> itemPrices = retrieveItemPrices(serverName);
-                    itemPriceService.saveAll(itemPrices);
+                    itemPriceServiceImpl.saveAll(itemPrices);
                 });
 
         log.info("Finished updating item prices in {} ms", elapsedTimeInMillis(start));

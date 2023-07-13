@@ -1,9 +1,6 @@
 package com.thoroldvix.economatic.item;
 
-import com.thoroldvix.economatic.item.dto.ItemPageResponse;
-import com.thoroldvix.economatic.item.dto.ItemRequest;
-import com.thoroldvix.economatic.item.dto.ItemResponse;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
+import com.thoroldvix.economatic.shared.SearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/wow-classic/api/v1/items")
 @Validated
 @RequiredArgsConstructor
-public class ItemsController {
+class ItemsController {
 
     private final ItemService itemService;
 

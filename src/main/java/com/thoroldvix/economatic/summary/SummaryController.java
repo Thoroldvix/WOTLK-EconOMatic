@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/wow-classic/api/v1/summary")
 @Tag(name = "Summary API", description = "API for retrieving summary of items and servers")
 @RequiredArgsConstructor
-public class SummaryController {
+class SummaryController {
 
-    private final ItemSummaryService itemSummaryService;
-    private final ServerSummaryService serverSummaryService;
+    private final ItemSummaryService itemSummaryServiceImpl;
+    private final ServerSummaryService serverSummaryServiceImpl;
 
     @Operation(summary = "Retrieves summary for all items",
             description = "Returns summary of all items. Includes amount of items in each category", tags = {"Summary API", "Items API"})
@@ -36,7 +36,7 @@ public class SummaryController {
     })
     @GetMapping("/items")
     public ResponseEntity<ItemSummaryResponse> getItemSummary() {
-        var itemSummaryResponse = itemSummaryService.getSummary();
+        var itemSummaryResponse = itemSummaryServiceImpl.getSummary();
         return ResponseEntity.ok(itemSummaryResponse);
     }
 
@@ -50,7 +50,7 @@ public class SummaryController {
     })
     @GetMapping("/servers")
     public ResponseEntity<ServerSummaryResponse> getSummary() {
-        var summary = serverSummaryService.getSummary();
+        var summary = serverSummaryServiceImpl.getSummary();
         return ResponseEntity.ok(summary);
     }
 }

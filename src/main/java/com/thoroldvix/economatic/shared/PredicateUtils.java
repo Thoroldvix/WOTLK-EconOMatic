@@ -1,6 +1,5 @@
 package com.thoroldvix.economatic.shared;
 
-import com.thoroldvix.economatic.shared.dto.SearchCriteria;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;

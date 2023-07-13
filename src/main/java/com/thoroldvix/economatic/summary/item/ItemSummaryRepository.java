@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ItemSummaryRepository extends JpaRepository<Item, Integer> {
+interface ItemSummaryRepository extends JpaRepository<Item, Integer> {
 
     @Query(value = """
             SELECT

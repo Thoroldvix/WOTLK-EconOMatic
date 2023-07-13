@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public abstract class ServerSummaryMapper {
+abstract class ServerSummaryMapper {
 
     public ServerSummaryResponse toResponse(ServerSummaryProjection summaryProjection) {
         ServerSummaryResponse.Summary summary = getSummary(summaryProjection);

@@ -1,10 +1,7 @@
 package com.thoroldvix.economatic.item;
 
-import com.thoroldvix.economatic.item.dto.ItemPageResponse;
-import com.thoroldvix.economatic.item.dto.ItemRequest;
-import com.thoroldvix.economatic.item.dto.ItemResponse;
 import com.thoroldvix.economatic.shared.SpecificationBuilder;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
+import com.thoroldvix.economatic.shared.SearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +25,7 @@ import static java.util.Objects.requireNonNull;
 @Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ItemServiceImpl implements ItemService {
+class ItemServiceImpl implements ItemService {
 
     public static final String ITEMS_NOT_FOUND = "Items not found";
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 
 @Repository
-public interface PopulationStatRepository extends JpaRepository<Population, Long> {
+interface PopulationStatRepository extends JpaRepository<Population, Long> {
 
     String STAT_SQL = """
             SELECT

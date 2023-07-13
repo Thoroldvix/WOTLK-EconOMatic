@@ -16,7 +16,7 @@ import java.util.Set;
 
 
 @Repository
-public interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, JpaSpecificationExecutor<ItemPrice> {
+interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, JpaSpecificationExecutor<ItemPrice> {
 
 
     @EntityGraph(attributePaths = {"item", "server"})

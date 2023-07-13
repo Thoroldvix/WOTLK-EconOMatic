@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 
 @Repository
-public interface GoldPriceStatRepository extends JpaRepository<GoldPrice, Long> {
+interface GoldPriceStatRepository extends JpaRepository<GoldPrice, Long> {
     String STAT_SQL = """
             SELECT
             (SELECT CAST(AVG(gp.value) AS DECIMAL(7, 6)) FROM gold_prices gp) AS mean,

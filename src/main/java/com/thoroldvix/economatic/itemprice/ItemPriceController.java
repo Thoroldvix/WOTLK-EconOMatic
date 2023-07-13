@@ -1,10 +1,7 @@
 package com.thoroldvix.economatic.itemprice;
 
-import com.thoroldvix.economatic.itemprice.dto.ItemPriceListResponse;
-import com.thoroldvix.economatic.itemprice.dto.ItemPricePageResponse;
-import com.thoroldvix.economatic.itemprice.dto.ItemPriceRequest;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
-import com.thoroldvix.economatic.shared.dto.TimeRange;
+import com.thoroldvix.economatic.shared.SearchRequest;
+import com.thoroldvix.economatic.shared.TimeRange;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,9 +25,9 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @Tag(name = "Item Prices API", description = "API for retrieving item prices")
 @RequiredArgsConstructor
-public class ItemPriceController {
+class ItemPriceController {
 
-    private final ItemPriceService itemPriceService;
+    private final ItemPriceService itemPriceServiceImpl;
 
     @Operation(summary = "Retrieve recent item prices for a server",
             description = "Returns all recent item prices for the specified server")
@@ -52,7 +49,7 @@ public class ItemPriceController {
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
             Pageable pageable) {
 
-        var auctionHouseInfo = itemPriceService.getRecentForServer(serverIdentifier, pageable);
+        var auctionHouseInfo = itemPriceServiceImpl.getRecentForServer(serverIdentifier, pageable);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -77,7 +74,7 @@ public class ItemPriceController {
                     required = true)
             @PathVariable String itemIdentifier) {
 
-        var auctionHouseInfo = itemPriceService.getRecentForServer(serverIdentifier, itemIdentifier);
+        var auctionHouseInfo = itemPriceServiceImpl.getRecentForServer(serverIdentifier, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -108,7 +105,7 @@ public class ItemPriceController {
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
             Pageable pageable) {
 
-        var auctionHouseInfo = itemPriceService.getForServer(serverIdentifier, itemIdentifier, new TimeRange(timeRange), pageable);
+        var auctionHouseInfo = itemPriceServiceImpl.getForServer(serverIdentifier, itemIdentifier, new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -130,7 +127,7 @@ public class ItemPriceController {
                                                         @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
                                                         @ParameterObject
                                                         Pageable pageable) {
-        var itemPrices = itemPriceService.search(searchRequest, pageable);
+        var itemPrices = itemPriceServiceImpl.search(searchRequest, pageable);
         return ResponseEntity.ok(itemPrices);
     }
 
@@ -152,7 +149,7 @@ public class ItemPriceController {
     public ResponseEntity<ItemPricePageResponse> getRecentForItemList(@RequestBody @Valid ItemPriceRequest itemList,
                                                                       @PageableDefault(sort = "updated_at", direction = Sort.Direction.DESC, size = 100)
                                                                       @ParameterObject Pageable pageable) {
-        var itemPrices = itemPriceService.getRecentForItemListAndServers(itemList, pageable);
+        var itemPrices = itemPriceServiceImpl.getRecentForItemListAndServers(itemList, pageable);
         return ResponseEntity.ok(itemPrices);
     }
 
@@ -177,7 +174,7 @@ public class ItemPriceController {
                     required = true)
             @PathVariable String itemIdentifier) {
 
-        var auctionHouseInfo = itemPriceService.getRecentForRegion(regionName, itemIdentifier);
+        var auctionHouseInfo = itemPriceServiceImpl.getRecentForRegion(regionName, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -202,7 +199,7 @@ public class ItemPriceController {
                     required = true)
             @PathVariable String itemIdentifier) {
 
-        var auctionHouseInfo = itemPriceService.getRecentForFaction(factionName, itemIdentifier);
+        var auctionHouseInfo = itemPriceServiceImpl.getRecentForFaction(factionName, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 }

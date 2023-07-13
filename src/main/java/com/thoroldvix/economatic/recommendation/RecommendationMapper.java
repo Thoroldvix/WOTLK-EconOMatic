@@ -1,7 +1,5 @@
 package com.thoroldvix.economatic.recommendation;
 
-import com.thoroldvix.economatic.recommendation.dto.RecommendationListResponse;
-import com.thoroldvix.economatic.recommendation.dto.RecommendationResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
@@ -14,7 +12,7 @@ import java.util.Optional;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface RecommendationMapper {
+interface RecommendationMapper {
 
     BigDecimal DEFAULT_SCORE = BigDecimal.ZERO;
     int SCALE = 6;

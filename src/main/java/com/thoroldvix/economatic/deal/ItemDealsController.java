@@ -1,6 +1,5 @@
 package com.thoroldvix.economatic.deal;
 
-import com.thoroldvix.economatic.deal.dto.ItemDealsList;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Item Deals API", description = "API for retrieving item deal")
 @RequestMapping("/wow-classic/api/v1/items/deals")
 @RequiredArgsConstructor
-public class ItemDealsController {
+class ItemDealsController {
 
-    private final ItemDealsService itemDealsService;
+    private final ItemDealsService itemDealsServiceImpl;
 
 
     @Operation(summary = "Retrieve deals for server",
@@ -51,7 +50,7 @@ public class ItemDealsController {
             @RequestParam(defaultValue = "0") int minQuality) {
 
 
-        var deals = itemDealsService.getDealsForServer(serverIdentifier, minQuantity, minQuality, limit);
+        var deals = itemDealsServiceImpl.getDealsForServer(serverIdentifier, minQuantity, minQuality, limit);
         return ResponseEntity.ok(deals);
     }
 }

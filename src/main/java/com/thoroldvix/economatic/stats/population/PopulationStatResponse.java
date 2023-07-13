@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.stats.population;
 
-import com.thoroldvix.economatic.population.dto.PopulationResponse;
+import com.thoroldvix.economatic.population.PopulationResponse;
 import lombok.Builder;
 
 @Builder

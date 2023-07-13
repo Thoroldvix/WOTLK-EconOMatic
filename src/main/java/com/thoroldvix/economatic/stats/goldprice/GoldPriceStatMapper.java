@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.stats.goldprice;
 
 import com.thoroldvix.economatic.goldprice.GoldPriceMapper;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
+import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.stats.StatsProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = GoldPriceMapper.class)
-public interface GoldPriceStatMapper {
+interface GoldPriceStatMapper {
     int SCALE = 6;
     RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
 
@@ -20,7 +20,7 @@ public interface GoldPriceStatMapper {
     @Mapping(target = "mean", qualifiedByName = "mapMean")
     @Mapping(target = "count", qualifiedByName = "mapCount")
     @Mapping(target = "minimum", source = "min")
-     @Mapping(target = "maximum", source = "max")
+    @Mapping(target = "maximum", source = "max")
     GoldPriceStatResponse toResponse(StatsProjection statProj, GoldPriceResponse min, GoldPriceResponse max);
 
 

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ServerSummaryRepository extends JpaRepository<Server, Integer> {
+interface ServerSummaryRepository extends JpaRepository<Server, Integer> {
 
      @Query(value = """
             SELECT SUM(CASE WHEN faction = 0 THEN 1 ELSE 0 END)          AS alliance,

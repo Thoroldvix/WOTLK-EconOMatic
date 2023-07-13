@@ -1,8 +1,6 @@
 package com.thoroldvix.economatic.deal;
 
 
-import com.thoroldvix.economatic.deal.dto.ItemDealResponse;
-import com.thoroldvix.economatic.deal.dto.ItemDealsList;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;

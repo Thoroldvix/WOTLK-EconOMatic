@@ -1,8 +1,6 @@
 package com.thoroldvix.economatic.server;
 
-import com.thoroldvix.economatic.server.dto.ServerListResponse;
-import com.thoroldvix.economatic.server.dto.ServerResponse;
-import com.thoroldvix.economatic.shared.dto.SearchRequest;
+import com.thoroldvix.economatic.shared.SearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Servers API", description = "API for retrieving server information")
 @RequestMapping("/wow-classic/api/v1/servers")
 @RequiredArgsConstructor
-public class ServerController {
+class ServerController {
 
     private final ServerService serverServiceImpl;
 

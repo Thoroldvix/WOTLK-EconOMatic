@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ItemRepository extends JpaRepository<Item, Integer>, JpaSpecificationExecutor<Item> {
+interface ItemRepository extends JpaRepository<Item, Integer>, JpaSpecificationExecutor<Item> {
     
     Optional<Item> findByUniqueName(String uniqueName);
 

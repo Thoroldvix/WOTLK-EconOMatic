@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @Repository
-public interface ItemDealsRepository extends JpaRepository<ItemPrice, Long> {
+interface ItemDealsRepository extends JpaRepository<ItemPrice, Long> {
 
 
     @Query(value = """

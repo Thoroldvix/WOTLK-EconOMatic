@@ -1,7 +1,5 @@
 package com.thoroldvix.economatic.deal;
 
-import com.thoroldvix.economatic.deal.dto.ItemDealResponse;
-import com.thoroldvix.economatic.deal.dto.ItemDealsList;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -14,7 +12,7 @@ import java.util.Objects;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface ItemDealsMapper {
+interface ItemDealsMapper {
 
     @Mapping(target = "discountPercentage", qualifiedByName = "mapDiscountPercentage")
     @Mapping(target = "server", source = "uniqueServerName")

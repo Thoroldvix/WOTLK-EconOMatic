@@ -1,7 +1,5 @@
 package com.thoroldvix.economatic.recommendation;
 
-import com.thoroldvix.economatic.recommendation.dto.RecommendationRequest;
-import com.thoroldvix.economatic.recommendation.dto.RecommendationListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Recommendations API", description = "API for retrieving server recommendations for gold farming")
 @RequestMapping("/wow-classic/api/v1/recommendations")
 @RequiredArgsConstructor
-public class RecommendationController {
+class RecommendationController {
 
     private final RecommendationService recommendationService;
 

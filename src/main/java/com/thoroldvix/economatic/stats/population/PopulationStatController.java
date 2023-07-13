@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.stats.population;
 
-import com.thoroldvix.economatic.shared.dto.TimeRange;
+import com.thoroldvix.economatic.shared.TimeRange;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Populations Stats API", description = "API for retrieving population statistics")
 @RequiredArgsConstructor
 @RequestMapping("/wow-classic/api/v1/servers/populations/stats")
-public class PopulationStatController {
+class PopulationStatController {
 
-    private final PopulationStatsService populationStatsService;
+    private final PopulationStatService populationStatServiceImpl;
 
     @Operation(summary = "Retrieves basic population statistics for all servers",
             description = "The statistics are based on all server population scans and the time range in days")
@@ -36,7 +36,7 @@ public class PopulationStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForAll = populationStatsService.getForAll(new TimeRange(timeRange));
+        var statsForAll = populationStatServiceImpl.getForAll(new TimeRange(timeRange));
         return ResponseEntity.ok(statsForAll);
     }
 
@@ -61,7 +61,7 @@ public class PopulationStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForServer = populationStatsService.getForServer(serverIdentifier, new TimeRange(timeRange));
+        var statsForServer = populationStatServiceImpl.getForServer(serverIdentifier, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForServer);
     }
 
@@ -85,7 +85,7 @@ public class PopulationStatController {
             example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForRegion = populationStatsService.getForRegion(regionName, new TimeRange(timeRange));
+        var statsForRegion = populationStatServiceImpl.getForRegion(regionName, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForRegion);
     }
 
@@ -110,7 +110,7 @@ public class PopulationStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForFaction = populationStatsService.getForFaction(factionName, new TimeRange(timeRange));
+        var statsForFaction = populationStatServiceImpl.getForFaction(factionName, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForFaction);
     }
 }

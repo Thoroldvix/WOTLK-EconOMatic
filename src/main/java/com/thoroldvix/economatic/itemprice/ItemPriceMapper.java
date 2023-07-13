@@ -1,11 +1,8 @@
 package com.thoroldvix.economatic.itemprice;
 
 import com.thoroldvix.economatic.item.Item;
-import com.thoroldvix.economatic.itemprice.dto.ItemPriceListResponse;
-import com.thoroldvix.economatic.itemprice.dto.ItemPricePageResponse;
-import com.thoroldvix.economatic.itemprice.dto.ItemPriceResponse;
 import com.thoroldvix.economatic.server.Server;
-import com.thoroldvix.economatic.shared.dto.PaginationInfo;
+import com.thoroldvix.economatic.shared.PaginationInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -18,7 +15,7 @@ import static com.thoroldvix.economatic.shared.ValidationUtils.checkNullAndGet;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface ItemPriceMapper {
+interface ItemPriceMapper {
 
     @Mapping(target = "server", source = "server", qualifiedByName = "serverName")
     @Mapping(target = "itemId", source = "item", qualifiedByName = "id")

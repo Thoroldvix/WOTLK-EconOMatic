@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.thoroldvix.economatic.population.dto.TotalPopResponse;
-import com.thoroldvix.economatic.server.dto.ServerResponse;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Server;
-import com.thoroldvix.economatic.server.ServerRepository;
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Retryable;
@@ -25,14 +25,15 @@ import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class PopulationUpdateService {
+class PopulationUpdateService {
 
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.population.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.population.update-rate}";
     private final WarcraftTavernClient warcraftTavernClient;
-    private final ServerRepository serverRepository;
+    @PersistenceContext
+    private final EntityManager entityManager;
     private final ServerService serverServiceImpl;
-    private final PopulationService populationService;
+    private final PopulationService populationServiceImpl;
 
     @Scheduled(fixedRateString = UPDATE_RATE,
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
@@ -44,7 +45,7 @@ public class PopulationUpdateService {
 
         String populationJson = warcraftTavernClient.getAll();
         List<Population> populations = retrievePopulations(populationJson);
-        populationService.saveAll(populations);
+        populationServiceImpl.saveAll(populations);
 
         log.info("Finished updating population in {} ms", elapsedTimeInMillis(start));
     }
@@ -76,7 +77,7 @@ public class PopulationUpdateService {
                 ? totalPopulation.popHorde()
                 : totalPopulation.popAlliance();
 
-        Server serverEntity = serverRepository.getReferenceById(server.id());
+        Server serverEntity = entityManager.getReference(Server.class, server.id());
 
         return Population.builder()
                 .value(populationSize)

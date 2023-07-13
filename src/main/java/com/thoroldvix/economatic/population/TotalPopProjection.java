@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.population;
 
-public interface TotalPopProjection {
+interface TotalPopProjection {
     Integer getPopTotal();
     Integer getPopHorde();
     Integer getPopAlliance();

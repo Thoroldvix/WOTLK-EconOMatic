@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.stats.goldprice;
 
-import com.thoroldvix.economatic.shared.dto.TimeRange;
+import com.thoroldvix.economatic.shared.TimeRange;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Gold Price Stats API", description = "API for retrieving gold price statistics")
 @RequestMapping("/wow-classic/api/v1/servers/prices/stats")
 @RequiredArgsConstructor
-public class GoldPriceStatController {
+class GoldPriceStatController {
 
-    private final GoldPriceStatsService goldPriceStatsService;
+    private final GoldPriceStatService goldPriceStatServiceImpl;
 
     @Operation(summary = "Retrieve basic price statistics for all servers",
             description = "Retrieves basic price statistics based on all gold price scans and the specified time range")
@@ -36,7 +36,7 @@ public class GoldPriceStatController {
             @Parameter(description = "Range of days to retrieve statistics for",
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
-        var statsForAllPrices = goldPriceStatsService.getForAll(new TimeRange(timeRange));
+        var statsForAllPrices = goldPriceStatServiceImpl.getForAll(new TimeRange(timeRange));
         return ResponseEntity.ok(statsForAllPrices);
     }
 
@@ -60,7 +60,7 @@ public class GoldPriceStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForServer = goldPriceStatsService.getForServer(serverIdentifier, new TimeRange(timeRange));
+        var statsForServer = goldPriceStatServiceImpl.getForServer(serverIdentifier, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForServer);
     }
 
@@ -84,7 +84,7 @@ public class GoldPriceStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForRegion = goldPriceStatsService.getForRegion(regionName, new TimeRange(timeRange));
+        var statsForRegion = goldPriceStatServiceImpl.getForRegion(regionName, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForRegion);
     }
 
@@ -108,7 +108,7 @@ public class GoldPriceStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForFaction = goldPriceStatsService.getForFaction(factionName, new TimeRange(timeRange));
+        var statsForFaction = goldPriceStatServiceImpl.getForFaction(factionName, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForFaction);
     }
 }

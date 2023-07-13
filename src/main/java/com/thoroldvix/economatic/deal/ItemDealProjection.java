@@ -1,8 +1,7 @@
 package com.thoroldvix.economatic.deal;
 
 import java.math.BigDecimal;
-
-public interface ItemDealProjection {
+interface ItemDealProjection {
     int getItemId();
     String getUniqueServerName();
     long getMarketValue();

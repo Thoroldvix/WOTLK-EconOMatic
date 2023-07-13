@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ServerRepository extends JpaRepository<Server, Integer>, JpaSpecificationExecutor<Server> {
+interface ServerRepository extends JpaRepository<Server, Integer>, JpaSpecificationExecutor<Server> {
 
     Optional<Server> findByUniqueName(String uniqueName);
 

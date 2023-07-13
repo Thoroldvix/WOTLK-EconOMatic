@@ -1,10 +1,7 @@
 package com.thoroldvix.economatic.item;
 
 
-import com.thoroldvix.economatic.item.dto.ItemPageResponse;
-import com.thoroldvix.economatic.item.dto.ItemRequest;
-import com.thoroldvix.economatic.item.dto.ItemResponse;
-import com.thoroldvix.economatic.shared.dto.PaginationInfo;
+import com.thoroldvix.economatic.shared.PaginationInfo;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,7 +12,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface ItemMapper {
+interface ItemMapper {
 
     private static <T extends Enum<T>> T getEnumValue(String enumString, Class<T> enumType) {
         return enumString != null ? StringEnumConverter.fromString(enumString, enumType) : null;

@@ -1,14 +1,14 @@
 package com.thoroldvix.economatic.stats.population;
 
-import com.thoroldvix.economatic.population.PopulationMapper;
-import com.thoroldvix.economatic.population.dto.PopulationResponse;
+
+import com.thoroldvix.economatic.population.PopulationResponse;
 import com.thoroldvix.economatic.stats.StatsProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = PopulationMapper.class)
-public interface PopulationStatMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+interface PopulationStatMapper {
 
     default PopulationStatResponse toResponse(StatsProjection statProj, PopulationResponse min, PopulationResponse max) {
         int median = statProj.getMedian().intValue();

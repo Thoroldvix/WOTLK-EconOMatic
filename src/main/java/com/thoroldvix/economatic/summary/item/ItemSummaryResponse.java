@@ -7,7 +7,7 @@ public record ItemSummaryResponse(
         Summary summary
 ) {
     @Builder
-    public record Summary(
+    record Summary(
             Quality quality,
 
             Slot slot,
@@ -19,7 +19,7 @@ public record ItemSummaryResponse(
     }
 
     @Builder
-    public record Quality(
+    record Quality(
             int common,
             int uncommon,
             int rare,
@@ -29,7 +29,7 @@ public record ItemSummaryResponse(
     }
 
     @Builder
-    public record Slot(
+    record Slot(
             int nonEquipable,
             int head,
             int neck,
@@ -63,7 +63,7 @@ public record ItemSummaryResponse(
     }
 
     @Builder
-    public record Type(int consumable,
+    record Type(int consumable,
                           int container,
                           int weapon,
                           int gem,

@@ -1,16 +1,13 @@
 package com.thoroldvix.economatic.recommendation;
 
+import com.thoroldvix.economatic.goldprice.GoldPriceRequest;
+import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.GoldPriceService;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceRequest;
-import com.thoroldvix.economatic.goldprice.dto.GoldPriceResponse;
+import com.thoroldvix.economatic.itemprice.ItemPriceRequest;
+import com.thoroldvix.economatic.itemprice.ItemPriceResponse;
 import com.thoroldvix.economatic.itemprice.ItemPriceService;
-import com.thoroldvix.economatic.itemprice.dto.ItemPriceRequest;
-import com.thoroldvix.economatic.itemprice.dto.ItemPriceResponse;
+import com.thoroldvix.economatic.population.PopulationResponse;
 import com.thoroldvix.economatic.population.PopulationService;
-import com.thoroldvix.economatic.population.dto.PopulationResponse;
-import com.thoroldvix.economatic.recommendation.dto.RecommendationListResponse;
-import com.thoroldvix.economatic.recommendation.dto.RecommendationProp;
-import com.thoroldvix.economatic.recommendation.dto.RecommendationRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -26,29 +23,29 @@ import static com.thoroldvix.economatic.shared.ValidationUtils.notLessThan;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class BasicRecommendationService implements RecommendationService{
+class BasicRecommendationService implements RecommendationService {
 
     private static final BigDecimal MAX_POPULATION = new BigDecimal("20000");
     private static final BigDecimal MAX_ITEM_PRICE_COPPER = new BigDecimal("15000000");
     private static final BigDecimal MAX_GOLD_PRICE_USD = new BigDecimal("0.0025");
     private final RecommendationProp prop;
-    private final PopulationService populationService;
+    private final PopulationService populationServiceImpl;
 
-    private final GoldPriceService goldPriceService;
+    private final GoldPriceService goldPriceServiceImpl;
 
-    private final ItemPriceService itemPriceService;
+    private final ItemPriceService itemPriceServiceImpl;
 
     private final RecommendationMapper recommendationMapper;
 
     @Autowired
-    public BasicRecommendationService(PopulationService populationService,
-                                      GoldPriceService goldPriceService,
-                                      ItemPriceService itemPriceService,
+    public BasicRecommendationService(PopulationService populationServiceImpl,
+                                      GoldPriceService goldPriceServiceImpl,
+                                      ItemPriceService itemPriceServiceImpl,
                                       RecommendationMapper recommendationMapper,
                                       RecommendationProp prop) {
-        this.populationService = populationService;
-        this.goldPriceService = goldPriceService;
-        this.itemPriceService = itemPriceService;
+        this.populationServiceImpl = populationServiceImpl;
+        this.goldPriceServiceImpl = goldPriceServiceImpl;
+        this.itemPriceServiceImpl = itemPriceServiceImpl;
         this.recommendationMapper = recommendationMapper;
         this.prop = prop;
     }
@@ -85,7 +82,7 @@ public class BasicRecommendationService implements RecommendationService{
         BigDecimal weight = getWeightOrDefault(itemPriceWeight, this.prop.itemPriceDefaultWeight());
         ItemPriceRequest request = buildItemPriceRequest(itemList, servers);
 
-        return itemPriceService.getRecentForItemListAndServers(request, Pageable.unpaged()).prices()
+        return itemPriceServiceImpl.getRecentForItemListAndServers(request, Pageable.unpaged()).prices()
                 .stream()
                 .collect(Collectors.toMap(ItemPriceResponse::server,
                         itemPrice -> calculateWeightedValue(marketValue ? itemPrice.marketValue() : itemPrice.minBuyout(), MAX_ITEM_PRICE_COPPER, weight),
@@ -95,7 +92,7 @@ public class BasicRecommendationService implements RecommendationService{
 
     private Map<String, BigDecimal> getPopulationScores(BigDecimal populationWeight) {
         BigDecimal weight = getWeightOrDefault(populationWeight, this.prop.populationDefaultWeight());
-        return populationService.getAllRecent().populations().stream()
+        return populationServiceImpl.getAllRecent().populations().stream()
                 .filter(this::filterLowPopulations)
                 .collect(Collectors.toMap(
                         PopulationResponse::server,
@@ -106,7 +103,7 @@ public class BasicRecommendationService implements RecommendationService{
     private Map<String, BigDecimal> getGoldPriceScores(BigDecimal goldPriceWeight, Set<String> servers) {
         BigDecimal weight = getWeightOrDefault(goldPriceWeight, this.prop.goldPriceDefaultWeight());
         GoldPriceRequest request = new GoldPriceRequest(servers);
-        return goldPriceService.getRecentForServerList(request).prices().stream()
+        return goldPriceServiceImpl.getRecentForServerList(request).prices().stream()
                 .collect(Collectors.toMap(
                         GoldPriceResponse::server,
                         goldPriceResponse ->
