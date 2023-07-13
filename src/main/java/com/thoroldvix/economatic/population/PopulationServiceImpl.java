@@ -44,6 +44,12 @@ class PopulationServiceImpl implements PopulationService {
     }
 
     @Override
+    public PopulationResponse getForId(long id) {
+         return populationRepository.findById(id).map(populationMapper::toResponse)
+                .orElseThrow(() -> new PopulationNotFoundException("No population found for id " + id));
+    }
+
+    @Override
     public PopulationPageResponse getAll(TimeRange timeRange, Pageable pageable) {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);

@@ -11,6 +11,8 @@ import java.util.List;
 @Validated
 public interface PopulationService {
 
+    PopulationResponse getForId(long id);
+
     PopulationPageResponse getAll(TimeRange timeRange, Pageable pageable);
 
     PopulationPageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable);

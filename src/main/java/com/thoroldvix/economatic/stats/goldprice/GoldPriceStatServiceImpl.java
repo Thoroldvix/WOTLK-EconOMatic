@@ -1,8 +1,7 @@
 package com.thoroldvix.economatic.stats.goldprice;
 
-import com.thoroldvix.economatic.goldprice.GoldPriceMapper;
-import com.thoroldvix.economatic.goldprice.GoldPriceNotFoundException;
 import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
+import com.thoroldvix.economatic.goldprice.GoldPriceService;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
@@ -31,7 +30,7 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
     private final ServerService serverService;
     private final GoldPriceStatRepository goldPriceStatRepository;
     private final GoldPriceStatMapper goldPriceStatMapper;
-    private final GoldPriceMapper goldPriceMapper;
+    private final GoldPriceService goldPriceServiceImpl;
 
     @Override
     public GoldPriceStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
@@ -102,15 +101,11 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
 
     private GoldPriceResponse getMax(StatsProjection goldPriceStat) {
         long maxId = goldPriceStat.getMaxId().longValue();
-
-        return goldPriceStatRepository.findById(maxId).map(goldPriceMapper::toResponse)
-                .orElseThrow(() -> new GoldPriceNotFoundException("No max gold price found with id " + maxId));
+        return goldPriceServiceImpl.getForId(maxId);
     }
 
     private GoldPriceResponse getMin(StatsProjection goldPriceStat) {
         long minId = goldPriceStat.getMinId().longValue();
-
-        return goldPriceStatRepository.findById(minId).map(goldPriceMapper::toResponse)
-                .orElseThrow(() -> new GoldPriceNotFoundException("No min gold price found with id " + minId));
+        return goldPriceServiceImpl.getForId(minId);
     }
 }

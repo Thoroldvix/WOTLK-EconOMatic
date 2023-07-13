@@ -1,6 +1,5 @@
 package com.thoroldvix.economatic.stats.goldprice;
 
-import com.thoroldvix.economatic.goldprice.GoldPriceMapper;
 import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.stats.StatsProjection;
 import org.mapstruct.Mapper;
@@ -11,7 +10,7 @@ import org.mapstruct.Named;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = GoldPriceMapper.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface GoldPriceStatMapper {
     int SCALE = 6;
     RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;

@@ -13,7 +13,7 @@ import java.util.List;
 import static com.thoroldvix.economatic.shared.ValidationUtils.checkNullAndGet;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface GoldPriceMapper {
+interface GoldPriceMapper {
 
     default GoldPriceListResponse toGoldPriceList(List<GoldPrice> prices) {
          return new GoldPriceListResponse(toList(prices));

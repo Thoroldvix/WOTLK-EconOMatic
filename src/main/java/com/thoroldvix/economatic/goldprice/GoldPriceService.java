@@ -11,7 +11,9 @@ import java.util.List;
 @Validated
 public interface GoldPriceService {
 
-   GoldPricePageResponse getAll(TimeRange timeRange, Pageable pageable);
+    GoldPriceResponse getForId(long id);
+
+    GoldPricePageResponse getAll(TimeRange timeRange, Pageable pageable);
 
     GoldPriceListResponse getAllRecent();
 

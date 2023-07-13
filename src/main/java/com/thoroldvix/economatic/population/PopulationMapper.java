@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface PopulationMapper {
+interface PopulationMapper {
 
     @Mapping(target = "server", source = "server", qualifiedByName = "serverName")
     PopulationResponse toResponse(Population population);

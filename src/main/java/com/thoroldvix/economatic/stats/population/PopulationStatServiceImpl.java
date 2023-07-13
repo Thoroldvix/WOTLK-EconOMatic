@@ -1,13 +1,12 @@
 package com.thoroldvix.economatic.stats.population;
 
-import com.thoroldvix.economatic.population.PopulationMapper;
-import com.thoroldvix.economatic.population.PopulationNotFoundException;
 import com.thoroldvix.economatic.population.PopulationResponse;
+import com.thoroldvix.economatic.population.PopulationService;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.shared.TimeRange;
 import com.thoroldvix.economatic.shared.StringEnumConverter;
+import com.thoroldvix.economatic.shared.TimeRange;
 import com.thoroldvix.economatic.stats.StatsProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class PopulationStatServiceImpl implements PopulationStatService {
     private final PopulationStatRepository statRepository;
     private final ServerService serverService;
     private final PopulationStatMapper populationStatMapper;
-    private final PopulationMapper populationMapper;
+    private final PopulationService populationServiceImpl;
 
     @Override
     public PopulationStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
@@ -92,16 +91,12 @@ public class PopulationStatServiceImpl implements PopulationStatService {
 
     private PopulationResponse getMax(StatsProjection statProj) {
         long maxId = statProj.getMaxId().longValue();
-
-        return statRepository.findById(maxId).map(populationMapper::toResponse)
-                .orElseThrow(() -> new PopulationNotFoundException("No max population found for id " + maxId));
+        return populationServiceImpl.getForId(maxId);
     }
 
     private PopulationResponse getMin(StatsProjection statProj) {
         long minId = statProj.getMinId().longValue();
-
-        return statRepository.findById(minId).map(populationMapper::toResponse)
-                .orElseThrow(() -> new PopulationNotFoundException("No min population found for id " + minId));
+        return populationServiceImpl.getForId(minId);
     }
 
     private PopulationStatResponse getStatResponse(StatsProjection statsProjection) {

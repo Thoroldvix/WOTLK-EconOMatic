@@ -47,6 +47,12 @@ class GoldPriceServiceImpl implements GoldPriceService {
     }
 
     @Override
+    public GoldPriceResponse getForId(long id) {
+        return goldPriceRepository.findById(id).map(goldPriceMapper::toResponse)
+                .orElseThrow(() -> new GoldPriceNotFoundException("No gold price found with id " + id));
+    }
+
+    @Override
     public GoldPricePageResponse getAll(TimeRange timeRange, Pageable pageable) {
         validateInputs(timeRange, pageable);
         Page<GoldPrice> page = findAllForTimeRange(timeRange, pageable);
