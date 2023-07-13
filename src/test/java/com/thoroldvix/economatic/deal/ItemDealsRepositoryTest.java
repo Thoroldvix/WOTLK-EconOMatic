@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 @DataJpaTest
-@ActiveProfiles(profiles = {"test", "integration"})
+@ActiveProfiles(profiles = {"integration"})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ItemDealsRepositoryTest implements PostgresqlContainerInitializer {
 

@@ -2,14 +2,14 @@ package com.thoroldvix.economatic.deal;
 
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public abstract class BaseItemDealTest {
     protected static final int MINIMUM_ITEM_QUANTITY = 3;
     protected static final int MINIMUM_ITEM_QUALITY = 0;
