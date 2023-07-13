@@ -8,7 +8,7 @@ public record ServerResponse(
         String name,
         Faction faction,
         Region region,
-        String type,
+        ServerType type,
         String uniqueName
 ) {
 

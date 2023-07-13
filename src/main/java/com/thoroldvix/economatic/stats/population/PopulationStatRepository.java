@@ -34,7 +34,7 @@ interface PopulationStatRepository extends JpaRepository<Population, Long> {
             FROM population p
             WHERE p.updated_at >= ?1 AND updated_at <= ?2 AND p.value > 0)
             """ + STAT_SQL, nativeQuery = true)
-    StatsProjection findStatsForAll(LocalDateTime start, LocalDateTime end);
+    StatsProjection findForTimeRange(LocalDateTime start, LocalDateTime end);
 
     @Query(value = """
             WITH filteredPopulations AS (

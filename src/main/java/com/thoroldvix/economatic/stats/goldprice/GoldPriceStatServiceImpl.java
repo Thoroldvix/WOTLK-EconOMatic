@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.stats.goldprice;
 
+import com.thoroldvix.economatic.error.StatisticsNotFoundException;
 import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.GoldPriceService;
 import com.thoroldvix.economatic.server.Faction;
@@ -13,12 +14,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.function.Supplier;
-
 import static com.thoroldvix.economatic.error.ErrorMessages.TIME_RANGE_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
 import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
-import static com.thoroldvix.economatic.shared.ValidationUtils.validateStatsProjection;
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -32,12 +30,25 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
     private final GoldPriceStatMapper goldPriceStatMapper;
     private final GoldPriceService goldPriceServiceImpl;
 
+    private static void validateStatsProjection(StatsProjection statsProjection) {
+        boolean isInvalid = statsProjection.getMean() == null
+                            || statsProjection.getMaxId() == null
+                            || statsProjection.getMinId() == null
+                            || statsProjection.getMedian() == null;
+        if (isInvalid) {
+            throw new StatisticsNotFoundException("No statistics found");
+        }
+    }
+
     @Override
     public GoldPriceStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
 
-        return generateGoldPriceStatResponse(() -> findForServer(serverIdentifier, timeRange));
+        StatsProjection statsProjection = findForServer(serverIdentifier, timeRange);
+        validateStatsProjection(statsProjection);
+
+        return getStatResponse(statsProjection);
     }
 
     @Override
@@ -45,7 +56,10 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
 
-        return generateGoldPriceStatResponse(() -> findForRegion(regionName, timeRange));
+        StatsProjection statsProjection = findForRegion(regionName, timeRange);
+        validateStatsProjection(statsProjection);
+
+        return getStatResponse(statsProjection);
     }
 
     @Override
@@ -53,18 +67,17 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
 
-        return generateGoldPriceStatResponse(() -> findForFaction(factionName, timeRange));
+        StatsProjection statsProjection = findForFaction(factionName, timeRange);
+        validateStatsProjection(statsProjection);
+
+        return getStatResponse(statsProjection);
     }
 
     @Override
     public GoldPriceStatResponse getForAll(TimeRange timeRange) {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
 
-        return generateGoldPriceStatResponse(() -> findForTimeRange(timeRange));
-    }
-
-    private GoldPriceStatResponse generateGoldPriceStatResponse(Supplier<StatsProjection> statsSupplier) {
-        StatsProjection statsProjection = statsSupplier.get();
+        StatsProjection statsProjection = findForTimeRange(timeRange);
         validateStatsProjection(statsProjection);
 
         return getStatResponse(statsProjection);
@@ -79,7 +92,6 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
 
     private StatsProjection findForServer(String serverIdentifier, TimeRange timeRange) {
         int serverId = serverService.getServer(serverIdentifier).id();
-
         return goldPriceStatRepository.findStatsForServer(serverId, timeRange.start(), timeRange.end());
     }
 

@@ -1,8 +1,5 @@
 package com.thoroldvix.economatic.shared;
 
-import com.thoroldvix.economatic.error.StatisticsNotFoundException;
-import com.thoroldvix.economatic.stats.StatsProjection;
-
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -16,16 +13,6 @@ public final class ValidationUtils {
         Objects.requireNonNull(exceptionSupplier, "Exception supplier cannot be null");
         if (isCollectionEmpty(collection)) {
             throw exceptionSupplier.get();
-        }
-    }
-
-    public static void validateStatsProjection(StatsProjection statsProjection) {
-        boolean isInvalid = statsProjection.getMean() == null
-                            || statsProjection.getMaxId() == null
-                            || statsProjection.getMinId() == null
-                            || statsProjection.getMedian() == null;
-        if (isInvalid) {
-            throw new StatisticsNotFoundException("No statistics found");
         }
     }
 

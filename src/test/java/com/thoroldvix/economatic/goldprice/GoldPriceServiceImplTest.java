@@ -1,10 +1,6 @@
 package com.thoroldvix.economatic.goldprice;
 
-import com.thoroldvix.economatic.server.Faction;
-import com.thoroldvix.economatic.server.Region;
-import com.thoroldvix.economatic.server.Server;
-import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.server.ServerResponse;
+import com.thoroldvix.economatic.server.*;
 import com.thoroldvix.economatic.shared.PaginationInfo;
 import com.thoroldvix.economatic.shared.SearchCriteria;
 import com.thoroldvix.economatic.shared.SearchRequest;
@@ -18,13 +14,13 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,7 +36,7 @@ import static org.mockito.Mockito.*;
 
 
 @ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class GoldPriceServiceImplTest {
     public static final String SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY = "Server identifier cannot be null or empty";
     private static final LocalDateTime UPDATE_DATE = LocalDateTime.now();
