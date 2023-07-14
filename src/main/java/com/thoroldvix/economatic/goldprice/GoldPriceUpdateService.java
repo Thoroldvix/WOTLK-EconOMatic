@@ -1,7 +1,6 @@
 package com.thoroldvix.economatic.goldprice;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerResponse;
@@ -28,6 +27,8 @@ import static com.thoroldvix.economatic.util.Utils.elapsedTimeInMillis;
 class GoldPriceUpdateService {
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.gold-price.update-rate}";
+    private static final GoldPriceDeserializer GOLD_PRICE_DESERIALIZER = new GoldPriceDeserializer();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     @PersistenceContext
     private final EntityManager entityManager;
     private final G2GPriceClient g2gPriceClient;
@@ -80,15 +81,18 @@ class GoldPriceUpdateService {
     }
 
     private List<GoldPriceResponse> extractFromJson(String goldPricesJson) {
-        GoldPriceDeserializer deserializer = new GoldPriceDeserializer();
-        ObjectMapper mapper = new ObjectMapper();
-        DeserializationContext context = mapper.getDeserializationContext();
-        JsonParser parser;
         try {
-            parser = mapper.getFactory().createParser(goldPricesJson);
-            return deserializer.deserialize(parser, context);
+            return deserializeGoldPrices(createJsonParser(goldPricesJson));
         } catch (IOException e) {
-            throw new GoldPriceParsingException("Error while parsing gold price json");
+            throw new GoldPriceParsingException("Error while parsing gold price json - " + e.getMessage());
         }
+    }
+
+    private JsonParser createJsonParser(String goldPricesJson) throws IOException {
+        return OBJECT_MAPPER.getFactory().createParser(goldPricesJson);
+    }
+
+    private List<GoldPriceResponse> deserializeGoldPrices(JsonParser parser) throws IOException {
+        return GOLD_PRICE_DESERIALIZER.deserialize(parser, OBJECT_MAPPER.getDeserializationContext());
     }
 }
