@@ -43,7 +43,6 @@ class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
 
     @Override
     public List<GoldPriceResponse> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-
         requireNonNull(jp, "Json parser cannot be null");
         requireNonNull(ctxt, "Deserialization context cannot be null");
 

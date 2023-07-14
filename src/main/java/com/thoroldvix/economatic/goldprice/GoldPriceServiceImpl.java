@@ -2,6 +2,7 @@ package com.thoroldvix.economatic.goldprice;
 
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.search.SearchRequest;
 import com.thoroldvix.economatic.dto.TimeRange;
@@ -52,6 +53,7 @@ class GoldPriceServiceImpl implements GoldPriceService {
                 .orElseThrow(() -> new GoldPriceNotFoundException("No gold price found with id " + id));
     }
 
+
     @Override
     public GoldPricePageResponse getAll(TimeRange timeRange, Pageable pageable) {
         validateInputs(timeRange, pageable);
@@ -87,7 +89,9 @@ class GoldPriceServiceImpl implements GoldPriceService {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
         validateInputs(timeRange, pageable);
 
-        Page<GoldPrice> prices = findAllForServer(serverIdentifier, timeRange, pageable);
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        Page<GoldPrice> prices = findAllForServer(server, timeRange, pageable);
+
         notEmpty(prices.getContent(),
                 () -> new GoldPriceNotFoundException("No prices found for server identifier %s and time range: %s-%s".formatted(
                         serverIdentifier, timeRange.start(), timeRange.end())));
@@ -99,7 +103,8 @@ class GoldPriceServiceImpl implements GoldPriceService {
     public GoldPriceResponse getRecentForServer(String serverIdentifier) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
 
-        GoldPrice price = findRecentForServer(serverIdentifier)
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        GoldPrice price = findRecentForServer(server)
                 .orElseThrow(() -> new GoldPriceNotFoundException("No prices found for server " + serverIdentifier));
 
         return goldPriceMapper.toResponse(price);
@@ -129,7 +134,8 @@ class GoldPriceServiceImpl implements GoldPriceService {
     public GoldPriceListResponse getRecentForServerList(@Valid GoldPriceRequest request) {
         requireNonNull(request, "Gold price request cannot be null");
 
-        List<GoldPrice> prices = findRecentForServerList(request.serverList());
+        Set<Integer> serverIds = getServerIds(request.serverList());
+        List<GoldPrice> prices = findRecentForServerIds(serverIds);
         notEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for server list"));
 
         return goldPriceMapper.toGoldPriceList(prices);
@@ -143,10 +149,8 @@ class GoldPriceServiceImpl implements GoldPriceService {
         goldPriceRepository.saveAll(pricesToSave);
     }
 
-    private Page<GoldPrice> findAllForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
-        int serverId = serverService.getServer(serverIdentifier).id();
-
-        return goldPriceRepository.findAllForServerAndTimeRange(serverId, timeRange.start(), timeRange.end(), pageable);
+    private Page<GoldPrice> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
+        return goldPriceRepository.findAllForServerAndTimeRange(server.id(), timeRange.start(), timeRange.end(), pageable);
     }
 
     private Page<GoldPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
@@ -160,26 +164,20 @@ class GoldPriceServiceImpl implements GoldPriceService {
 
     private List<GoldPrice> findRecentForRegion(String regionName) {
         Region region = StringEnumConverter.fromString(regionName, Region.class);
-
         return goldPriceRepository.findRecentForRegion(region.ordinal());
     }
 
     private List<GoldPrice> findRecentForFaction(String factionName) {
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-
         return goldPriceRepository.findRecentForFaction(faction.ordinal());
     }
 
-    private Optional<GoldPrice> findRecentForServer(String serverIdentifier) {
-        int serverId = serverService.getServer(serverIdentifier).id();
-
-        return goldPriceRepository.findRecentForServer(serverId);
+    private Optional<GoldPrice> findRecentForServer(ServerResponse server) {
+        return goldPriceRepository.findRecentForServer(server.id());
     }
 
-    private List<GoldPrice> findRecentForServerList(Set<String> serverList) {
-        Set<Integer> serverIds = getServerIds(serverList);
-
-        return goldPriceRepository.findRecentForServers(serverIds);
+    private List<GoldPrice> findRecentForServerIds(Set<Integer> serverIds) {
+        return goldPriceRepository.findRecentForServerIds(serverIds);
     }
 
     private Set<Integer> getServerIds(Set<String> serverList) {
@@ -187,4 +185,5 @@ class GoldPriceServiceImpl implements GoldPriceService {
                 .map(server -> serverService.getServer(server).id())
                 .collect(Collectors.toSet());
     }
+
 }

@@ -130,7 +130,7 @@ class GoldPriceRepositoryTest extends GoldPriceDataInitializer {
     @Test
     void findRecentForServers_returnsCorrectGoldPriceList() {
         Set<Integer> serverIds = Set.of(1, 2, 3);
-        List<GoldPrice> actual = goldPriceRepository.findRecentForServers(serverIds);
+        List<GoldPrice> actual = goldPriceRepository.findRecentForServerIds(serverIds);
         assertThat(actual)
                 .hasSize(3)
                 .containsExactlyInAnyOrder(goldPrice1, goldPrice2, goldPrice3);

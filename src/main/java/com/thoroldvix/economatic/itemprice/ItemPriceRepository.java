@@ -87,7 +87,7 @@ interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, JpaSpecifi
                 AND ip.updated_at = latest_prices.max_updated_at
             where item_id in ?1 and ip.server_id in ?2
             """, nativeQuery = true)
-    Page<ItemPrice> findRecentForItemListAndServers(Set<Integer> itemIds, Set<Integer> serverIds, Pageable pageable);
+    Page<ItemPrice> findRecentForItemsAndServers(Set<Integer> itemIds, Set<Integer> serverIds, Pageable pageable);
 
     default void saveAll(Collection<ItemPrice> prices, JdbcTemplate jdbcTemplate) {
         jdbcTemplate.batchUpdate("""

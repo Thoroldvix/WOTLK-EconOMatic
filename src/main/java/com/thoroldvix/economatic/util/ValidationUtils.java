@@ -43,11 +43,6 @@ public final class ValidationUtils {
         return collection == null || collection.isEmpty();
     }
 
-    public static void inRange(int value, int minThreshold, int maxThreshold, String errorMessage) {
-        if (value < minThreshold || value > maxThreshold) {
-            throw new IllegalArgumentException(errorMessage);
-        }
-    }
 
     public  static  <T> T checkNullAndGet(Supplier<T> supplier) {
         try {

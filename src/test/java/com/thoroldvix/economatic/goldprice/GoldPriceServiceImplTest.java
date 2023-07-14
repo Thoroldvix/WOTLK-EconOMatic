@@ -391,7 +391,7 @@ class GoldPriceServiceImplTest {
         when(goldPriceMapper.toGoldPriceList(prices)).thenReturn(expected);
         when(serverService.getServer(server1Id)).thenReturn(server1);
         when(serverService.getServer(server2Id)).thenReturn(server2);
-        when(goldPriceRepository.findRecentForServers(serverIds)).thenReturn(prices);
+        when(goldPriceRepository.findRecentForServerIds(serverIds)).thenReturn(prices);
 
         GoldPriceListResponse actual = goldPriceServiceImpl.getRecentForServerList(request);
 
@@ -413,7 +413,7 @@ class GoldPriceServiceImplTest {
                 .serverList(Set.of(server1Id))
                 .build();
         when(serverService.getServer(server1Id)).thenReturn(server);
-        when(goldPriceRepository.findRecentForServers(Set.of(1))).thenReturn(Collections.emptyList());
+        when(goldPriceRepository.findRecentForServerIds(Set.of(1))).thenReturn(Collections.emptyList());
         assertThatThrownBy(() -> goldPriceServiceImpl.getRecentForServerList(request))
                 .isInstanceOf(GoldPriceNotFoundException.class)
                 .hasMessage("No prices found for server list");

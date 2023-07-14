@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.deal;
 
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,16 +27,16 @@ class ItemDealsServiceImpl implements ItemDealsService {
     public ItemDealsList getDealsForServer(@Valid ItemDealsRequest request) {
         Objects.requireNonNull(request, "Item deals request cannot be null or empty");
 
+        ServerResponse server = serverService.getServer(request.serverIdentifier());
+        List<ItemDealProjection> deals = findDealsForServer(request, server);
 
-        List<ItemDealProjection> deals = findDealsForServer(request);
         notEmpty(deals,
                 () -> new ItemDealsNotFoundException("No deal found for server " + request.serverIdentifier()));
 
         return itemDealsMapper.toItemDealsList(deals);
     }
 
-    private List<ItemDealProjection> findDealsForServer(ItemDealsRequest request) {
-        int serverId = serverService.getServer(request.serverIdentifier()).id();
-        return itemDealsRepository.findDealsForServer(serverId, request.minQuantity(), request.minQuality(), request.limit());
+    private List<ItemDealProjection> findDealsForServer(ItemDealsRequest request, ServerResponse server) {
+        return itemDealsRepository.findDealsForServer(server.id(), request.minQuantity(), request.minQuality(), request.limit());
     }
 }

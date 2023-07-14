@@ -5,6 +5,7 @@ import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.GoldPriceService;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.util.StringEnumConverter;
 import com.thoroldvix.economatic.dto.TimeRange;
@@ -45,7 +46,8 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
 
-        StatsProjection statsProjection = findForServer(serverIdentifier, timeRange);
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        StatsProjection statsProjection = findForServer(server, timeRange);
         validateStatsProjection(statsProjection);
 
         return getStatResponse(statsProjection);
@@ -90,14 +92,12 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         return goldPriceStatMapper.toResponse(statsProjection, min, max);
     }
 
-    private StatsProjection findForServer(String serverIdentifier, TimeRange timeRange) {
-        int serverId = serverService.getServer(serverIdentifier).id();
-        return goldPriceStatRepository.findStatsForServer(serverId, timeRange.start(), timeRange.end());
+    private StatsProjection findForServer(ServerResponse server, TimeRange timeRange) {
+        return goldPriceStatRepository.findStatsForServer(server.id(), timeRange.start(), timeRange.end());
     }
 
     private StatsProjection findForRegion(String regionName, TimeRange timeRange) {
         Region region = StringEnumConverter.fromString(regionName, Region.class);
-
         return goldPriceStatRepository.findForRegion(region.ordinal(), timeRange.start(), timeRange.end());
     }
 
@@ -107,7 +107,6 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
 
     private StatsProjection findForFaction(String factionName, TimeRange timeRange) {
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-
         return goldPriceStatRepository.findForFaction(faction.ordinal(), timeRange.start(), timeRange.end());
     }
 

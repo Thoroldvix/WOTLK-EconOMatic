@@ -81,5 +81,5 @@ interface GoldPriceRepository extends JpaRepository<GoldPrice, Long>, JpaSpecifi
                 AND gp.updated_at = latest_prices.max_updated_at
             where gp.server_id in ?1
             """, nativeQuery = true)
-    List<GoldPrice> findRecentForServers(Set<Integer> serverIds);
+    List<GoldPrice> findRecentForServerIds(Set<Integer> serverIds);
 }

@@ -1,12 +1,14 @@
 package com.thoroldvix.economatic.itemprice;
 
+import com.thoroldvix.economatic.dto.TimeRange;
+import com.thoroldvix.economatic.item.ItemResponse;
 import com.thoroldvix.economatic.item.ItemService;
+import com.thoroldvix.economatic.search.SearchRequest;
+import com.thoroldvix.economatic.search.SpecificationBuilder;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.search.SearchRequest;
-import com.thoroldvix.economatic.dto.TimeRange;
-import com.thoroldvix.economatic.search.SpecificationBuilder;
 import com.thoroldvix.economatic.util.StringEnumConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +54,9 @@ class ItemPriceServiceImpl implements ItemPriceService {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
 
-        Page<ItemPrice> page = findRecentForServer(serverIdentifier, pageable);
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        Page<ItemPrice> page = findRecentForServer(server, pageable);
+
         notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No recent item prices found for server identifier " + serverIdentifier));
 
@@ -64,7 +68,9 @@ class ItemPriceServiceImpl implements ItemPriceService {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
         notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
 
-        List<ItemPrice> itemPrices = findRecentForRegionAndItem(regionName, itemIdentifier);
+        ItemResponse item = itemService.getItem(itemIdentifier);
+        List<ItemPrice> itemPrices = findRecentForRegionAndItem(regionName, item);
+
         notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for region and item identifier " + regionName + " " + itemIdentifier));
 
@@ -76,7 +82,9 @@ class ItemPriceServiceImpl implements ItemPriceService {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
         notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
 
-        List<ItemPrice> itemPrices = findRecentForFactionAndItem(factionName, itemIdentifier);
+        ItemResponse item = itemService.getItem(itemIdentifier);
+        List<ItemPrice> itemPrices = findRecentForFactionAndItem(factionName, item);
+
         notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for faction and item identifier " + factionName + " " + itemIdentifier));
 
@@ -88,7 +96,10 @@ class ItemPriceServiceImpl implements ItemPriceService {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
         notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
 
-        List<ItemPrice> itemPrices = findRecentForServerAndItem(serverIdentifier, itemIdentifier);
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        ItemResponse item = itemService.getItem(itemIdentifier);
+        List<ItemPrice> itemPrices = findRecentForServerAndItem(server, item);
+
         notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for server identifier %s and item identifier %s"
                         .formatted(serverIdentifier, itemIdentifier)));
@@ -114,7 +125,10 @@ class ItemPriceServiceImpl implements ItemPriceService {
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
 
-        Page<ItemPrice> page = findForServerAndTimeRange(serverIdentifier, itemIdentifier, timeRange, pageable);
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        ItemResponse item = itemService.getItem(itemIdentifier);
+        Page<ItemPrice> page = findForServerAndTimeRange(server, item, timeRange, pageable);
+
         notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No item prices found for time range %s for server identifier %s and item identifier %s"
                         .formatted(timeRange, serverIdentifier, itemIdentifier)));
@@ -127,7 +141,10 @@ class ItemPriceServiceImpl implements ItemPriceService {
         requireNonNull(request, "Item price request cannot be null");
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
 
-        Page<ItemPrice> page = findRecentForRequest(request, pageable);
+        Set<Integer> itemIds = getItemIds(request.itemList());
+        Set<Integer> serverIds = getServerIds(request.serverList());
+        Page<ItemPrice> page = findRecentForItemsAndServers(serverIds, itemIds, pageable);
+
         notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No recent prices found for item list"));
 
@@ -148,55 +165,42 @@ class ItemPriceServiceImpl implements ItemPriceService {
     }
 
 
-    private Page<ItemPrice> findRecentForServer(String serverIdentifier, Pageable pageable) {
-        int serverId = serverService.getServer(serverIdentifier).id();
-        return itemPriceRepository.findRecentForServer(serverId, pageable);
+    private Page<ItemPrice> findRecentForServer(ServerResponse server, Pageable pageable) {
+        return itemPriceRepository.findRecentForServer(server.id(), pageable);
     }
 
 
-    private Page<ItemPrice> findForServerAndTimeRange(String serverIdentifier,
-                                                      String itemIdentifier,
+    private Page<ItemPrice> findForServerAndTimeRange(ServerResponse server,
+                                                      ItemResponse item,
                                                       TimeRange timeRange,
                                                       Pageable pageable) {
-        int itemId = itemService.getItem(itemIdentifier).id();
-        int serverId = serverService.getServer(serverIdentifier).id();
 
-        return itemPriceRepository.findForServerAndTimeRange(serverId, itemId, timeRange.start(), timeRange.end(), pageable);
+        return itemPriceRepository.findForServerAndTimeRange(server.id(), item.id(), timeRange.start(), timeRange.end(), pageable);
     }
 
 
-    private List<ItemPrice> findRecentForServerAndItem(String serverIdentifier, String itemIdentifier) {
-        int itemId = itemService.getItem(itemIdentifier).id();
-        int serverId = serverService.getServer(serverIdentifier).id();
-
-        return itemPriceRepository.findRecentForServerAndItem(serverId, itemId);
+    private List<ItemPrice> findRecentForServerAndItem(ServerResponse server, ItemResponse item) {
+        return itemPriceRepository.findRecentForServerAndItem(server.id(), item.id());
     }
 
 
-    private List<ItemPrice> findRecentForRegionAndItem(String regionName, String itemIdentifier) {
+    private List<ItemPrice> findRecentForRegionAndItem(String regionName, ItemResponse item) {
         Region region = StringEnumConverter.fromString(regionName, Region.class);
-        int itemId = itemService.getItem(itemIdentifier).id();
-
-        return itemPriceRepository.findRecentForRegionAndItem(region.ordinal(), itemId);
+        return itemPriceRepository.findRecentForRegionAndItem(region.ordinal(), item.id());
     }
 
 
-    private List<ItemPrice> findRecentForFactionAndItem(String factionName, String itemIdentifier) {
+    private List<ItemPrice> findRecentForFactionAndItem(String factionName, ItemResponse item) {
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        int itemId = itemService.getItem(itemIdentifier).id();
-
-        return itemPriceRepository.findRecentForFactionAndItem(faction.ordinal(), itemId);
+        return itemPriceRepository.findRecentForFactionAndItem(faction.ordinal(), item.id());
     }
 
 
-    private Page<ItemPrice> findRecentForRequest(ItemPriceRequest request, Pageable pageable) {
-        Set<Integer> itemIds = getItemIds(request.itemList());
-        if (isCollectionEmpty(request.serverList())) {
+    private Page<ItemPrice> findRecentForItemsAndServers(Set<Integer> serverIds, Set<Integer> itemIds, Pageable pageable) {
+        if (isCollectionEmpty(serverIds)) {
             return itemPriceRepository.findRecentForItemList(itemIds, pageable);
         }
-        Set<Integer> serverIds = getServerIds(request.serverList());
-
-        return itemPriceRepository.findRecentForItemListAndServers(itemIds, serverIds, pageable);
+        return itemPriceRepository.findRecentForItemsAndServers(itemIds, serverIds, pageable);
     }
 
     private Set<Integer> getServerIds(Set<String> serverList) {

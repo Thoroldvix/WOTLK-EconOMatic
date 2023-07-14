@@ -1,12 +1,13 @@
 package com.thoroldvix.economatic.population;
 
+import com.thoroldvix.economatic.dto.TimeRange;
+import com.thoroldvix.economatic.search.SearchRequest;
+import com.thoroldvix.economatic.search.SpecificationBuilder;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.search.SpecificationBuilder;
 import com.thoroldvix.economatic.util.StringEnumConverter;
-import com.thoroldvix.economatic.search.SearchRequest;
-import com.thoroldvix.economatic.dto.TimeRange;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
@@ -45,7 +47,7 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationResponse getForId(long id) {
-         return populationRepository.findById(id).map(populationMapper::toResponse)
+        return populationRepository.findById(id).map(populationMapper::toResponse)
                 .orElseThrow(() -> new PopulationNotFoundException("No population found for id " + id));
     }
 
@@ -55,6 +57,7 @@ class PopulationServiceImpl implements PopulationService {
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
 
         Page<Population> page = findForTimeRange(timeRange, pageable);
+
         notEmpty(page.getContent(),
                 () -> new PopulationNotFoundException(NO_POPULATIONS_FOUND));
 
@@ -67,7 +70,9 @@ class PopulationServiceImpl implements PopulationService {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
 
-        Page<Population> page = findAllForServer(serverIdentifier, timeRange, pageable);
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        Page<Population> page = findAllForServer(server, timeRange, pageable);
+
         notEmpty(page.getContent(),
                 () -> new PopulationNotFoundException("No populations found for server identifier: " + serverIdentifier));
 
@@ -80,6 +85,7 @@ class PopulationServiceImpl implements PopulationService {
 
         TotalPopProjection totalPopProjection = populationRepository.findTotalPopForServer(serverName)
                 .orElseThrow(() -> new PopulationNotFoundException("No total population found for server name " + serverName));
+
         validateTotalPopProj(totalPopProjection, serverName);
 
         return populationMapper.toTotalPopResponse(totalPopProjection);
@@ -131,7 +137,9 @@ class PopulationServiceImpl implements PopulationService {
     public PopulationResponse getRecentForServer(String serverIdentifier) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
 
-        Population population = findRecentForServer(serverIdentifier);
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        Population population = findRecentForServer(server)
+                .orElseThrow(() -> new PopulationNotFoundException("No recent populations found for server: " + serverIdentifier));
 
         return populationMapper.toResponse(population);
     }
@@ -145,10 +153,8 @@ class PopulationServiceImpl implements PopulationService {
         populationRepository.saveAll(populations);
     }
 
-    private Population findRecentForServer(String serverIdentifier) {
-        int serverId = serverService.getServer(serverIdentifier).id();
-        return populationRepository.findRecentForServer(serverId)
-                .orElseThrow(() -> new PopulationNotFoundException("No recent populations found for server: " + serverIdentifier));
+    private Optional<Population> findRecentForServer(ServerResponse server) {
+        return populationRepository.findRecentForServer(server.id());
     }
 
 
@@ -168,10 +174,8 @@ class PopulationServiceImpl implements PopulationService {
         return populationRepository.findRecentForFaction(faction);
     }
 
-    private Page<Population> findAllForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
-        int serverId = serverService.getServer(serverIdentifier).id();
-
-        return populationRepository.findAllForServer(serverId, timeRange.start(), timeRange.end(), pageable);
+    private Page<Population> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
+        return populationRepository.findAllForServer(server.id(), timeRange.start(), timeRange.end(), pageable);
     }
 
     private Page<Population> findForTimeRange(TimeRange timeRange, Pageable pageable) {

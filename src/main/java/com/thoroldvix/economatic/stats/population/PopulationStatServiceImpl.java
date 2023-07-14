@@ -5,6 +5,7 @@ import com.thoroldvix.economatic.population.PopulationResponse;
 import com.thoroldvix.economatic.population.PopulationService;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
+import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.util.StringEnumConverter;
 import com.thoroldvix.economatic.dto.TimeRange;
@@ -43,7 +44,8 @@ public class PopulationStatServiceImpl implements PopulationStatService {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
 
-        StatsProjection statsProjection = findForServer(serverIdentifier, timeRange);
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        StatsProjection statsProjection = findForServer(server, timeRange);
         validateStatsProjection(statsProjection);
 
         return getStatResponse(statsProjection);
@@ -85,21 +87,17 @@ public class PopulationStatServiceImpl implements PopulationStatService {
         return statRepository.findForTimeRange(timeRange.start(), timeRange.end());
     }
 
-    private StatsProjection findForServer(String serverIdentifier, TimeRange timeRange) {
-        int serverId = serverService.getServer(serverIdentifier).id();
-
-        return statRepository.findStatsByServer(serverId, timeRange.start(), timeRange.end());
+    private StatsProjection findForServer(ServerResponse server, TimeRange timeRange) {
+        return statRepository.findStatsByServer(server.id(), timeRange.start(), timeRange.end());
     }
 
     private StatsProjection findForFaction(String factionName, TimeRange timeRange) {
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-
         return statRepository.findStatsByFaction(faction.ordinal(), timeRange.start(), timeRange.end());
     }
 
     private StatsProjection findForRegion(String regionName, TimeRange timeRange) {
         Region region = StringEnumConverter.fromString(regionName, Region.class);
-
         return statRepository.findStatsByRegion(region.ordinal(), timeRange.start(), timeRange.end());
     }
 
