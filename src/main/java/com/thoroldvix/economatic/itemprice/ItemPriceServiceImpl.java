@@ -12,12 +12,10 @@ import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.util.StringEnumConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +35,6 @@ import static java.util.Objects.requireNonNull;
 @Service
 @Cacheable("item-price-cache")
 @Validated
-@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 class ItemPriceServiceImpl implements ItemPriceService {
@@ -47,7 +44,8 @@ class ItemPriceServiceImpl implements ItemPriceService {
     private final ServerService serverService;
     private final ItemPriceRepository itemPriceRepository;
     private final ItemPriceMapper itemPriceMapper;
-    private final JdbcTemplate jdbcTemplate;
+    private final ItemPriceJdbcRepository jdbcRepository;
+
 
     @Override
     public ItemPricePageResponse getRecentForServer(String serverIdentifier, Pageable pageable) {
@@ -155,8 +153,7 @@ class ItemPriceServiceImpl implements ItemPriceService {
     @Transactional
     public void saveAll(List<ItemPrice> itemPricesToSave) {
         requireNonNull(itemPricesToSave, "Item prices cannot be null");
-
-        itemPriceRepository.saveAll(itemPricesToSave, jdbcTemplate);
+        jdbcRepository.saveAll(itemPricesToSave);
     }
 
     private Page<ItemPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
