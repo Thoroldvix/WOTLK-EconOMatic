@@ -40,17 +40,15 @@ class ItemDealsController {
             @Parameter(description = "The limit of deals to be fetched",
                     example = "5")
             @RequestParam(defaultValue = "5") int limit,
-
             @Parameter(description = "The minimum quantity of deals required",
                     example = "3")
             @RequestParam(defaultValue = "3") int minQuantity,
-
             @Parameter(description = "The minimum quality of deals required",
                     example = "0")
             @RequestParam(defaultValue = "0") int minQuality) {
 
-
-        var deals = itemDealsServiceImpl.getDealsForServer(serverIdentifier, minQuantity, minQuality, limit);
+        ItemDealsRequest request = new ItemDealsRequest(serverIdentifier, minQuantity, minQuality, limit);
+        var deals = itemDealsServiceImpl.getDealsForServer(request);
         return ResponseEntity.ok(deals);
     }
 }

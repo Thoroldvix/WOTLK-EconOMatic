@@ -14,6 +14,10 @@ import java.util.Objects;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface ItemDealsMapper {
 
+    RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
+    int SCALE = 2;
+    BigDecimal DEFAULT_DISCOUNT_PERCENTAGE = BigDecimal.ZERO;
+
     @Mapping(target = "discountPercentage", qualifiedByName = "mapDiscountPercentage")
     @Mapping(target = "server", source = "uniqueServerName")
     ItemDealResponse toResponse(ItemDealProjection deal);
@@ -22,8 +26,8 @@ interface ItemDealsMapper {
 
     @Named("mapDiscountPercentage")
     default BigDecimal mapDiscountPercentage(BigDecimal discountPercentage) {
-        return Objects.requireNonNullElse(discountPercentage, BigDecimal.ZERO)
-                .setScale(2, RoundingMode.HALF_UP);
+        return Objects.requireNonNullElse(discountPercentage, DEFAULT_DISCOUNT_PERCENTAGE)
+                .setScale(SCALE, ROUNDING_MODE);
     }
 
     default ItemDealsList toItemDealsList(List<ItemDealProjection> deals) {

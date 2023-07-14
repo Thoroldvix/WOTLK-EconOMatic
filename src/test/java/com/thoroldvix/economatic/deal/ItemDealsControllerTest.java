@@ -45,8 +45,9 @@ class ItemDealsControllerTest extends BaseItemDealTest {
                         "itemName": "Arcane Dust"
                     }]
                 }""";
+        ItemDealsRequest itemDealsRequest = new ItemDealsRequest(SERVER_NAME, MINIMUM_ITEM_QUANTITY, MINIMUM_ITEM_QUALITY, ITEM_LIMIT);
         ItemDealsList itemDeals = getItemDealsList();
-        when(itemDealsServiceImpl.getDealsForServer(SERVER_NAME, MINIMUM_ITEM_QUANTITY, MINIMUM_ITEM_QUALITY, ITEM_LIMIT)).thenReturn(itemDeals);
+        when(itemDealsServiceImpl.getDealsForServer(itemDealsRequest)).thenReturn(itemDeals);
         mockMvc.perform(get(ITEM_DEALS_API_ENDPOINT + "/" + SERVER_NAME))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJsonResponse));
@@ -54,7 +55,8 @@ class ItemDealsControllerTest extends BaseItemDealTest {
 
     @Test
     void getDealsForServer_returnsBadRequest_whenServiceThrowsConstraintViolationException() throws Exception {
-        when(itemDealsServiceImpl.getDealsForServer(SERVER_NAME, MINIMUM_ITEM_QUANTITY, MINIMUM_ITEM_QUALITY, ITEM_LIMIT))
+        ItemDealsRequest itemDealsRequest = new ItemDealsRequest(SERVER_NAME, MINIMUM_ITEM_QUANTITY, MINIMUM_ITEM_QUALITY, ITEM_LIMIT);
+        when(itemDealsServiceImpl.getDealsForServer(itemDealsRequest))
                 .thenThrow(ConstraintViolationException.class);
         mockMvc.perform(get(ITEM_DEALS_API_ENDPOINT + "/" + SERVER_NAME))
                 .andExpect(status().isBadRequest());

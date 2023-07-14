@@ -1,16 +1,20 @@
 package com.thoroldvix.economatic.deal;
 
 import com.thoroldvix.economatic.server.ServerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Objects;
 
-import static com.thoroldvix.economatic.shared.ValidationUtils.*;
+import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
 
 
 @Service
+@Validated
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 class ItemDealsServiceImpl implements ItemDealsService {
@@ -19,31 +23,19 @@ class ItemDealsServiceImpl implements ItemDealsService {
     private final ItemDealsRepository itemDealsRepository;
     private final ItemDealsMapper itemDealsMapper;
 
-    private static void validateInputs(String serverIdentifier, int minQuantity, int minQuality, int limit) {
-        notEmpty(serverIdentifier, "Server identifier cannot be null or empty");
-        notLessThan(minQuantity, 1, "Minimum quantity must be a positive integer");
-        inRange(minQuality, 0, 5, "Min quality cannot be less than 0");
-        notLessThan(limit, 1, "Limit must be a positive integer");
-    }
+    public ItemDealsList getDealsForServer(@Valid ItemDealsRequest request) {
+        Objects.requireNonNull(request, "Item deals request cannot be null or empty");
 
-    public ItemDealsList getDealsForServer(
-            String serverIdentifier,
-            int minQuantity,
-            int minQuality,
-            int limit) {
 
-        validateInputs(serverIdentifier, minQuantity, minQuality, limit);
-
-        List<ItemDealProjection> deals = findDealsForServer(serverIdentifier, minQuantity, minQuality, limit);
+        List<ItemDealProjection> deals = findDealsForServer(request);
         notEmpty(deals,
-                () -> new ItemDealsNotFoundException("No deal found for server " + serverIdentifier));
+                () -> new ItemDealsNotFoundException("No deal found for server " + request.serverIdentifier()));
 
         return itemDealsMapper.toItemDealsList(deals);
     }
 
-    private List<ItemDealProjection> findDealsForServer(String serverIdentifier, int minQuantity, int minQuality, int limit) {
-        int serverId = serverService.getServer(serverIdentifier).id();
-
-        return itemDealsRepository.findDealsForServer(serverId, minQuantity, minQuality, limit);
+    private List<ItemDealProjection> findDealsForServer(ItemDealsRequest request) {
+        int serverId = serverService.getServer(request.serverIdentifier()).id();
+        return itemDealsRepository.findDealsForServer(serverId, request.minQuantity(), request.minQuality(), request.limit());
     }
 }
