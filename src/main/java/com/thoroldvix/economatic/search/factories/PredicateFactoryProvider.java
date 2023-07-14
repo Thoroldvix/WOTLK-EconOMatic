@@ -4,6 +4,7 @@ import com.thoroldvix.economatic.search.SearchCriteria;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 
 public final class PredicateFactoryProvider {
     private static final Map<SearchCriteria.Operation, PredicateFactory> FACTORIES_MAP = new EnumMap<>(SearchCriteria.Operation.class);
@@ -28,6 +29,7 @@ public final class PredicateFactoryProvider {
     private PredicateFactoryProvider(){}
 
     public static PredicateFactory getPredicateFactory(SearchCriteria searchCriteria) {
-        return FACTORIES_MAP.get(searchCriteria.operation());
+        return Optional.ofNullable(FACTORIES_MAP.get(searchCriteria.operation()))
+                .orElseThrow(() -> new UnsupportedOperationException("Operation not supported + " + searchCriteria.operation()));
     }
 }
