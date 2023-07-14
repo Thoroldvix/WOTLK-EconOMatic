@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
+import static com.thoroldvix.economatic.util.Utils.elapsedTimeInMillis;
 
 @Service
 @RequiredArgsConstructor

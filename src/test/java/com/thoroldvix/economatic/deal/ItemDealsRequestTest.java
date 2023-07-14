@@ -17,7 +17,7 @@ class ItemDealsRequestTest {
 
     @Test
     void whenAllFieldsAreCorrect_thenZeroConstraintViolations() {
-          ItemDealsRequest request = new ItemDealsRequest("server", 2, 2, 2);
+        ItemDealsRequest request = new ItemDealsRequest("server", 2, 2, 2);
 
         Set<ConstraintViolation<ItemDealsRequest>> constraintViolations = validator.validate(request);
 
@@ -52,7 +52,7 @@ class ItemDealsRequestTest {
         assertThat(constraintViolations).hasSize(1);
     }
 
-     @Test
+    @Test
     void whenLimitLessThanOne_thenOneConstraintViolationException() {
         ItemDealsRequest request = new ItemDealsRequest("server1", 1, 2, 0);
 

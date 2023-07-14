@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.item;
 
-import com.thoroldvix.economatic.shared.SpecificationBuilder;
-import com.thoroldvix.economatic.shared.SearchRequest;
+import com.thoroldvix.economatic.search.SpecificationBuilder;
+import com.thoroldvix.economatic.search.SearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import static com.thoroldvix.economatic.error.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.error.ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.item.ItemErrorMessages.ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
-import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
+import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
 
 @Service

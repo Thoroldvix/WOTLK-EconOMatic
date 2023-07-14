@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.stats.population;
 
-import com.thoroldvix.economatic.shared.TimeRange;
+import com.thoroldvix.economatic.dto.TimeRange;
 
 public interface PopulationStatService {
 

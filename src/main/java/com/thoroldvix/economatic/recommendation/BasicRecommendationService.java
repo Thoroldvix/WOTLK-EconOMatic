@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.thoroldvix.economatic.shared.ValidationUtils.notLessThan;
+import static com.thoroldvix.economatic.util.ValidationUtils.notLessThan;
 import static java.util.Objects.requireNonNull;
 
 @Service

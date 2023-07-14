@@ -1,9 +1,9 @@
 package com.thoroldvix.economatic.server;
 
 import com.thoroldvix.economatic.error.ErrorMessages;
-import com.thoroldvix.economatic.shared.SpecificationBuilder;
-import com.thoroldvix.economatic.shared.StringEnumConverter;
-import com.thoroldvix.economatic.shared.SearchRequest;
+import com.thoroldvix.economatic.search.SpecificationBuilder;
+import com.thoroldvix.economatic.util.StringEnumConverter;
+import com.thoroldvix.economatic.search.SearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
+import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
 
 @Service

@@ -6,8 +6,8 @@ import com.thoroldvix.economatic.goldprice.GoldPriceService;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.shared.StringEnumConverter;
-import com.thoroldvix.economatic.shared.TimeRange;
+import com.thoroldvix.economatic.util.StringEnumConverter;
+import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.stats.StatsProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.thoroldvix.economatic.error.ErrorMessages.TIME_RANGE_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
+import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
 
 @Service

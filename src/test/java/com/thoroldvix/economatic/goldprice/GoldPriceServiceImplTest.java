@@ -1,10 +1,10 @@
 package com.thoroldvix.economatic.goldprice;
 
 import com.thoroldvix.economatic.server.*;
-import com.thoroldvix.economatic.shared.PaginationInfo;
-import com.thoroldvix.economatic.shared.SearchCriteria;
-import com.thoroldvix.economatic.shared.SearchRequest;
-import com.thoroldvix.economatic.shared.TimeRange;
+import com.thoroldvix.economatic.dto.PaginationInfo;
+import com.thoroldvix.economatic.search.SearchCriteria;
+import com.thoroldvix.economatic.search.SearchRequest;
+import com.thoroldvix.economatic.dto.TimeRange;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

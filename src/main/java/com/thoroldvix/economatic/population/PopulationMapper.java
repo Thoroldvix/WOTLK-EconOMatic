@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.population;
 
 import com.thoroldvix.economatic.server.Server;
-import com.thoroldvix.economatic.shared.PaginationInfo;
+import com.thoroldvix.economatic.dto.PaginationInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

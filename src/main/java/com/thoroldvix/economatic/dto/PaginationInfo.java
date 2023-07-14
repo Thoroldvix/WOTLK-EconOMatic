@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.shared;
+package com.thoroldvix.economatic.dto;
 
 import lombok.Builder;
 import org.springframework.data.domain.Page;

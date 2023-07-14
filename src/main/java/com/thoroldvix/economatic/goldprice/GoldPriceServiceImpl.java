@@ -3,10 +3,10 @@ package com.thoroldvix.economatic.goldprice;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.shared.SearchRequest;
-import com.thoroldvix.economatic.shared.TimeRange;
-import com.thoroldvix.economatic.shared.SpecificationBuilder;
-import com.thoroldvix.economatic.shared.StringEnumConverter;
+import com.thoroldvix.economatic.search.SearchRequest;
+import com.thoroldvix.economatic.dto.TimeRange;
+import com.thoroldvix.economatic.search.SpecificationBuilder;
+import com.thoroldvix.economatic.util.StringEnumConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
+import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
 
 @Service

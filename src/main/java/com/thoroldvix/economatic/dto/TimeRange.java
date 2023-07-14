@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.shared;
+package com.thoroldvix.economatic.dto;
 
 import com.thoroldvix.economatic.error.InvalidTimeRangeException;
 

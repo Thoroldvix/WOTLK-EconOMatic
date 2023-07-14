@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.thoroldvix.economatic.shared.Utils.elapsedTimeInMillis;
+import static com.thoroldvix.economatic.util.Utils.elapsedTimeInMillis;
 
 
 @Service

@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.stats.population;
 
-import com.thoroldvix.economatic.shared.TimeRange;
+import com.thoroldvix.economatic.dto.TimeRange;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

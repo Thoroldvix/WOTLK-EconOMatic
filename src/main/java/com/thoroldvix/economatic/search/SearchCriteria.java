@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.shared;
+package com.thoroldvix.economatic.search;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -26,8 +26,13 @@ public record SearchCriteria(
         LESS_THAN_OR_EQUALS,
         LESS_THAN,
         IN,
-        BETWEEN,
-        EQUALS_IGNORE_CASE
+        BETWEEN_NUMERIC,
+        BETWEEN_DATE_TIME,
+        EQUALS_IGNORE_CASE,
+        BEFORE,
+        AFTER,
+        BEFORE_OR_EQUALS,
+        AFTER_OR_EQUALS
     }
 }
 

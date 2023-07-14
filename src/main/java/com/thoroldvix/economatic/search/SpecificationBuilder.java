@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.shared;
+package com.thoroldvix.economatic.search;
 
 import com.thoroldvix.economatic.error.InvalidSearchCriteriaException;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -10,9 +10,9 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 
 import static com.thoroldvix.economatic.error.ErrorMessages.SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY;
-import static com.thoroldvix.economatic.shared.PredicateUtils.getPredicateFromOperation;
-import static com.thoroldvix.economatic.shared.ValidationUtils.isNonEmptyString;
-import static com.thoroldvix.economatic.shared.ValidationUtils.notEmpty;
+import static com.thoroldvix.economatic.search.PredicateBuilder.buildPredicate;
+import static com.thoroldvix.economatic.util.ValidationUtils.isNonEmptyString;
+import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 
 
 
@@ -36,7 +36,7 @@ public class SpecificationBuilder {
     private static <E> List<Predicate> getPredicates(Root<E> root, CriteriaBuilder cb, List<SearchCriteria> searchCriteria) {
         return searchCriteria.stream().map(criteria -> {
             Path<?> columnPath = getColumnPath(root, criteria);
-            return getPredicateFromOperation(cb, criteria, columnPath);
+            return buildPredicate(cb, criteria, columnPath);
         }).toList();
     }
 

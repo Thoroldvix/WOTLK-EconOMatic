@@ -7,7 +7,7 @@ import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.shared.TimeRange;
+import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.stats.StatsProjection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

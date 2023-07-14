@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.server;
 
-import com.thoroldvix.economatic.shared.SearchRequest;
+import com.thoroldvix.economatic.search.SearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

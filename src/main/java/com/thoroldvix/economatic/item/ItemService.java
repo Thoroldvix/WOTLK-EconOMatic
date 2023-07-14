@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.item;
 
-import com.thoroldvix.economatic.shared.SearchRequest;
+import com.thoroldvix.economatic.search.SearchRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
