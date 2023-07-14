@@ -194,10 +194,9 @@ class ItemPriceServiceImpl implements ItemPriceService {
 
 
     private Page<ItemPrice> findRecentForItemsAndServers(Set<Integer> serverIds, Set<Integer> itemIds, Pageable pageable) {
-        if (isCollectionEmpty(serverIds)) {
-            return itemPriceRepository.findRecentForItemList(itemIds, pageable);
-        }
-        return itemPriceRepository.findRecentForItemsAndServers(itemIds, serverIds, pageable);
+        return isCollectionEmpty(serverIds)
+                ? itemPriceRepository.findRecentForItemList(itemIds, pageable)
+                : itemPriceRepository.findRecentForItemsAndServers(itemIds, serverIds, pageable);
     }
 
     private Set<Integer> getServerIds(Set<String> serverList) {

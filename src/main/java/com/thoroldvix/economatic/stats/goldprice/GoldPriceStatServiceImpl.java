@@ -31,15 +31,6 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
     private final GoldPriceStatMapper goldPriceStatMapper;
     private final GoldPriceService goldPriceServiceImpl;
 
-    private static void validateStatsProjection(StatsProjection statsProjection) {
-        boolean isInvalid = statsProjection.getMean() == null
-                            || statsProjection.getMaxId() == null
-                            || statsProjection.getMinId() == null
-                            || statsProjection.getMedian() == null;
-        if (isInvalid) {
-            throw new StatisticsNotFoundException("No statistics found");
-        }
-    }
 
     @Override
     public GoldPriceStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
@@ -119,4 +110,15 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         long minId = goldPriceStat.getMinId().longValue();
         return goldPriceServiceImpl.getForId(minId);
     }
+
+     private void validateStatsProjection(StatsProjection statsProjection) {
+        boolean isInvalid = statsProjection.getMean() == null
+                            || statsProjection.getMaxId() == null
+                            || statsProjection.getMinId() == null
+                            || statsProjection.getMedian() == null;
+        if (isInvalid) {
+            throw new StatisticsNotFoundException("No statistics found");
+        }
+    }
+
 }

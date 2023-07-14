@@ -50,21 +50,6 @@ class BasicRecommendationService implements RecommendationService {
         this.prop = prop;
     }
 
-    private static ItemPriceRequest buildItemPriceRequest(Set<String> itemList, Set<String> servers) {
-        return ItemPriceRequest.builder()
-                .itemList(itemList)
-                .serverList(servers)
-                .build();
-    }
-
-    private static BigDecimal getWeightOrDefault(BigDecimal weight, BigDecimal defaultWeight) {
-        return weight == null ? defaultWeight : weight;
-    }
-
-    private static BigDecimal calculateWeightedValue(Number value, BigDecimal maxValue, BigDecimal weight) {
-        BigDecimal normalizedValue = (BigDecimal.valueOf(value.doubleValue())).divide(maxValue, MathContext.DECIMAL64);
-        return normalizedValue.multiply(weight);
-    }
 
     public RecommendationListResponse getRecommendationsForItemList(@Valid RecommendationRequest request, int limit, boolean marketValue) {
         requireNonNull(request, "Recommendation request cannot be null");
@@ -113,5 +98,21 @@ class BasicRecommendationService implements RecommendationService {
 
     private boolean filterLowPopulations(PopulationResponse population) {
         return population.value() >= this.prop.minAllowedPopulation();
+    }
+
+    private ItemPriceRequest buildItemPriceRequest(Set<String> itemList, Set<String> servers) {
+        return ItemPriceRequest.builder()
+                .itemList(itemList)
+                .serverList(servers)
+                .build();
+    }
+
+    private BigDecimal getWeightOrDefault(BigDecimal weight, BigDecimal defaultWeight) {
+        return weight == null ? defaultWeight : weight;
+    }
+
+    private BigDecimal calculateWeightedValue(Number value, BigDecimal maxValue, BigDecimal weight) {
+        BigDecimal normalizedValue = (BigDecimal.valueOf(value.doubleValue())).divide(maxValue, MathContext.DECIMAL64);
+        return normalizedValue.multiply(weight);
     }
 }

@@ -36,14 +36,6 @@ class PopulationServiceImpl implements PopulationService {
     private final ServerService serverService;
     private final PopulationMapper populationMapper;
 
-    private static void validateTotalPopProj(TotalPopProjection totalPopProjection, String serverName) {
-        boolean isInvalid = totalPopProjection.getPopTotal() == null
-                            || totalPopProjection.getPopHorde() == null
-                            || totalPopProjection.getPopAlliance() == null;
-        if (isInvalid) {
-            throw new PopulationNotFoundException("No total population found for server name " + serverName);
-        }
-    }
 
     @Override
     public PopulationResponse getForId(long id) {
@@ -180,6 +172,15 @@ class PopulationServiceImpl implements PopulationService {
 
     private Page<Population> findForTimeRange(TimeRange timeRange, Pageable pageable) {
         return populationRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
+    }
+
+    private void validateTotalPopProj(TotalPopProjection totalPopProjection, String serverName) {
+        boolean isInvalid = totalPopProjection.getPopTotal() == null
+                            || totalPopProjection.getPopHorde() == null
+                            || totalPopProjection.getPopAlliance() == null;
+        if (isInvalid) {
+            throw new PopulationNotFoundException("No total population found for server name " + serverName);
+        }
     }
 }
 

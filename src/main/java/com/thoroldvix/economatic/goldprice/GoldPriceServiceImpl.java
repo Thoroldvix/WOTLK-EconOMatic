@@ -42,11 +42,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
     private final GoldPriceMapper goldPriceMapper;
 
 
-    private static void validateInputs(TimeRange timeRange, Pageable pageable) {
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
-    }
-
     @Override
     public GoldPriceResponse getForId(long id) {
         return goldPriceRepository.findById(id).map(goldPriceMapper::toResponse)
@@ -184,6 +179,11 @@ class GoldPriceServiceImpl implements GoldPriceService {
         return serverList.stream()
                 .map(server -> serverService.getServer(server).id())
                 .collect(Collectors.toSet());
+    }
+
+    private void validateInputs(TimeRange timeRange, Pageable pageable) {
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
     }
 
 }

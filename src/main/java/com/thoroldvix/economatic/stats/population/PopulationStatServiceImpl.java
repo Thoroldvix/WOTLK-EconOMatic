@@ -29,15 +29,7 @@ public class PopulationStatServiceImpl implements PopulationStatService {
     private final PopulationStatMapper populationStatMapper;
     private final PopulationService populationServiceImpl;
 
-    private static void validateStatsProjection(StatsProjection statsProjection) {
-        boolean isInvalid = statsProjection.getMean() == null
-                            || statsProjection.getMaxId() == null
-                            || statsProjection.getMinId() == null
-                            || statsProjection.getMedian() == null;
-        if (isInvalid) {
-            throw new StatisticsNotFoundException("No statistics found");
-        }
-    }
+
 
     @Override
     public PopulationStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
@@ -116,5 +108,15 @@ public class PopulationStatServiceImpl implements PopulationStatService {
         PopulationResponse max = getMax(statsProjection);
 
         return populationStatMapper.toResponse(statsProjection, min, max);
+    }
+
+       private void validateStatsProjection(StatsProjection statsProjection) {
+        boolean isInvalid = statsProjection.getMean() == null
+                            || statsProjection.getMaxId() == null
+                            || statsProjection.getMinId() == null
+                            || statsProjection.getMedian() == null;
+        if (isInvalid) {
+            throw new StatisticsNotFoundException("No statistics found");
+        }
     }
 }
