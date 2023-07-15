@@ -18,7 +18,9 @@ public record RecommendationRequest(
         @Min(value = 0, message = "Minimum allowed population cannot be less than 0")
         int minAllowedPopulation,
         @NotEmpty(message = "Item list cannot be null or empty")
-        Set<String> itemList
+        Set<String> itemList,
+
+        boolean marketValue
 ) {
 
 }
