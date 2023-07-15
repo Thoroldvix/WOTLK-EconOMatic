@@ -3,7 +3,9 @@ package com.thoroldvix.economatic.goldprice;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,7 +18,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.Objects.requireNonNull;
 
-
+@Component
 class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
 
     private static final Pattern SERVER_NAME_PATTERN = Pattern.compile("^(\\w+(?:\\s\\w+)?)\\s.*-\\s(\\w+)$");
@@ -26,6 +28,7 @@ class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
     private static final String RESULTS_ARRAY = "results";
     private static final String NODE_TITLE = "title";
     private static final String NODE_PRICE = "converted_unit_price";
+
 
 
     public GoldPriceDeserializer() {
@@ -39,6 +42,16 @@ class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
     private static JsonNode getJsonNodeOrThrow(JsonNode rootNode, String nodeName) {
         return Optional.ofNullable(rootNode.get(nodeName))
                 .orElseThrow(() -> new GoldPriceParsingException("Received JSON doesn't contain expected node: " + nodeName));
+    }
+
+    public  List<GoldPriceResponse> extractPricesFromJson(String goldPriceJson) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonParser parser = objectMapper.getFactory().createParser(goldPriceJson);
+            return deserialize(parser, objectMapper.getDeserializationContext());
+        } catch (IOException e) {
+            throw new GoldPriceParsingException("Error while parsing gold price json - " + e.getMessage());
+        }
     }
 
     @Override
