@@ -43,8 +43,7 @@ interface RecommendationMapper {
                                 getOrDefault(goldPriceScores, key)
                         )
                 )
-                .sorted(Comparator.comparing(RecommendationResponse::totalScore)
-                        .reversed())
+                .sorted(Comparator.comparing(RecommendationResponse::totalScore).reversed())
                 .limit(limit)
                 .toList();
     }
@@ -57,7 +56,6 @@ interface RecommendationMapper {
                                                         BigDecimal itemPriceScore,
                                                         BigDecimal populationScore,
                                                         BigDecimal goldPriceScore) {
-
         BigDecimal totalScore = itemPriceScore.add(populationScore).add(goldPriceScore);
         return new RecommendationResponse(serverName, itemPriceScore, populationScore, goldPriceScore, totalScore);
     }
