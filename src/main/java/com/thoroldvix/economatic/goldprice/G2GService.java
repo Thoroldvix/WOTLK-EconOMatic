@@ -14,7 +14,7 @@ class G2GService {
 
     public List<GoldPriceResponse> retrieveGoldPrices() {
         String pricesJson = g2gPriceClient.getAllPrices();
-       return goldPriceDeserializer.extractPricesFromJson(pricesJson);
+        return goldPriceDeserializer.extractPricesFromJson(pricesJson);
     }
 
 

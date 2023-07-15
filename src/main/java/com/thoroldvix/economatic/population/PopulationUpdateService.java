@@ -1,9 +1,5 @@
 package com.thoroldvix.economatic.population;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerResponse;
@@ -29,11 +25,12 @@ class PopulationUpdateService {
 
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.population.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.population.update-rate}";
-    private final WarcraftTavernClient warcraftTavernClient;
+
     @PersistenceContext
     private final EntityManager entityManager;
     private final ServerService serverServiceImpl;
     private final PopulationService populationServiceImpl;
+    private final WarcraftTavernService warcraftTavernService;
 
     @Scheduled(fixedRateString = UPDATE_RATE,
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
@@ -43,21 +40,20 @@ class PopulationUpdateService {
         log.info("Updating population");
         Instant start = Instant.now();
 
-        String populationJson = warcraftTavernClient.getAll();
-        List<Population> populations = retrievePopulations(populationJson);
+
+        List<Population> populations = retrievePopulations();
         populationServiceImpl.saveAll(populations);
 
         log.info("Finished updating population in {} ms", elapsedTimeInMillis(start));
     }
 
-
-    private List<Population> retrievePopulations(String populationJson) {
+    private List<Population> retrievePopulations() {
+        List<TotalPopResponse> totalPopulationsForServer = warcraftTavernService.retrievePopulations();
         List<ServerResponse> servers = serverServiceImpl.getAll().servers();
-        List<TotalPopResponse> totalPopulationsForServer = extractFromJson(populationJson);
-        return getPopulationList(totalPopulationsForServer, servers);
+        return toPopulationList(totalPopulationsForServer, servers);
     }
 
-    private List<Population> getPopulationList(List<TotalPopResponse> totalPopulationsForServer, List<ServerResponse> servers) {
+    private List<Population> toPopulationList(List<TotalPopResponse> totalPopulationsForServer, List<ServerResponse> servers) {
         return totalPopulationsForServer.stream()
                 .flatMap(totalPop -> getForBothFactions(totalPop, servers).stream())
                 .toList();
@@ -68,11 +64,11 @@ class PopulationUpdateService {
 
         return servers.stream()
                 .filter(server -> server.name().equals(totalPop.serverName()))
-                .map(server -> getPopulation(totalPop, server))
+                .map(server -> buildPopulation(totalPop, server))
                 .toList();
     }
 
-    private Population getPopulation(TotalPopResponse totalPopulation, ServerResponse server) {
+    private Population buildPopulation(TotalPopResponse totalPopulation, ServerResponse server) {
         int populationSize = server.faction().equals(Faction.HORDE)
                 ? totalPopulation.popHorde()
                 : totalPopulation.popAlliance();
@@ -85,15 +81,6 @@ class PopulationUpdateService {
                 .build();
     }
 
-    private List<TotalPopResponse> extractFromJson(String populationJson) {
-        ObjectMapper mapper = new ObjectMapper();
-        CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, TotalPopResponse.class);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        try {
-            return mapper.readValue(populationJson, collectionType);
-        } catch (JsonProcessingException e) {
-            throw new PopulationParsingException("Error while parsing population json");
-        }
-    }
+
 
 }
