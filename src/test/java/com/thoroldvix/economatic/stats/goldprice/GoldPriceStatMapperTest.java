@@ -6,35 +6,31 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GoldPriceStatMapperTest {
 
-    private static final String SERVER_NAME = "everlook-alliance";
-    private static final BigDecimal MIN_PRICE = BigDecimal.valueOf(0.1);
-    private static final BigDecimal MAX_PRICE = BigDecimal.valueOf(0.2);
-    private static final BigDecimal MEAN = BigDecimal.valueOf(0.001122);
-    private static final int MAX_ID = 41003;
-    private static final int MIN_ID = 41003;
-    private static final BigDecimal MEDIAN = BigDecimal.valueOf(0.001136);
-    private static final int COUNT = 9;
+    private static final BigDecimal MEAN = BigDecimal.valueOf(0.1);
+    private static final int MAX_ID = 1;
+    private static final int MIN_ID = 2;
+    private static final BigDecimal MEDIAN = BigDecimal.valueOf(0.2);
+    private static final int COUNT = 3;
     private final GoldPriceStatMapper priceStatMapper = Mappers.getMapper(GoldPriceStatMapper.class);
 
     @Test
     void toResponse_returnsValidGoldPriceStatResponse_whenValidStatProjectionProvided() {
         StatsProjection statsProjection = getStatProjection();
-        LocalDateTime now = LocalDateTime.now();
-        GoldPriceResponse min = new GoldPriceResponse(MIN_PRICE, SERVER_NAME, now);
-        GoldPriceResponse max = new GoldPriceResponse(MAX_PRICE, SERVER_NAME, now);
-        GoldPriceStatResponse expected = getGoldPriceStatResponse(max, min);
+        GoldPriceResponse min = GoldPriceResponse.builder().build();
+        GoldPriceResponse max = GoldPriceResponse.builder().build();
+        GoldPriceStatResponse expected = buildGoldPriceStatResponse(max, min);
+
         GoldPriceStatResponse actual = priceStatMapper.toResponse(statsProjection, min, max);
 
         assertThat(actual).isEqualTo(expected);
     }
 
-    private GoldPriceStatResponse getGoldPriceStatResponse(GoldPriceResponse max, GoldPriceResponse min) {
+    private static GoldPriceStatResponse buildGoldPriceStatResponse(GoldPriceResponse max, GoldPriceResponse min) {
         return GoldPriceStatResponse.builder()
                 .count(COUNT)
                 .maximum(max)
@@ -48,28 +44,29 @@ class GoldPriceStatMapperTest {
         return new StatsProjection() {
             @Override
             public BigDecimal getMean() {
-                return MEAN;
+                return GoldPriceStatMapperTest.MEAN;
             }
 
             @Override
             public Number getMaxId() {
-                return MAX_ID;
+                return GoldPriceStatMapperTest.MAX_ID;
             }
 
             @Override
             public Number getMinId() {
-                return MIN_ID;
+                return GoldPriceStatMapperTest.MIN_ID;
             }
 
             @Override
             public BigDecimal getMedian() {
-                return MEDIAN;
+                return GoldPriceStatMapperTest.MEDIAN;
             }
 
             @Override
             public long getCount() {
-                return COUNT;
+                return GoldPriceStatMapperTest.COUNT;
             }
         };
     }
+
 }

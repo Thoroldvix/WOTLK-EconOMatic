@@ -1,16 +1,6 @@
 package com.thoroldvix.economatic.summary.item;
 
-interface ItemSummaryProjection {
-
-    int getCommon();
-
-    int getUncommon();
-
-    int getRare();
-
-    int getEpic();
-
-    int getLegendary();
+interface ItemSummarySlotProjection {
 
     int getNonEquipable();
 
@@ -38,7 +28,7 @@ interface ItemSummaryProjection {
 
     int getTrinket();
 
-    int getWeaponSlot();
+    int getWeapon();
 
     int getShield();
 
@@ -69,33 +59,4 @@ interface ItemSummaryProjection {
     int getQuiver();
 
     int getRelic();
-
-    int getConsumable();
-
-    int getWeaponType();
-
-    int getContainer();
-
-    int getGem();
-
-    int getArmor();
-
-    int getReagent();
-
-    int getProjectile();
-
-    int getTradeGoods();
-
-    int getRecipe();
-
-    int getQuest();
-
-    int getKey();
-
-    int getMiscellaneous();
-
-    int getGlyph();
-
-    int getTotal();
-
 }

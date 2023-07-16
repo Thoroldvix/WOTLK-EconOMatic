@@ -14,8 +14,31 @@ interface ItemSummaryRepository extends JpaRepository<Item, Integer> {
                 SUM(CASE WHEN quality = 1 THEN 1 ELSE 0 END) AS uncommon,
                 SUM(CASE WHEN quality = 2 THEN 1 ELSE 0 END) AS rare,
                 SUM(CASE WHEN quality = 3 THEN 1 ELSE 0 END) AS epic,
-                SUM(CASE WHEN quality = 4 THEN 1 ELSE 0 END) AS legendary,
-               
+                SUM(CASE WHEN quality = 4 THEN 1 ELSE 0 END) AS legendary;
+                """, nativeQuery = true)
+    ItemSummaryQualityProjection getQualitySummary();
+
+    @Query(value = """
+            SELECT
+            SUM(CASE WHEN type = 0 THEN 1 ELSE 0 END) AS consumable,
+                           SUM(CASE WHEN type = 1 THEN 1 ELSE 0 END) AS container,
+                           SUM(CASE WHEN type = 2 THEN 1 ELSE 0 END) AS weaponType,
+                           SUM(CASE WHEN type = 3 THEN 1 ELSE 0 END) AS gem,
+                           SUM(CASE WHEN type = 4 THEN 1 ELSE 0 END) AS armor,
+                           SUM(CASE WHEN type = 5 THEN 1 ELSE 0 END) AS reagent,
+                           SUM(CASE WHEN type = 6 THEN 1 ELSE 0 END) AS projectile,
+                           SUM(CASE WHEN type = 7 THEN 1 ELSE 0 END) AS tradeGoods,
+                           SUM(CASE WHEN type = 8 THEN 1 ELSE 0 END) AS recipe,
+                           SUM(CASE WHEN type = 9 THEN 1 ELSE 0 END) AS quiver,
+                           SUM(CASE WHEN type = 10 THEN 1 ELSE 0 END) AS quest,
+                           SUM(CASE WHEN type = 11 THEN 1 ELSE 0 END) AS key,
+                           SUM(CASE WHEN type = 12 THEN 1 ELSE 0 END) AS miscellaneous,
+                           SUM(CASE WHEN type = 13 THEN 1 ELSE 0 END) AS glyph
+                       """, nativeQuery = true)
+    ItemSummaryTypeProjection getTypeSummary();
+
+    @Query(value = """
+            SELECT
                 SUM(CASE WHEN slot = 0 THEN 1 ELSE 0 END) AS nonEquipable,
                 SUM(CASE WHEN slot = 1 THEN 1 ELSE 0 END) AS head,
                 SUM(CASE WHEN slot = 2 THEN 1 ELSE 0 END) AS neck,
@@ -44,24 +67,8 @@ interface ItemSummaryRepository extends JpaRepository<Item, Integer> {
                 SUM(CASE WHEN slot = 25 THEN 1 ELSE 0 END) AS thrown,
                 SUM(CASE WHEN slot = 26 THEN 1 ELSE 0 END) AS rangedRight,
                 SUM(CASE WHEN slot = 27 THEN 1 ELSE 0 END) AS quiver,
-                SUM(CASE WHEN slot = 28 THEN 1 ELSE 0 END) AS relic,
-                
-                SUM(CASE WHEN type = 0 THEN 1 ELSE 0 END) AS consumable,
-                SUM(CASE WHEN type = 1 THEN 1 ELSE 0 END) AS container,
-                SUM(CASE WHEN type = 2 THEN 1 ELSE 0 END) AS weaponType,
-                SUM(CASE WHEN type = 3 THEN 1 ELSE 0 END) AS gem,
-                SUM(CASE WHEN type = 4 THEN 1 ELSE 0 END) AS armor,
-                SUM(CASE WHEN type = 5 THEN 1 ELSE 0 END) AS reagent,
-                SUM(CASE WHEN type = 6 THEN 1 ELSE 0 END) AS projectile,
-                SUM(CASE WHEN type = 7 THEN 1 ELSE 0 END) AS tradeGoods,
-                SUM(CASE WHEN type = 8 THEN 1 ELSE 0 END) AS recipe,
-                SUM(CASE WHEN type = 9 THEN 1 ELSE 0 END) AS quiver,
-                SUM(CASE WHEN type = 10 THEN 1 ELSE 0 END) AS quest,
-                SUM(CASE WHEN type = 11 THEN 1 ELSE 0 END) AS key,
-                SUM(CASE WHEN type = 12 THEN 1 ELSE 0 END) AS miscellaneous,
-                SUM(CASE WHEN type = 13 THEN 1 ELSE 0 END) AS glyph,
-                count(id)  as total
-                FROM item
+                SUM(CASE WHEN slot = 28 THEN 1 ELSE 0 END) AS relic
             """, nativeQuery = true)
-    ItemSummaryProjection getSummary();
+    ItemSummarySlotProjection getSlotSummary();
+
 }

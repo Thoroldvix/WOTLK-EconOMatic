@@ -1,6 +1,7 @@
 package com.thoroldvix.economatic.stats.goldprice;
 
 import com.thoroldvix.economatic.common.dto.TimeRange;
+import com.thoroldvix.economatic.error.ErrorMessages;
 import com.thoroldvix.economatic.error.StatisticsNotFoundException;
 import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.GoldPriceService;
@@ -106,13 +107,15 @@ class GoldPriceStatServiceImplTest {
     @NullAndEmptySource
     void getForServer_throwsIllegalArgumentException_whenServerIdentifierIsInvalid(String serverIdentifier) {
         assertThatThrownBy(() -> goldPriceStatServiceImpl.getForServer(serverIdentifier, timeRange))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ErrorMessages.SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
     }
 
     @Test
     void getForServer_throwsNullPointerException_whenTimeRangeIsNull() {
         assertThatThrownBy(() -> goldPriceStatServiceImpl.getForServer(serverIdentifier, null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
     }
 
     @Test
@@ -176,13 +179,15 @@ class GoldPriceStatServiceImplTest {
     @NullAndEmptySource
     void getForRegion_throwsIllegalArgumentException_whenRegionNameIsInvalid(String regionName) {
         assertThatThrownBy(() -> goldPriceStatServiceImpl.getForRegion(regionName, timeRange))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ErrorMessages.REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
     }
 
     @Test
     void getForRegion_throwsNullPointerException_whenTimeRangeIsNull() {
         assertThatThrownBy(() -> goldPriceStatServiceImpl.getForRegion("eu", null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
     }
 
     @Test
@@ -233,13 +238,15 @@ class GoldPriceStatServiceImplTest {
     @NullAndEmptySource
     void getForFaction_throwsIllegalArgumentException_whenFactionNameIsInvalid(String factionName) {
         assertThatThrownBy(() -> goldPriceStatServiceImpl.getForFaction(factionName, timeRange))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ErrorMessages.FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
     }
 
     @Test
     void getForFaction_throwsNullPointerException_whenTimeRangeIsNull() {
         assertThatThrownBy(() -> goldPriceStatServiceImpl.getForFaction("alliance", null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
     }
 
     @Test
@@ -267,7 +274,8 @@ class GoldPriceStatServiceImplTest {
     @Test
     void getForAll_throwsNullPointerException_whenTimeRangeIsNull() {
         assertThatThrownBy(() -> goldPriceStatServiceImpl.getForAll(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
     }
 
     private GoldPriceStatResponse getStatResponse(GoldPriceResponse min, GoldPriceResponse max, long count) {

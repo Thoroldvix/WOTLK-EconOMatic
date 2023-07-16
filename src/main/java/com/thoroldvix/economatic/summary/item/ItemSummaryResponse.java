@@ -15,7 +15,7 @@ public record ItemSummaryResponse(
 
             Type type,
 
-            int total
+            long total
     ) {
 
     }

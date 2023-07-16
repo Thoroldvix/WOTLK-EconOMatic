@@ -12,7 +12,11 @@ class ItemSummaryServiceImpl implements ItemSummaryService {
 
     @Override
     public ItemSummaryResponse getSummary() {
-        ItemSummaryProjection summaryProjection = itemSummaryRepository.getSummary();
-        return itemSummaryMapper.toSummaryResponse(summaryProjection);
+        ItemSummaryQualityProjection qualityProjection = itemSummaryRepository.getQualitySummary();
+        ItemSummaryTypeProjection typeProjection = itemSummaryRepository.getTypeSummary();
+        ItemSummarySlotProjection slotProjection = itemSummaryRepository.getSlotSummary();
+        long total = itemSummaryRepository.count();
+
+        return itemSummaryMapper.toSummaryResponse(qualityProjection, typeProjection, slotProjection, total);
     }
 }

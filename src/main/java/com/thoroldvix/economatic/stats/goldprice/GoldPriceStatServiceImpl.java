@@ -115,7 +115,7 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
                             || statsProjection.getMinId() == null
                             || statsProjection.getMedian() == null;
         if (isInvalid) {
-            throw new StatisticsNotFoundException("No statistics found");
+            throw new StatisticsNotFoundException(NO_STATISTICS_FOUND.message);
         }
     }
 
