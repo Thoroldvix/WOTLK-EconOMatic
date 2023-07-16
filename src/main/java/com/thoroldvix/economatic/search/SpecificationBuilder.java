@@ -9,9 +9,9 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
+import static com.thoroldvix.economatic.common.util.ValidationUtils.isNonEmptyString;
+import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY;
-import static com.thoroldvix.economatic.util.ValidationUtils.isNonEmptyString;
-import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 
 
 public class SpecificationBuilder {

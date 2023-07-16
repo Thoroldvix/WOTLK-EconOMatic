@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.util;
+package com.thoroldvix.economatic.common.util;
 
 import java.util.Collection;
 import java.util.Objects;

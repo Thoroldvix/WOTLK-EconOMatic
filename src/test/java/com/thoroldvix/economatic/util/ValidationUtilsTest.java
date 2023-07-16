@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.util;
 
+import com.thoroldvix.economatic.common.util.ValidationUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

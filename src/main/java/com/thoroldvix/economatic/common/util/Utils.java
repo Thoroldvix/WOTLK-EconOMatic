@@ -1,4 +1,4 @@
-package com.thoroldvix.economatic.util;
+package com.thoroldvix.economatic.common.util;
 
 import java.time.Duration;
 import java.time.Instant;

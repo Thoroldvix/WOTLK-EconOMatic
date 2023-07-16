@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.itemprice;
 
-import com.thoroldvix.economatic.dto.PaginationInfo;
+import com.thoroldvix.economatic.common.dto.PaginationInfo;
 import com.thoroldvix.economatic.item.Item;
 import com.thoroldvix.economatic.server.Server;
 import org.mapstruct.Mapper;
@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-import static com.thoroldvix.economatic.util.ValidationUtils.checkNullAndGet;
+import static com.thoroldvix.economatic.common.util.ValidationUtils.checkNullAndGet;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)

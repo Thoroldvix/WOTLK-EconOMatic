@@ -1,6 +1,7 @@
 package com.thoroldvix.economatic.stats.population;
 
-import com.thoroldvix.economatic.dto.TimeRange;
+import com.thoroldvix.economatic.common.dto.TimeRange;
+import com.thoroldvix.economatic.common.util.StringEnumConverter;
 import com.thoroldvix.economatic.error.StatisticsNotFoundException;
 import com.thoroldvix.economatic.population.PopulationResponse;
 import com.thoroldvix.economatic.population.PopulationService;
@@ -9,14 +10,13 @@ import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
 import com.thoroldvix.economatic.stats.StatsProjection;
-import com.thoroldvix.economatic.util.StringEnumConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.TIME_RANGE_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
 
 @Service

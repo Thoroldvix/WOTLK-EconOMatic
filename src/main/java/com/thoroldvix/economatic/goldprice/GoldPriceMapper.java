@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.goldprice;
 
-import com.thoroldvix.economatic.dto.PaginationInfo;
+import com.thoroldvix.economatic.common.dto.PaginationInfo;
 import com.thoroldvix.economatic.server.Server;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-import static com.thoroldvix.economatic.util.ValidationUtils.checkNullAndGet;
+import static com.thoroldvix.economatic.common.util.ValidationUtils.checkNullAndGet;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface GoldPriceMapper {

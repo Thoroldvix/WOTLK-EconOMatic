@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Objects;
 
-import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
+import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 
 
 @Service

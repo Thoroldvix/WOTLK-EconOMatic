@@ -1,6 +1,6 @@
 package com.thoroldvix.economatic.goldprice;
 
-import com.thoroldvix.economatic.dto.PaginationInfo;
+import com.thoroldvix.economatic.common.dto.PaginationInfo;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.Server;

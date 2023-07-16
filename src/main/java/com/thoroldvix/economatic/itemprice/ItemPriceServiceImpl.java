@@ -1,6 +1,7 @@
 package com.thoroldvix.economatic.itemprice;
 
-import com.thoroldvix.economatic.dto.TimeRange;
+import com.thoroldvix.economatic.common.dto.TimeRange;
+import com.thoroldvix.economatic.common.util.StringEnumConverter;
 import com.thoroldvix.economatic.item.ItemResponse;
 import com.thoroldvix.economatic.item.ItemService;
 import com.thoroldvix.economatic.search.SearchRequest;
@@ -9,7 +10,6 @@ import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.util.StringEnumConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.thoroldvix.economatic.common.util.ValidationUtils.isCollectionEmpty;
+import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
 import static com.thoroldvix.economatic.item.ItemErrorMessages.ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
 import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
-import static com.thoroldvix.economatic.util.ValidationUtils.isCollectionEmpty;
-import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
 
 

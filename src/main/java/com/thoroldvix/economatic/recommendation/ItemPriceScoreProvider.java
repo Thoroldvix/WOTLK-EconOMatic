@@ -1,9 +1,9 @@
 package com.thoroldvix.economatic.recommendation;
 
+import com.thoroldvix.economatic.common.util.ValidationUtils;
 import com.thoroldvix.economatic.itemprice.ItemPriceRequest;
 import com.thoroldvix.economatic.itemprice.ItemPriceResponse;
 import com.thoroldvix.economatic.itemprice.ItemPriceService;
-import com.thoroldvix.economatic.util.ValidationUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -34,28 +34,37 @@ class ItemPriceScoreProvider extends ScoreProvider {
         ItemPriceRequest itemPriceRequest = buildItemPriceRequest(request.itemList(), servers);
 
         List<ItemPriceResponse> recentItemPrices = itemPriceServiceImpl.getRecentForItemListAndServers(itemPriceRequest, Pageable.unpaged()).prices();
-        return createScores(request.marketValue(), recentItemPrices, itemWeight);
+
+
+        return request.marketValue()
+                ? createScoresForMarketValue(recentItemPrices, itemWeight)
+                : createScoresForMinBuyout(recentItemPrices, itemWeight);
     }
 
-    private Map<String, BigDecimal> createScores(boolean marketValue, List<ItemPriceResponse> recentItemPrices, BigDecimal itemWeight) {
+    private Map<String, BigDecimal> createScoresForMarketValue(List<ItemPriceResponse> recentItemPrices, BigDecimal itemWeight) {
 
         return recentItemPrices
                 .stream()
                 .collect(Collectors.toMap(ItemPriceResponse::server,
-                        itemPrice -> calculateWeightedValue(determineType(marketValue, itemPrice), itemWeight, MAX_ITEM_PRICE_COPPER),
+                        itemPrice -> calculateWeightedValue(itemPrice.marketValue(), itemWeight, MAX_ITEM_PRICE_COPPER),
                         BigDecimal::add)
                 );
     }
 
-    private static long determineType(boolean marketValue, ItemPriceResponse itemPrice) {
-        return marketValue ? itemPrice.marketValue() : itemPrice.minBuyout();
+    private Map<String, BigDecimal> createScoresForMinBuyout(List<ItemPriceResponse> recentItemPrices, BigDecimal itemWeight) {
+
+        return recentItemPrices
+                .stream()
+                .collect(Collectors.toMap(ItemPriceResponse::server,
+                        itemPrice -> calculateWeightedValue(itemPrice.minBuyout(), itemWeight, MAX_ITEM_PRICE_COPPER),
+                        BigDecimal::add)
+                );
     }
 
     private void validateInputs(RecommendationRequest request, Set<String> servers) {
         Objects.requireNonNull(request, "Recommendation request cannot be null");
         ValidationUtils.notEmpty(servers, () -> new IllegalArgumentException("Servers cannot be null or empty"));
     }
-
 
     private static ItemPriceRequest buildItemPriceRequest(Set<String> itemList, Set<String> servers) {
         return ItemPriceRequest.builder()

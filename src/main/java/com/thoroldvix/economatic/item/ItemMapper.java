@@ -1,8 +1,8 @@
 package com.thoroldvix.economatic.item;
 
 
-import com.thoroldvix.economatic.dto.PaginationInfo;
-import com.thoroldvix.economatic.util.StringEnumConverter;
+import com.thoroldvix.economatic.common.dto.PaginationInfo;
+import com.thoroldvix.economatic.common.util.StringEnumConverter;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

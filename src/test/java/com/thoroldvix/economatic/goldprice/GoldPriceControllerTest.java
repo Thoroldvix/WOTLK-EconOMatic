@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.goldprice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.economatic.dto.PaginationInfo;
+import com.thoroldvix.economatic.common.dto.PaginationInfo;
 import com.thoroldvix.economatic.search.SearchCriteria;
 import com.thoroldvix.economatic.search.SearchRequest;
 import com.thoroldvix.economatic.server.Faction;

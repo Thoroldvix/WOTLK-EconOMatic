@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.PAGEABLE_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.error.ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL;
 import static com.thoroldvix.economatic.item.ItemErrorMessages.ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
-import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 import static java.util.Objects.requireNonNull;
 
 @Service

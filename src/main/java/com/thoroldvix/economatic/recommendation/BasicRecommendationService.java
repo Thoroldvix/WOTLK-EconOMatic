@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
-import static com.thoroldvix.economatic.util.ValidationUtils.notLessThan;
+import static com.thoroldvix.economatic.common.util.ValidationUtils.notLessThan;
 import static java.util.Objects.requireNonNull;
 
 @Service

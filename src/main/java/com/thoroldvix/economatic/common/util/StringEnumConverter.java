@@ -1,9 +1,9 @@
-package com.thoroldvix.economatic.util;
+package com.thoroldvix.economatic.common.util;
 
 
 import com.thoroldvix.economatic.error.NotFoundException;
 
-import static com.thoroldvix.economatic.util.ValidationUtils.isNonEmptyString;
+import static com.thoroldvix.economatic.common.util.ValidationUtils.isNonEmptyString;
 
 public final class StringEnumConverter {
 
