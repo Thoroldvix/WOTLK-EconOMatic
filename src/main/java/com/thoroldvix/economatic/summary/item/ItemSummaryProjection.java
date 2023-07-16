@@ -1,6 +1,7 @@
 package com.thoroldvix.economatic.summary.item;
 
 interface ItemSummaryProjection {
+
     int getCommon();
 
     int getUncommon();

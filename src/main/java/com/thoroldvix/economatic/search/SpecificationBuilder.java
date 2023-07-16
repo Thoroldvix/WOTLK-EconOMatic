@@ -14,10 +14,10 @@ import static com.thoroldvix.economatic.util.ValidationUtils.isNonEmptyString;
 import static com.thoroldvix.economatic.util.ValidationUtils.notEmpty;
 
 
-
 public class SpecificationBuilder {
 
-    private SpecificationBuilder() {}
+    private SpecificationBuilder() {
+    }
 
     public static <E> Specification<E> from(SearchRequest request) {
         notEmpty(request.searchCriteria(),

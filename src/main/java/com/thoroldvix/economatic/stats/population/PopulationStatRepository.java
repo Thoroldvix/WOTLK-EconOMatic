@@ -20,37 +20,37 @@ interface PopulationStatRepository extends JpaRepository<Population, Long> {
                                        (SELECT COUNT(fp.id) FROM filteredPopulations fp) AS count;
             """;
 
-     @Query(value = """
-            WITH filteredPopulations AS (SELECT p.value, p.id, p.updated_at
-            FROM population p
-            JOIN server s ON s.id = p.server_id
-            WHERE s.region = ?1 AND p.updated_at >= ?2 and p.updated_at <= ?3 and p.value > 0)
-            """ + STAT_SQL, nativeQuery = true)
-     StatsProjection findStatsByRegion(int region, LocalDateTime start, LocalDateTime end);
+    @Query(value = """
+                           WITH filteredPopulations AS (SELECT p.value, p.id, p.updated_at
+                           FROM population p
+                           JOIN server s ON s.id = p.server_id
+                           WHERE s.region = ?1 AND p.updated_at >= ?2 and p.updated_at <= ?3 and p.value > 0)
+                           """ + STAT_SQL, nativeQuery = true)
+    StatsProjection findStatsByRegion(int region, LocalDateTime start, LocalDateTime end);
 
     @Query(value = """
-            WITH filteredPopulations AS (
-            SELECT p.value, p.id, p.updated_at
-            FROM population p
-            WHERE p.updated_at >= ?1 AND updated_at <= ?2 AND p.value > 0)
-            """ + STAT_SQL, nativeQuery = true)
+                           WITH filteredPopulations AS (
+                           SELECT p.value, p.id, p.updated_at
+                           FROM population p
+                           WHERE p.updated_at >= ?1 AND updated_at <= ?2 AND p.value > 0)
+                           """ + STAT_SQL, nativeQuery = true)
     StatsProjection findForTimeRange(LocalDateTime start, LocalDateTime end);
 
     @Query(value = """
-            WITH filteredPopulations AS (
-            SELECT p.value, p.id, p.updated_at
-            FROM population p
-            WHERE p.server_id = ?1 AND p.updated_at >= ?2 and p.updated_at <= ?3 and p.value > 0)
-            """ + STAT_SQL, nativeQuery = true)
+                           WITH filteredPopulations AS (
+                           SELECT p.value, p.id, p.updated_at
+                           FROM population p
+                           WHERE p.server_id = ?1 AND p.updated_at >= ?2 and p.updated_at <= ?3 and p.value > 0)
+                           """ + STAT_SQL, nativeQuery = true)
     StatsProjection findStatsByServer(int serverId, LocalDateTime start, LocalDateTime end);
 
     @Query(value = """
-            WITH filteredPopulations AS (
-            SELECT p.value, p.id, p.updated_at
-            FROM population p
-            JOIN server s ON s.id = p.server_id
-            WHERE s.faction = ?1 AND p.updated_at >= ?2 and p.updated_at <= ?3 and p.value > 0)
-            """ + STAT_SQL, nativeQuery = true)
+                           WITH filteredPopulations AS (
+                           SELECT p.value, p.id, p.updated_at
+                           FROM population p
+                           JOIN server s ON s.id = p.server_id
+                           WHERE s.faction = ?1 AND p.updated_at >= ?2 and p.updated_at <= ?3 and p.value > 0)
+                           """ + STAT_SQL, nativeQuery = true)
     StatsProjection findStatsByFaction(int faction, LocalDateTime start, LocalDateTime end);
 
 

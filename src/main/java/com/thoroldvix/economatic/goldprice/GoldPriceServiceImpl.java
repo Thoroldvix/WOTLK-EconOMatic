@@ -1,12 +1,12 @@
 package com.thoroldvix.economatic.goldprice;
 
+import com.thoroldvix.economatic.dto.TimeRange;
+import com.thoroldvix.economatic.search.SearchRequest;
+import com.thoroldvix.economatic.search.SpecificationBuilder;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.search.SearchRequest;
-import com.thoroldvix.economatic.dto.TimeRange;
-import com.thoroldvix.economatic.search.SpecificationBuilder;
 import com.thoroldvix.economatic.util.StringEnumConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
                 .orElseThrow(() -> new GoldPriceNotFoundException("No gold price found with id " + id));
     }
 
-
     @Override
     public GoldPricePageResponse getAll(TimeRange timeRange, Pageable pageable) {
         validateInputs(timeRange, pageable);
@@ -56,6 +55,34 @@ class GoldPriceServiceImpl implements GoldPriceService {
         notEmpty(page.getContent(),
                 () -> new GoldPriceNotFoundException("No prices found for time range: %s-%s".formatted(timeRange.start(), timeRange.end())));
         return goldPriceMapper.toPageResponse(page);
+    }
+
+    private Page<GoldPrice> findAllForTimeRange(TimeRange timeRange, Pageable pageable) {
+        return goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
+    }
+
+    private void validateInputs(TimeRange timeRange, Pageable pageable) {
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+    }
+
+    @Override
+    public GoldPricePageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        validateInputs(timeRange, pageable);
+
+        ServerResponse server = serverService.getServer(serverIdentifier);
+        Page<GoldPrice> prices = findAllForServer(server, timeRange, pageable);
+
+        notEmpty(prices.getContent(),
+                () -> new GoldPriceNotFoundException("No prices found for server identifier %s and time range: %s-%s".formatted(
+                        serverIdentifier, timeRange.start(), timeRange.end())));
+
+        return goldPriceMapper.toPageResponse(prices);
+    }
+
+    private Page<GoldPrice> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
+        return goldPriceRepository.findAllForServerAndTimeRange(server.id(), timeRange.start(), timeRange.end(), pageable);
     }
 
     @Override
@@ -79,20 +106,11 @@ class GoldPriceServiceImpl implements GoldPriceService {
         return goldPriceMapper.toPageResponse(prices);
     }
 
-    @Override
-    public GoldPricePageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-        validateInputs(timeRange, pageable);
-
-        ServerResponse server = serverService.getServer(serverIdentifier);
-        Page<GoldPrice> prices = findAllForServer(server, timeRange, pageable);
-
-        notEmpty(prices.getContent(),
-                () -> new GoldPriceNotFoundException("No prices found for server identifier %s and time range: %s-%s".formatted(
-                        serverIdentifier, timeRange.start(), timeRange.end())));
-
-        return goldPriceMapper.toPageResponse(prices);
+    private Page<GoldPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
+        Specification<GoldPrice> spec = SpecificationBuilder.from(searchRequest);
+        return goldPriceRepository.findAll(spec, pageable);
     }
+
 
     @Override
     public GoldPriceResponse getRecentForServer(String serverIdentifier) {
@@ -105,6 +123,10 @@ class GoldPriceServiceImpl implements GoldPriceService {
         return goldPriceMapper.toResponse(price);
     }
 
+    private Optional<GoldPrice> findRecentForServer(ServerResponse server) {
+        return goldPriceRepository.findRecentForServer(server.id());
+    }
+
     @Override
     public GoldPriceListResponse getRecentForRegion(String regionName) {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
@@ -115,6 +137,11 @@ class GoldPriceServiceImpl implements GoldPriceService {
         return goldPriceMapper.toGoldPriceList(prices);
     }
 
+    private List<GoldPrice> findRecentForRegion(String regionName) {
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        return goldPriceRepository.findRecentForRegion(region.ordinal());
+    }
+
     @Override
     public GoldPriceListResponse getRecentForFaction(String factionName) {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
@@ -123,6 +150,11 @@ class GoldPriceServiceImpl implements GoldPriceService {
         notEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for faction " + factionName));
 
         return goldPriceMapper.toGoldPriceList(prices);
+    }
+
+    private List<GoldPrice> findRecentForFaction(String factionName) {
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        return goldPriceRepository.findRecentForFaction(faction.ordinal());
     }
 
     @Override
@@ -136,6 +168,16 @@ class GoldPriceServiceImpl implements GoldPriceService {
         return goldPriceMapper.toGoldPriceList(prices);
     }
 
+    private Set<Integer> getServerIds(Set<String> serverList) {
+        return serverList.stream()
+                .map(server -> serverService.getServer(server).id())
+                .collect(Collectors.toSet());
+    }
+
+    private List<GoldPrice> findRecentForServerIds(Set<Integer> serverIds) {
+        return goldPriceRepository.findRecentForServerIds(serverIds);
+    }
+
     @Override
     @Transactional
     public void saveAll(List<GoldPrice> pricesToSave) {
@@ -143,47 +185,4 @@ class GoldPriceServiceImpl implements GoldPriceService {
 
         goldPriceRepository.saveAll(pricesToSave);
     }
-
-    private Page<GoldPrice> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
-        return goldPriceRepository.findAllForServerAndTimeRange(server.id(), timeRange.start(), timeRange.end(), pageable);
-    }
-
-    private Page<GoldPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<GoldPrice> spec = SpecificationBuilder.from(searchRequest);
-        return goldPriceRepository.findAll(spec, pageable);
-    }
-
-    private Page<GoldPrice> findAllForTimeRange(TimeRange timeRange, Pageable pageable) {
-        return goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
-    }
-
-    private List<GoldPrice> findRecentForRegion(String regionName) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return goldPriceRepository.findRecentForRegion(region.ordinal());
-    }
-
-    private List<GoldPrice> findRecentForFaction(String factionName) {
-        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        return goldPriceRepository.findRecentForFaction(faction.ordinal());
-    }
-
-    private Optional<GoldPrice> findRecentForServer(ServerResponse server) {
-        return goldPriceRepository.findRecentForServer(server.id());
-    }
-
-    private List<GoldPrice> findRecentForServerIds(Set<Integer> serverIds) {
-        return goldPriceRepository.findRecentForServerIds(serverIds);
-    }
-
-    private Set<Integer> getServerIds(Set<String> serverList) {
-        return serverList.stream()
-                .map(server -> serverService.getServer(server).id())
-                .collect(Collectors.toSet());
-    }
-
-    private void validateInputs(TimeRange timeRange, Pageable pageable) {
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
-    }
-
 }

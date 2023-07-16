@@ -11,6 +11,7 @@ import java.util.List;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public abstract class BaseItemDealTest {
+
     protected static final int MINIMUM_ITEM_QUANTITY = 3;
     protected static final int MINIMUM_ITEM_QUALITY = 0;
     protected static final int ITEM_LIMIT = 5;

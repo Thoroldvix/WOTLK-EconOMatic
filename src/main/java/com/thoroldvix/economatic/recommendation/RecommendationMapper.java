@@ -17,7 +17,6 @@ interface RecommendationMapper {
     BigDecimal DEFAULT_SCORE = BigDecimal.ZERO;
     int SCALE = 6;
 
-
     default RecommendationListResponse toRecommendationResponse(
             Map<String, BigDecimal> itemPriceScores,
             Map<String, BigDecimal> populationScores,

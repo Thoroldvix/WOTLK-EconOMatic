@@ -7,7 +7,8 @@ import static com.thoroldvix.economatic.util.ValidationUtils.isNonEmptyString;
 
 public final class StringEnumConverter {
 
-    private StringEnumConverter() {}
+    private StringEnumConverter() {
+    }
 
     public static <T extends Enum<T>> T fromString(String str, Class<T> enumClass) {
         if (!isNonEmptyString(str)) {

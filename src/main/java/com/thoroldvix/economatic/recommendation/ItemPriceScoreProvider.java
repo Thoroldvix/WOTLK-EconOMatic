@@ -57,7 +57,7 @@ class ItemPriceScoreProvider extends ScoreProvider {
     }
 
 
-     private static ItemPriceRequest buildItemPriceRequest(Set<String> itemList, Set<String> servers) {
+    private static ItemPriceRequest buildItemPriceRequest(Set<String> itemList, Set<String> servers) {
         return ItemPriceRequest.builder()
                 .itemList(itemList)
                 .serverList(servers)

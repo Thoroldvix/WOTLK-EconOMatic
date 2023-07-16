@@ -24,6 +24,7 @@ import static com.thoroldvix.economatic.util.Utils.elapsedTimeInMillis;
 class GoldPriceUpdateService {
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.gold-price.update-rate}";
+
     @PersistenceContext
     private final EntityManager entityManager;
     private final GoldPriceServiceImpl goldPriceServiceImpl;
@@ -44,7 +45,6 @@ class GoldPriceUpdateService {
         List<GoldPrice> pricesToSave = getPriceList(servers, prices);
 
         goldPriceServiceImpl.saveAll(pricesToSave);
-
         log.info("Finished updating gold prices in {} ms", elapsedTimeInMillis(start));
     }
 

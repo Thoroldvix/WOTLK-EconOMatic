@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.Arrays;
 
 class InPredicateFactory implements PredicateFactory {
+
     @Override
     public Predicate getPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         String[] split = value.split(",");

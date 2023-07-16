@@ -16,6 +16,7 @@ public record SearchRequest(
         @Schema(description = "Global operator for combining search criteria", allowableValues = {"AND", "OR", "NOT"})
         GlobalOperator globalOperator
 ) {
+
     public enum GlobalOperator {
         AND, OR, NOT
     }

@@ -1,11 +1,11 @@
 package com.thoroldvix.economatic.goldprice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thoroldvix.economatic.server.Faction;
-import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.dto.PaginationInfo;
 import com.thoroldvix.economatic.search.SearchCriteria;
 import com.thoroldvix.economatic.search.SearchRequest;
+import com.thoroldvix.economatic.server.Faction;
+import com.thoroldvix.economatic.server.Region;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +34,9 @@ class GoldPriceControllerTest {
 
     private static final String GOLD_PRICE_API_ENDPOINT = "/wow-classic/api/v1/servers/prices";
 
-    private  GoldPriceResponse goldPriceResponse1;
+    private GoldPriceResponse goldPriceResponse1;
 
-    private  GoldPriceResponse goldPriceResponse2;
+    private GoldPriceResponse goldPriceResponse2;
 
     private GoldPriceResponse goldPriceResponse3;
 

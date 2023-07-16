@@ -6,6 +6,7 @@ import lombok.Builder;
 public record ServerSummaryResponse(
         Summary summary
 ) {
+
     @Builder
     public record Summary(
             Faction faction,
@@ -14,6 +15,7 @@ public record ServerSummaryResponse(
             Locale locale,
             int total
     ) {
+
     }
 
     @Builder
@@ -21,6 +23,7 @@ public record ServerSummaryResponse(
             int alliance,
             int horde
     ) {
+
     }
 
     @Builder
@@ -28,6 +31,7 @@ public record ServerSummaryResponse(
             int eu,
             int us
     ) {
+
     }
 
     @Builder
@@ -37,6 +41,7 @@ public record ServerSummaryResponse(
             int pvpRp,
             int rp
     ) {
+
     }
 
     @Builder
@@ -48,5 +53,6 @@ public record ServerSummaryResponse(
             int frFR,
             int ruRU
     ) {
+
     }
 }

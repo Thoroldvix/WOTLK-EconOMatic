@@ -1,10 +1,10 @@
 package com.thoroldvix.economatic.goldprice;
 
+import com.thoroldvix.economatic.dto.PaginationInfo;
 import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.server.ServerType;
-import com.thoroldvix.economatic.dto.PaginationInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

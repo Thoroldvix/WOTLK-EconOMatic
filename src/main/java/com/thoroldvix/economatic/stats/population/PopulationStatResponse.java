@@ -11,4 +11,5 @@ public record PopulationStatResponse(
         PopulationResponse maximum,
         long count
 ) {
+
 }

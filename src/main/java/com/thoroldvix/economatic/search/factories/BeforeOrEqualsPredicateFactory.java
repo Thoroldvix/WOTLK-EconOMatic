@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 
 class BeforeOrEqualsPredicateFactory implements PredicateFactory {
+
     @Override
     public Predicate getPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();

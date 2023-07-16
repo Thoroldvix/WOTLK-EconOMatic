@@ -20,7 +20,6 @@ class BasicRecommendationService implements RecommendationService {
     private final GoldPriceScoreProvider goldPriceScoreProvider;
     private final RecommendationMapper recommendationMapper;
 
-
     public RecommendationListResponse getRecommendationsForItemList(@Valid RecommendationRequest request, int limit) {
         requireNonNull(request, "Recommendation request cannot be null");
         notLessThan(limit, 1, "Limit cannot be less than 1");

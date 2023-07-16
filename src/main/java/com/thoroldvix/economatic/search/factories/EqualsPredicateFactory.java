@@ -7,13 +7,6 @@ import jakarta.persistence.criteria.Predicate;
 class EqualsPredicateFactory implements PredicateFactory {
 
 
-    private static <E extends Enum<E>> int getValueForEnumType(Class<?> enumClass, String value) {
-        @SuppressWarnings("unchecked")
-        Class<E> castedEnumClass = (Class<E>) enumClass;
-        E enumValue = Enum.valueOf(castedEnumClass, value.toUpperCase());
-        return enumValue.ordinal();
-    }
-
     @Override
     public Predicate getPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();
@@ -22,5 +15,12 @@ class EqualsPredicateFactory implements PredicateFactory {
             return cb.equal(columnPath, searchValue);
         }
         return cb.equal(columnPath, value);
+    }
+
+    private static <E extends Enum<E>> int getValueForEnumType(Class<?> enumClass, String value) {
+        @SuppressWarnings("unchecked")
+        Class<E> castedEnumClass = (Class<E>) enumClass;
+        E enumValue = Enum.valueOf(castedEnumClass, value.toUpperCase());
+        return enumValue.ordinal();
     }
 }

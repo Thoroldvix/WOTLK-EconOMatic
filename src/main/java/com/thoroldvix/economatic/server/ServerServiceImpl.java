@@ -1,9 +1,9 @@
 package com.thoroldvix.economatic.server;
 
 import com.thoroldvix.economatic.error.ErrorMessages;
+import com.thoroldvix.economatic.search.SearchRequest;
 import com.thoroldvix.economatic.search.SpecificationBuilder;
 import com.thoroldvix.economatic.util.StringEnumConverter;
-import com.thoroldvix.economatic.search.SearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

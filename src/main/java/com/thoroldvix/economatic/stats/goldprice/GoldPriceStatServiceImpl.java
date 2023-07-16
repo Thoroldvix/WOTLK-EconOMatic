@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.stats.goldprice;
 
+import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.error.StatisticsNotFoundException;
 import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.GoldPriceService;
@@ -7,9 +8,8 @@ import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.util.StringEnumConverter;
-import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.stats.StatsProjection;
+import com.thoroldvix.economatic.util.StringEnumConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -111,7 +111,7 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         return goldPriceServiceImpl.getForId(minId);
     }
 
-     private void validateStatsProjection(StatsProjection statsProjection) {
+    private void validateStatsProjection(StatsProjection statsProjection) {
         boolean isInvalid = statsProjection.getMean() == null
                             || statsProjection.getMaxId() == null
                             || statsProjection.getMinId() == null

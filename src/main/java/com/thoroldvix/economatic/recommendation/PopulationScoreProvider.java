@@ -18,10 +18,10 @@ class PopulationScoreProvider extends ScoreProvider {
     private final PopulationService populationServiceImpl;
     private final RecommendationProp prop;
 
-   public Map<String, BigDecimal> getPopulationScores(BigDecimal populationWeight) {
+    public Map<String, BigDecimal> getPopulationScores(BigDecimal populationWeight) {
         BigDecimal weight = getWeightOrDefault(populationWeight, prop.populationDefaultWeight());
-       List<PopulationResponse> recentPopulations = populationServiceImpl.getAllRecent().populations();
-       return createScores(recentPopulations, weight);
+        List<PopulationResponse> recentPopulations = populationServiceImpl.getAllRecent().populations();
+        return createScores(recentPopulations, weight);
     }
 
     private Map<String, BigDecimal> createScores(List<PopulationResponse> recentPopulations, BigDecimal weight) {
@@ -32,7 +32,6 @@ class PopulationScoreProvider extends ScoreProvider {
                         populationResponse -> calculateWeightedValue(populationResponse.value(), weight, MAX_POPULATION)
                 ));
     }
-
 
     private boolean filterLowPopulations(PopulationResponse population) {
         return population.value() >= this.prop.minAllowedPopulation();

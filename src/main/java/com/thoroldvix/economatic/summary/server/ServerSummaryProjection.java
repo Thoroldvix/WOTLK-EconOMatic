@@ -1,6 +1,7 @@
 package com.thoroldvix.economatic.summary.server;
 
 interface ServerSummaryProjection {
+
     int getAlliance();
 
     int getHorde();

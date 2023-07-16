@@ -23,11 +23,11 @@ class ValidationUtilsTest {
 
     @Test
     void notEmpty_array() {
-        String[] nonEmptyArray = new String[] {"a", "b", "c"};
+        String[] nonEmptyArray = new String[]{"a", "b", "c"};
         assertThatCode(() -> ValidationUtils.notEmpty(nonEmptyArray, () -> new IllegalArgumentException("Array should not be empty")))
                 .doesNotThrowAnyException();
 
-        String[] emptyArray = new String[] {};
+        String[] emptyArray = new String[]{};
         assertThatThrownBy(() -> ValidationUtils.notEmpty(emptyArray, () -> new IllegalArgumentException("Array should not be empty")))
                 .isInstanceOf(IllegalArgumentException.class);
     }

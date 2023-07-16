@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Repository
 interface GoldPriceStatRepository extends JpaRepository<GoldPrice, Long> {
+
     String STAT_SQL = """
             SELECT
             (SELECT CAST(AVG(gp.value) AS DECIMAL(7, 6)) FROM gold_prices gp) AS mean,
@@ -20,37 +21,37 @@ interface GoldPriceStatRepository extends JpaRepository<GoldPrice, Long> {
             """;
 
     @Query(value = """
-            WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
-            FROM gold_price gp
-            JOIN server s ON s.id = gp.server_id
-            WHERE s.region = ?1 and gp.updated_at >= ?2 and gp.updated_at <= ?3
-    )
-    """ + STAT_SQL, nativeQuery = true)
+                                   WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
+                                   FROM gold_price gp
+                                   JOIN server s ON s.id = gp.server_id
+                                   WHERE s.region = ?1 and gp.updated_at >= ?2 and gp.updated_at <= ?3
+                           )
+                           """ + STAT_SQL, nativeQuery = true)
     StatsProjection findForRegion(int region, LocalDateTime start, LocalDateTime end);
 
     @Query(value = """
-            WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
-            FROM gold_price gp
-            JOIN server s ON s.id = gp.server_id
-            WHERE s.faction = ?1 and gp.updated_at >= ?2 and gp.updated_at <= ?3
-    )
-    """ + STAT_SQL, nativeQuery = true)
+                                   WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
+                                   FROM gold_price gp
+                                   JOIN server s ON s.id = gp.server_id
+                                   WHERE s.faction = ?1 and gp.updated_at >= ?2 and gp.updated_at <= ?3
+                           )
+                           """ + STAT_SQL, nativeQuery = true)
     StatsProjection findForFaction(int faction, LocalDateTime start, LocalDateTime end);
 
 
     @Query(value = """
-            WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
-            FROM gold_price gp
-            WHERE gp.updated_at >= ?1 AND gp.updated_at <= ?2
-    )
-      """ + STAT_SQL, nativeQuery = true)
+                                   WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
+                                   FROM gold_price gp
+                                   WHERE gp.updated_at >= ?1 AND gp.updated_at <= ?2
+                           )
+                             """ + STAT_SQL, nativeQuery = true)
     StatsProjection findStatsForAll(LocalDateTime start, LocalDateTime end);
 
     @Query(value = """
-            WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
-            FROM gold_price gp
-            WHERE gp.server_id = ?1 and gp.updated_at >= ?2 and gp.updated_at <= ?3
-    )
- """ + STAT_SQL, nativeQuery = true)
+                                      WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
+                                      FROM gold_price gp
+                                      WHERE gp.server_id = ?1 and gp.updated_at >= ?2 and gp.updated_at <= ?3
+                              )
+                           """ + STAT_SQL, nativeQuery = true)
     StatsProjection findStatsForServer(int serverId, LocalDateTime start, LocalDateTime end);
 }

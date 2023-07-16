@@ -15,16 +15,16 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 class GoldPriceScoreProvider extends ScoreProvider {
+
     private static final BigDecimal MAX_GOLD_PRICE_USD = new BigDecimal("0.0025");
     private final GoldPriceService goldPriceServiceImpl;
     private final RecommendationProp prop;
 
-
     public Map<String, BigDecimal> getGoldPriceScores(BigDecimal goldPriceWeight, Set<String> servers) {
         BigDecimal weight = getWeightOrDefault(goldPriceWeight, prop.goldPriceDefaultWeight());
         GoldPriceRequest request = new GoldPriceRequest(servers);
-
         List<GoldPriceResponse> recentPrices = goldPriceServiceImpl.getRecentForServerList(request).prices();
+
         return createScores(recentPrices, weight);
     }
 

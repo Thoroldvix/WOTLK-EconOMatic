@@ -8,4 +8,5 @@ import java.util.List;
 public record ServerListResponse(
         List<ServerResponse> servers
 ) {
+
 }

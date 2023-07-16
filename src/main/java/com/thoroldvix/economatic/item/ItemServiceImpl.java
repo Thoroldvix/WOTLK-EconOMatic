@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.item;
 
-import com.thoroldvix.economatic.search.SpecificationBuilder;
 import com.thoroldvix.economatic.search.SearchRequest;
+import com.thoroldvix.economatic.search.SpecificationBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,6 @@ import static java.util.Objects.requireNonNull;
 class ItemServiceImpl implements ItemService {
 
     public static final String ITEMS_NOT_FOUND = "Items not found";
-
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
 
@@ -43,6 +42,11 @@ class ItemServiceImpl implements ItemService {
         return itemMapper.toPageResponse(items);
     }
 
+    private Page<Item> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
+        Specification<Item> spec = SpecificationBuilder.from(searchRequest);
+        return itemRepository.findAll(spec, pageable);
+    }
+
     @Override
     public ItemPageResponse getAll(Pageable pageable) {
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
@@ -53,7 +57,6 @@ class ItemServiceImpl implements ItemService {
         return itemMapper.toPageResponse(page);
     }
 
-
     @Override
     public ItemResponse getItem(String itemIdentifier) {
         notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
@@ -63,18 +66,13 @@ class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ItemNotFoundException("No item found for identifier " + itemIdentifier));
     }
 
-
-    @Override
-    @Transactional
-    public ItemResponse addItem(@Valid ItemRequest itemRequest) {
-        requireNonNull(itemRequest, "Item request cannot be null");
-
-        Item item = itemMapper.fromRequest(itemRequest);
-        itemRepository.findById(item.getId()).ifPresent(i -> {
-            throw new ItemAlreadyExistsException("Item with id " + item.getId() + " already exists");
-        });
-
-        return itemMapper.toResponse(itemRepository.save(item));
+    private Optional<Item> findItem(String itemIdentifier) {
+        try {
+            int itemId = Integer.parseInt(itemIdentifier);
+            return itemRepository.findById(itemId);
+        } catch (NumberFormatException ignored) {
+            return itemRepository.findByUniqueName(itemIdentifier);
+        }
     }
 
     @Override
@@ -89,18 +87,18 @@ class ItemServiceImpl implements ItemService {
         return itemMapper.toResponse(item);
     }
 
-    private Page<Item> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<Item> spec = SpecificationBuilder.from(searchRequest);
-        return itemRepository.findAll(spec, pageable);
+    @Override
+    @Transactional
+    public ItemResponse addItem(@Valid ItemRequest itemRequest) {
+        requireNonNull(itemRequest, "Item request cannot be null");
+
+        Item item = itemMapper.fromRequest(itemRequest);
+        itemRepository.findById(item.getId()).ifPresent(i -> {
+            throw new ItemAlreadyExistsException("Item with id " + item.getId() + " already exists");
+        });
+
+        return itemMapper.toResponse(itemRepository.save(item));
     }
 
-    private Optional<Item> findItem(String itemIdentifier) {
-        try {
-            int itemId = Integer.parseInt(itemIdentifier);
-            return itemRepository.findById(itemId);
-        } catch (NumberFormatException ignored) {
-            return itemRepository.findByUniqueName(itemIdentifier);
-        }
-    }
 
 }

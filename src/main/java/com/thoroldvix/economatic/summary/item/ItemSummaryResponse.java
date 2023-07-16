@@ -6,6 +6,7 @@ import lombok.Builder;
 public record ItemSummaryResponse(
         Summary summary
 ) {
+
     @Builder
     record Summary(
             Quality quality,
@@ -16,6 +17,7 @@ public record ItemSummaryResponse(
 
             int total
     ) {
+
     }
 
     @Builder
@@ -26,6 +28,7 @@ public record ItemSummaryResponse(
             int epic,
             int legendary
     ) {
+
     }
 
     @Builder
@@ -60,23 +63,24 @@ public record ItemSummaryResponse(
             int quiver,
             int relic
     ) {
+
     }
 
     @Builder
     record Type(int consumable,
-                          int container,
-                          int weapon,
-                          int gem,
-                          int armor,
-                          int reagent,
-                          int projectile,
-                          int tradeGoods,
-                          int recipe,
-                          int quiver,
-                          int quest,
-                          int key,
-                          int miscellaneous,
-                          int glyph
+                int container,
+                int weapon,
+                int gem,
+                int armor,
+                int reagent,
+                int projectile,
+                int tradeGoods,
+                int recipe,
+                int quiver,
+                int quest,
+                int key,
+                int miscellaneous,
+                int glyph
     ) {
 
     }

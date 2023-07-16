@@ -26,9 +26,9 @@ import static com.thoroldvix.economatic.util.Utils.elapsedTimeInMillis;
 class ItemPriceUpdateService {
     public static final String UPDATE_RATE = "${economatic.item-price.update-rate}";
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.item-price.update-rate}}";
+
     @PersistenceContext
     private final EntityManager entityManager;
-
     private final ItemPriceService itemPriceServiceImpl;
     private final NexusHubService nexusHubService;
     private final Map<String, Integer> serverIdentifiers;
@@ -42,6 +42,11 @@ class ItemPriceUpdateService {
         this.itemPriceServiceImpl = itemPriceServiceImpl;
         this.nexusHubService = nexusHubService;
         this.serverIdentifiers = getServerIds(serverService);
+    }
+
+    private Map<String, Integer> getServerIds(ServerService serverService) {
+        return serverService.getAll().servers().stream()
+                .collect(Collectors.toMap(ServerResponse::uniqueName, ServerResponse::id, (id1, id2) -> id1));
     }
 
     @Scheduled(fixedRateString = UPDATE_RATE,
@@ -61,26 +66,22 @@ class ItemPriceUpdateService {
         log.info("Finished updating item prices in {} ms", elapsedTimeInMillis(start));
     }
 
-
     private List<ItemPrice> retrieveItemPricesForServer(String serverName) {
         List<NexusHubResponse.NexusHubPrice> nexusHubPrices = nexusHubService.retrieveItemPricesForServer(serverName);
         Server server = getServer(serverName);
         return toItemPriceList(server, nexusHubPrices);
     }
 
-
     private Server getServer(String uniqueServerName) {
         int serverId = serverIdentifiers.get(uniqueServerName);
         return entityManager.getReference(Server.class, serverId);
     }
-
 
     private List<ItemPrice> toItemPriceList(Server server, List<NexusHubResponse.NexusHubPrice> filteredPrices) {
         return filteredPrices.parallelStream()
                 .map(itemResponse -> buildItemPrice(server, itemResponse))
                 .toList();
     }
-
 
     private ItemPrice buildItemPrice(Server server, NexusHubResponse.NexusHubPrice price) {
         Item item = entityManager.getReference(Item.class, price.itemId());
@@ -94,10 +95,5 @@ class ItemPriceUpdateService {
                 .minBuyout(price.minBuyout())
                 .server(server)
                 .build();
-    }
-
-    private Map<String, Integer> getServerIds(ServerService serverService) {
-        return serverService.getAll().servers().stream()
-                .collect(Collectors.toMap(ServerResponse::uniqueName, ServerResponse::id, (id1, id2) -> id1));
     }
 }

@@ -32,6 +32,7 @@ import static java.util.Objects.requireNonNull;
 class PopulationServiceImpl implements PopulationService {
 
     public static final String NO_POPULATIONS_FOUND = "No populations found";
+
     private final PopulationRepository populationRepository;
     private final ServerService serverService;
     private final PopulationMapper populationMapper;
@@ -56,6 +57,10 @@ class PopulationServiceImpl implements PopulationService {
         return populationMapper.toPageResponse(page);
     }
 
+    private Page<Population> findForTimeRange(TimeRange timeRange, Pageable pageable) {
+        return populationRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
+    }
+
     @Override
     public PopulationPageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
@@ -71,6 +76,10 @@ class PopulationServiceImpl implements PopulationService {
         return populationMapper.toPageResponse(page);
     }
 
+    private Page<Population> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
+        return populationRepository.findAllForServer(server.id(), timeRange.start(), timeRange.end(), pageable);
+    }
+
     @Override
     public TotalPopResponse getTotalPopulation(String serverName) {
         notEmpty(serverName, "Server name cannot be null or empty");
@@ -81,6 +90,15 @@ class PopulationServiceImpl implements PopulationService {
         validateTotalPopProj(totalPopProjection, serverName);
 
         return populationMapper.toTotalPopResponse(totalPopProjection);
+    }
+
+    private void validateTotalPopProj(TotalPopProjection totalPopProjection, String serverName) {
+        boolean isInvalid = totalPopProjection.getPopTotal() == null
+                            || totalPopProjection.getPopHorde() == null
+                            || totalPopProjection.getPopAlliance() == null;
+        if (isInvalid) {
+            throw new PopulationNotFoundException("No total population found for server name " + serverName);
+        }
     }
 
     @Override
@@ -95,6 +113,11 @@ class PopulationServiceImpl implements PopulationService {
         return populationMapper.toPageResponse(populations);
     }
 
+    private Page<Population> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
+        Specification<Population> spec = SpecificationBuilder.from(searchRequest);
+        return populationRepository.findAll(spec, pageable);
+    }
+
     @Override
     public PopulationListResponse getRecentForRegion(String regionName) {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
@@ -106,6 +129,11 @@ class PopulationServiceImpl implements PopulationService {
         return populationMapper.toPopulationList(population);
     }
 
+    private List<Population> findRecentForRegion(String regionName) {
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        return populationRepository.findRecentForRegion(region);
+    }
+
     @Override
     public PopulationListResponse getRecentForFaction(String factionName) {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
@@ -114,6 +142,12 @@ class PopulationServiceImpl implements PopulationService {
         notEmpty(population, () -> new PopulationNotFoundException("No recent populations found for faction: " + factionName));
 
         return populationMapper.toPopulationList(population);
+    }
+
+    private List<Population> findRecentForFaction(String factionName) {
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+
+        return populationRepository.findRecentForFaction(faction);
     }
 
     @Override
@@ -136,6 +170,10 @@ class PopulationServiceImpl implements PopulationService {
         return populationMapper.toResponse(population);
     }
 
+    private Optional<Population> findRecentForServer(ServerResponse server) {
+        return populationRepository.findRecentForServer(server.id());
+    }
+
     @Override
     @Transactional
     public void saveAll(List<Population> populations) {
@@ -143,44 +181,6 @@ class PopulationServiceImpl implements PopulationService {
                 () -> new IllegalArgumentException("Population list cannot be null or empty"));
 
         populationRepository.saveAll(populations);
-    }
-
-    private Optional<Population> findRecentForServer(ServerResponse server) {
-        return populationRepository.findRecentForServer(server.id());
-    }
-
-
-    private Page<Population> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<Population> spec = SpecificationBuilder.from(searchRequest);
-        return populationRepository.findAll(spec, pageable);
-    }
-
-    private List<Population> findRecentForRegion(String regionName) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return populationRepository.findRecentForRegion(region);
-    }
-
-    private List<Population> findRecentForFaction(String factionName) {
-        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-
-        return populationRepository.findRecentForFaction(faction);
-    }
-
-    private Page<Population> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
-        return populationRepository.findAllForServer(server.id(), timeRange.start(), timeRange.end(), pageable);
-    }
-
-    private Page<Population> findForTimeRange(TimeRange timeRange, Pageable pageable) {
-        return populationRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
-    }
-
-    private void validateTotalPopProj(TotalPopProjection totalPopProjection, String serverName) {
-        boolean isInvalid = totalPopProjection.getPopTotal() == null
-                            || totalPopProjection.getPopHorde() == null
-                            || totalPopProjection.getPopAlliance() == null;
-        if (isInvalid) {
-            throw new PopulationNotFoundException("No total population found for server name " + serverName);
-        }
     }
 }
 

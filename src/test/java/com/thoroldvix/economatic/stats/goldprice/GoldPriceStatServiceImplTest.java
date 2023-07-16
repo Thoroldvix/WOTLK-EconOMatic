@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.stats.goldprice;
 
+import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.error.StatisticsNotFoundException;
 import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.GoldPriceService;
@@ -7,7 +8,6 @@ import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.stats.StatsProjection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class GoldPriceStatServiceImplTest {
+
     @Mock
     private ServerService serverService;
     @Mock
@@ -263,7 +264,7 @@ class GoldPriceStatServiceImplTest {
         assertThat(actual).isEqualTo(expectedResponse);
     }
 
-     @Test
+    @Test
     void getForAll_throwsNullPointerException_whenTimeRangeIsNull() {
         assertThatThrownBy(() -> goldPriceStatServiceImpl.getForAll(null))
                 .isInstanceOf(NullPointerException.class);

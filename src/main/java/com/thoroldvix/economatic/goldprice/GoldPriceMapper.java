@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.goldprice;
 
-import com.thoroldvix.economatic.server.Server;
 import com.thoroldvix.economatic.dto.PaginationInfo;
+import com.thoroldvix.economatic.server.Server;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

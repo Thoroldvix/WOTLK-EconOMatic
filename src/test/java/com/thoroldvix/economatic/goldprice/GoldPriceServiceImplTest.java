@@ -1,10 +1,10 @@
 package com.thoroldvix.economatic.goldprice;
 
-import com.thoroldvix.economatic.server.*;
 import com.thoroldvix.economatic.dto.PaginationInfo;
+import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.search.SearchCriteria;
 import com.thoroldvix.economatic.search.SearchRequest;
-import com.thoroldvix.economatic.dto.TimeRange;
+import com.thoroldvix.economatic.server.*;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -38,6 +38,7 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class GoldPriceServiceImplTest {
+
     public static final String SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY = "Server identifier cannot be null or empty";
     private static final LocalDateTime UPDATE_DATE = LocalDateTime.now();
     public static final String PAGEABLE_CANNOT_BE_NULL = "Pageable cannot be null";

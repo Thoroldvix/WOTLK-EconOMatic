@@ -1,5 +1,6 @@
 package com.thoroldvix.economatic.stats.population;
 
+import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.error.StatisticsNotFoundException;
 import com.thoroldvix.economatic.population.PopulationResponse;
 import com.thoroldvix.economatic.population.PopulationService;
@@ -7,9 +8,8 @@ import com.thoroldvix.economatic.server.Faction;
 import com.thoroldvix.economatic.server.Region;
 import com.thoroldvix.economatic.server.ServerResponse;
 import com.thoroldvix.economatic.server.ServerService;
-import com.thoroldvix.economatic.util.StringEnumConverter;
-import com.thoroldvix.economatic.dto.TimeRange;
 import com.thoroldvix.economatic.stats.StatsProjection;
+import com.thoroldvix.economatic.util.StringEnumConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,6 @@ public class PopulationStatServiceImpl implements PopulationStatService {
     private final ServerService serverService;
     private final PopulationStatMapper populationStatMapper;
     private final PopulationService populationServiceImpl;
-
 
 
     @Override
@@ -110,7 +109,7 @@ public class PopulationStatServiceImpl implements PopulationStatService {
         return populationStatMapper.toResponse(statsProjection, min, max);
     }
 
-       private void validateStatsProjection(StatsProjection statsProjection) {
+    private void validateStatsProjection(StatsProjection statsProjection) {
         boolean isInvalid = statsProjection.getMean() == null
                             || statsProjection.getMaxId() == null
                             || statsProjection.getMinId() == null

@@ -12,6 +12,7 @@ import java.math.RoundingMode;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface GoldPriceStatMapper {
+
     int SCALE = 6;
     RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
 

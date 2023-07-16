@@ -11,6 +11,7 @@ record RecommendationProp(
         BigDecimal goldPriceDefaultWeight,
         int minAllowedPopulation
 ) {
+
     public RecommendationProp {
         validate(itemPriceDefaultWeight, populationDefaultWeight, goldPriceDefaultWeight, minAllowedPopulation);
     }

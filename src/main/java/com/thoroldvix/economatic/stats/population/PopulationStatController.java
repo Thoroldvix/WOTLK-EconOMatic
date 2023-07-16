@@ -82,7 +82,7 @@ class PopulationStatController {
                     required = true)
             @PathVariable String regionName,
             @Parameter(description = "Range of days to retrieve statistics for",
-            example = "7")
+                    example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
         var statsForRegion = populationStatServiceImpl.getForRegion(regionName, new TimeRange(timeRange));

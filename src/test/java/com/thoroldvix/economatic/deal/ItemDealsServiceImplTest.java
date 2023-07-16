@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 
 class ItemDealsServiceImplTest extends BaseItemDealTest {
+
     @Mock
     private ServerService serverService;
     @Mock

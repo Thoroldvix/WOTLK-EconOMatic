@@ -44,7 +44,7 @@ public final class ValidationUtils {
     }
 
 
-    public  static  <T> T checkNullAndGet(Supplier<T> supplier) {
+    public static <T> T checkNullAndGet(Supplier<T> supplier) {
         try {
             return supplier.get();
         } catch (NullPointerException e) {

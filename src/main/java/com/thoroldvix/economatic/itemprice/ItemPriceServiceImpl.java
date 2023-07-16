@@ -39,7 +39,6 @@ import static java.util.Objects.requireNonNull;
 @RequiredArgsConstructor
 class ItemPriceServiceImpl implements ItemPriceService {
 
-
     private final ItemService itemService;
     private final ServerService serverService;
     private final ItemPriceRepository itemPriceRepository;
@@ -61,6 +60,10 @@ class ItemPriceServiceImpl implements ItemPriceService {
         return itemPriceMapper.toPageResponse(page);
     }
 
+    private Page<ItemPrice> findRecentForServer(ServerResponse server, Pageable pageable) {
+        return itemPriceRepository.findRecentForServer(server.id(), pageable);
+    }
+
     @Override
     public ItemPriceListResponse getRecentForRegion(String regionName, String itemIdentifier) {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
@@ -75,6 +78,11 @@ class ItemPriceServiceImpl implements ItemPriceService {
         return itemPriceMapper.toItemPriceList(itemPrices);
     }
 
+    private List<ItemPrice> findRecentForRegionAndItem(String regionName, ItemResponse item) {
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        return itemPriceRepository.findRecentForRegionAndItem(region.ordinal(), item.id());
+    }
+
     @Override
     public ItemPriceListResponse getRecentForFaction(String factionName, String itemIdentifier) {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
@@ -87,6 +95,11 @@ class ItemPriceServiceImpl implements ItemPriceService {
                 () -> new ItemPriceNotFoundException("No item prices found for faction and item identifier " + factionName + " " + itemIdentifier));
 
         return itemPriceMapper.toItemPriceList(itemPrices);
+    }
+
+    private List<ItemPrice> findRecentForFactionAndItem(String factionName, ItemResponse item) {
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        return itemPriceRepository.findRecentForFactionAndItem(faction.ordinal(), item.id());
     }
 
     @Override
@@ -105,6 +118,10 @@ class ItemPriceServiceImpl implements ItemPriceService {
         return itemPriceMapper.toItemPriceList(itemPrices);
     }
 
+    private List<ItemPrice> findRecentForServerAndItem(ServerResponse server, ItemResponse item) {
+        return itemPriceRepository.findRecentForServerAndItem(server.id(), item.id());
+    }
+
     @Override
     public ItemPricePageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
@@ -114,6 +131,11 @@ class ItemPriceServiceImpl implements ItemPriceService {
         notEmpty(page.getContent(), () -> new ItemPriceNotFoundException("No item prices found for search request"));
 
         return itemPriceMapper.toPageResponse(page);
+    }
+
+    private Page<ItemPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
+        Specification<ItemPrice> specification = SpecificationBuilder.from(searchRequest);
+        return itemPriceRepository.findAll(specification, pageable);
     }
 
     @Override
@@ -134,6 +156,14 @@ class ItemPriceServiceImpl implements ItemPriceService {
         return itemPriceMapper.toPageResponse(page);
     }
 
+    private Page<ItemPrice> findForServerAndTimeRange(ServerResponse server,
+                                                      ItemResponse item,
+                                                      TimeRange timeRange,
+                                                      Pageable pageable) {
+
+        return itemPriceRepository.findForServerAndTimeRange(server.id(), item.id(), timeRange.start(), timeRange.end(), pageable);
+    }
+
     @Override
     public ItemPricePageResponse getRecentForItemListAndServers(@Valid ItemPriceRequest request, Pageable pageable) {
         requireNonNull(request, "Item price request cannot be null");
@@ -149,54 +179,10 @@ class ItemPriceServiceImpl implements ItemPriceService {
         return itemPriceMapper.toPageResponse(page);
     }
 
-    @Override
-    @Transactional
-    public void saveAll(List<ItemPrice> itemPricesToSave) {
-        requireNonNull(itemPricesToSave, "Item prices cannot be null");
-        jdbcRepository.saveAll(itemPricesToSave);
-    }
-
-    private Page<ItemPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<ItemPrice> specification = SpecificationBuilder.from(searchRequest);
-        return itemPriceRepository.findAll(specification, pageable);
-    }
-
-
-    private Page<ItemPrice> findRecentForServer(ServerResponse server, Pageable pageable) {
-        return itemPriceRepository.findRecentForServer(server.id(), pageable);
-    }
-
-
-    private Page<ItemPrice> findForServerAndTimeRange(ServerResponse server,
-                                                      ItemResponse item,
-                                                      TimeRange timeRange,
-                                                      Pageable pageable) {
-
-        return itemPriceRepository.findForServerAndTimeRange(server.id(), item.id(), timeRange.start(), timeRange.end(), pageable);
-    }
-
-
-    private List<ItemPrice> findRecentForServerAndItem(ServerResponse server, ItemResponse item) {
-        return itemPriceRepository.findRecentForServerAndItem(server.id(), item.id());
-    }
-
-
-    private List<ItemPrice> findRecentForRegionAndItem(String regionName, ItemResponse item) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return itemPriceRepository.findRecentForRegionAndItem(region.ordinal(), item.id());
-    }
-
-
-    private List<ItemPrice> findRecentForFactionAndItem(String factionName, ItemResponse item) {
-        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        return itemPriceRepository.findRecentForFactionAndItem(faction.ordinal(), item.id());
-    }
-
-
-    private Page<ItemPrice> findRecentForItemsAndServers(Set<Integer> serverIds, Set<Integer> itemIds, Pageable pageable) {
-        return isCollectionEmpty(serverIds)
-                ? itemPriceRepository.findRecentForItemList(itemIds, pageable)
-                : itemPriceRepository.findRecentForItemsAndServers(itemIds, serverIds, pageable);
+    private Set<Integer> getItemIds(Set<String> itemList) {
+        return itemList.parallelStream()
+                .map(item -> itemService.getItem(item).id())
+                .collect(Collectors.toSet());
     }
 
     private Set<Integer> getServerIds(Set<String> serverList) {
@@ -205,9 +191,18 @@ class ItemPriceServiceImpl implements ItemPriceService {
                 .collect(Collectors.toSet());
     }
 
-    private Set<Integer> getItemIds(Set<String> itemList) {
-        return itemList.parallelStream()
-                .map(item -> itemService.getItem(item).id())
-                .collect(Collectors.toSet());
+    private Page<ItemPrice> findRecentForItemsAndServers(Set<Integer> serverIds, Set<Integer> itemIds, Pageable pageable) {
+        return isCollectionEmpty(serverIds)
+                ? itemPriceRepository.findRecentForItemList(itemIds, pageable)
+                : itemPriceRepository.findRecentForItemsAndServers(itemIds, serverIds, pageable);
     }
+
+    @Override
+    @Transactional
+    public void saveAll(List<ItemPrice> itemPricesToSave) {
+        requireNonNull(itemPricesToSave, "Item prices cannot be null");
+        jdbcRepository.saveAll(itemPricesToSave);
+    }
+
+
 }

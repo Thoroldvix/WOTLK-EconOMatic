@@ -98,7 +98,8 @@ class ItemDealsRepositoryTest implements PostgresqlContainerInitializer {
                 .extracting(ITEM_DEALS_PROJECTION_FIELDS)
                 .containsExactly(itemPrice2Tuple);
     }
-     @Test
+
+    @Test
     void findDealsForServer_returnsDealsOrderedByDiscountPercentage() {
         List<ItemDealProjection> dealsForServer = itemDealsRepository.findDealsForServer(1, 1, 0, 5);
         assertThat(dealsForServer)

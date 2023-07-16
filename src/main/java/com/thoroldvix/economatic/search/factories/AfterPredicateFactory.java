@@ -7,9 +7,10 @@ import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 
 class AfterPredicateFactory implements PredicateFactory {
+
     @Override
     public Predicate getPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
-         Class<?> columnType = columnPath.getJavaType();
+        Class<?> columnType = columnPath.getJavaType();
         if (columnType.equals(LocalDateTime.class)) {
             return cb.greaterThan(columnPath.as(LocalDateTime.class), LocalDateTime.parse(value, DATE_TIME_FORMATTER));
         }

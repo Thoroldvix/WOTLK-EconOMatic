@@ -18,6 +18,7 @@ import java.util.Locale;
 
 @ActiveProfiles(profiles = {"test", "integration"})
 abstract class GoldPriceDataInitializer implements PostgresqlContainerInitializer {
+
     protected final static LocalDateTime UPDATE_DATE = LocalDateTime.now();
     protected GoldPrice goldPrice1;
     protected GoldPrice goldPrice2;
@@ -78,7 +79,6 @@ abstract class GoldPriceDataInitializer implements PostgresqlContainerInitialize
                 goldPrice9,
                 goldPrice10));
     }
-
 
 
     private GoldPrice buildGoldPrice(double value, LocalDateTime updateDate, Server server) {

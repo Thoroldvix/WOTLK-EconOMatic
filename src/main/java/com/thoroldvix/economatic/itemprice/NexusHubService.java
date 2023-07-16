@@ -23,10 +23,23 @@ class NexusHubService {
         this.itemIds = getItemIds(itemService);
     }
 
+    private Set<Integer> getItemIds(ItemService itemService) {
+        return itemService.getAll(Pageable.unpaged()).items().stream()
+                .map(ItemResponse::id)
+                .collect(Collectors.toSet());
+    }
+
     public List<NexusHubResponse.NexusHubPrice> retrieveItemPricesForServer(String serverName) {
         RATE_LIMITER.acquire();
         NexusHubResponse nexusHubResponse = nexusHubClient.fetchAllItemPricesForServer(serverName);
         return filterPriceList(nexusHubResponse.data());
+    }
+
+
+    private List<NexusHubResponse.NexusHubPrice> filterPriceList(List<NexusHubResponse.NexusHubPrice> prices) {
+        return prices.stream()
+                .filter(this::filterPrice)
+                .toList();
     }
 
     private boolean filterPrice(NexusHubResponse.NexusHubPrice price) {
@@ -37,15 +50,5 @@ class NexusHubService {
                price.numAuctions() > 0;
     }
 
-    private List<NexusHubResponse.NexusHubPrice> filterPriceList(List<NexusHubResponse.NexusHubPrice> prices) {
-        return prices.stream()
-                .filter(this::filterPrice)
-                .toList();
-    }
 
-    private Set<Integer> getItemIds(ItemService itemService) {
-        return itemService.getAll(Pageable.unpaged()).items().stream()
-                .map(ItemResponse::id)
-                .collect(Collectors.toSet());
-    }
 }

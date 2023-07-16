@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.search;
 
-import com.thoroldvix.economatic.search.factories.PredicateFactoryProvider;
 import com.thoroldvix.economatic.search.factories.PredicateFactory;
+import com.thoroldvix.economatic.search.factories.PredicateFactoryProvider;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;

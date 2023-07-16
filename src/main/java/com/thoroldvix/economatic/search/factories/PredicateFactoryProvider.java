@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class PredicateFactoryProvider {
+
     private static final Map<SearchCriteria.Operation, PredicateFactory> FACTORIES_MAP = new EnumMap<>(SearchCriteria.Operation.class);
 
     static {
@@ -26,7 +27,8 @@ public final class PredicateFactoryProvider {
         FACTORIES_MAP.put(SearchCriteria.Operation.BETWEEN_DATE_TIME, new BetweenDateTimePredicateFactory());
     }
 
-    private PredicateFactoryProvider(){}
+    private PredicateFactoryProvider() {
+    }
 
     public static PredicateFactory getPredicateFactory(SearchCriteria searchCriteria) {
         return Optional.ofNullable(FACTORIES_MAP.get(searchCriteria.operation()))

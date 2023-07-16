@@ -1,7 +1,7 @@
 package com.thoroldvix.economatic.itemprice;
 
-import com.thoroldvix.economatic.search.SearchRequest;
 import com.thoroldvix.economatic.dto.TimeRange;
+import com.thoroldvix.economatic.search.SearchRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;

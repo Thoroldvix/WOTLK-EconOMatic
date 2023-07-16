@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 interface ServerSummaryRepository extends JpaRepository<Server, Integer> {
 
-     @Query(value = """
+    @Query(value = """
             SELECT SUM(CASE WHEN faction = 0 THEN 1 ELSE 0 END)          AS alliance,
                    SUM(CASE WHEN faction = 1 THEN 1 ELSE 0 END)          AS horde,
                    SUM(CASE WHEN region = 0 THEN 1 ELSE 0 END) / 2       AS eu,
