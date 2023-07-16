@@ -40,7 +40,6 @@ class PopulationUpdateService {
         log.info("Updating population");
         Instant start = Instant.now();
 
-
         List<Population> populations = retrievePopulations();
         populationServiceImpl.saveAll(populations);
 

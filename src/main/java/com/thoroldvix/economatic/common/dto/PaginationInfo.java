@@ -10,6 +10,7 @@ public record PaginationInfo(
         int totalPages,
         long totalElements
 ) {
+
     public PaginationInfo(Page<?> page) {
         this(page.getNumber(), page.getSize(), page.getTotalPages(), page.getTotalElements());
     }

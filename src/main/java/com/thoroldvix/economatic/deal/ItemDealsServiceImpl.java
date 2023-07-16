@@ -13,7 +13,6 @@ import java.util.Objects;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 
-
 @Service
 @Validated
 @Transactional(readOnly = true)

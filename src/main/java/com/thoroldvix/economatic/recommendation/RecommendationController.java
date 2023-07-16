@@ -21,7 +21,6 @@ class RecommendationController {
 
     private final RecommendationService recommendationService;
 
-
     @Operation(summary = "Retrieve recommendations for item list",
             description = """
                     Returns a list of recommended servers based on the input item list.

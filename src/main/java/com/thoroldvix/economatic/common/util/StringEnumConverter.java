@@ -1,6 +1,5 @@
 package com.thoroldvix.economatic.common.util;
 
-
 import com.thoroldvix.economatic.error.NotFoundException;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.isNonEmptyString;

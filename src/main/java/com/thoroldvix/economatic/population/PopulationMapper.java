@@ -16,10 +16,9 @@ interface PopulationMapper {
     @Mapping(target = "server", source = "server", qualifiedByName = "serverName")
     PopulationResponse toResponse(Population population);
 
-
     List<PopulationResponse> toList(List<Population> populations);
 
-     default PopulationListResponse toPopulationList(List<Population> populations) {
+    default PopulationListResponse toPopulationList(List<Population> populations) {
         return new PopulationListResponse(toList(populations));
     }
 

@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @Tag(name = "Item Deals API", description = "API for retrieving item deal")
 @RequestMapping("/wow-classic/api/v1/items/deals")
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 class ItemDealsController {
 
     private final ItemDealsService itemDealsServiceImpl;
-
 
     @Operation(summary = "Retrieve deals for server",
             description = "Returns a list of deals for a specific server")

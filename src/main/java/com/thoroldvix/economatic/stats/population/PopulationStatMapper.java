@@ -1,11 +1,9 @@
 package com.thoroldvix.economatic.stats.population;
 
-
 import com.thoroldvix.economatic.population.PopulationResponse;
 import com.thoroldvix.economatic.stats.StatsProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface PopulationStatMapper {
@@ -24,6 +22,5 @@ interface PopulationStatMapper {
                 .count(count)
                 .build();
     }
-
 
 }

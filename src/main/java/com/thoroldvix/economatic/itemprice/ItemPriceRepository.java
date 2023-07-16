@@ -12,10 +12,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-
 @Repository
 interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, JpaSpecificationExecutor<ItemPrice> {
-
 
     @EntityGraph(attributePaths = {"item", "server"})
     @Query(""" 
@@ -86,6 +84,5 @@ interface ItemPriceRepository extends JpaRepository<ItemPrice, Long>, JpaSpecifi
             where item_id in ?1 and ip.server_id in ?2
             """, nativeQuery = true)
     Page<ItemPrice> findRecentForItemsAndServers(Set<Integer> itemIds, Set<Integer> serverIds, Pageable pageable);
-
 
 }

@@ -22,6 +22,7 @@ import static com.thoroldvix.economatic.common.util.Utils.elapsedTimeInMillis;
 @RequiredArgsConstructor
 @Slf4j
 class GoldPriceUpdateService {
+
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.gold-price.update-rate}}";
     public static final String UPDATE_RATE = "${economatic.gold-price.update-rate}";
 
@@ -30,7 +31,6 @@ class GoldPriceUpdateService {
     private final GoldPriceServiceImpl goldPriceServiceImpl;
     private final G2GService g2GService;
     private final ServerService serverServiceImpl;
-
 
     @Scheduled(fixedRateString = UPDATE_RATE,
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,

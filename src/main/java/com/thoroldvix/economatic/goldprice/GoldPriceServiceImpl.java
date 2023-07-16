@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
-import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -40,7 +39,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
     private final ServerService serverService;
     private final GoldPriceRepository goldPriceRepository;
     private final GoldPriceMapper goldPriceMapper;
-
 
     @Override
     public GoldPriceResponse getForId(long id) {
@@ -61,14 +59,9 @@ class GoldPriceServiceImpl implements GoldPriceService {
         return goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
     }
 
-    private void validateInputs(TimeRange timeRange, Pageable pageable) {
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
-    }
-
     @Override
     public GoldPricePageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
         validateInputs(timeRange, pageable);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
@@ -79,6 +72,11 @@ class GoldPriceServiceImpl implements GoldPriceService {
                         serverIdentifier, timeRange.start(), timeRange.end())));
 
         return goldPriceMapper.toPageResponse(prices);
+    }
+
+    private void validateInputs(TimeRange timeRange, Pageable pageable) {
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
     }
 
     private Page<GoldPrice> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
@@ -96,8 +94,8 @@ class GoldPriceServiceImpl implements GoldPriceService {
 
     @Override
     public GoldPricePageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
-        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
+        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
 
         Page<GoldPrice> prices = findAllForSearch(searchRequest, pageable);
         notEmpty(prices.getContent(),
@@ -111,10 +109,9 @@ class GoldPriceServiceImpl implements GoldPriceService {
         return goldPriceRepository.findAll(spec, pageable);
     }
 
-
     @Override
     public GoldPriceResponse getRecentForServer(String serverIdentifier) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         GoldPrice price = findRecentForServer(server)
@@ -129,7 +126,7 @@ class GoldPriceServiceImpl implements GoldPriceService {
 
     @Override
     public GoldPriceListResponse getRecentForRegion(String regionName) {
-        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
         List<GoldPrice> prices = findRecentForRegion(regionName);
         notEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for region " + regionName));
@@ -144,7 +141,7 @@ class GoldPriceServiceImpl implements GoldPriceService {
 
     @Override
     public GoldPriceListResponse getRecentForFaction(String factionName) {
-        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
         List<GoldPrice> prices = findRecentForFaction(factionName);
         notEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for faction " + factionName));

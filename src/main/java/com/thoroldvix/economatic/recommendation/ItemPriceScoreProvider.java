@@ -5,7 +5,7 @@ import com.thoroldvix.economatic.itemprice.ItemPriceRequest;
 import com.thoroldvix.economatic.itemprice.ItemPriceResponse;
 import com.thoroldvix.economatic.itemprice.ItemPriceService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -19,22 +19,25 @@ import java.util.stream.Collectors;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 class ItemPriceScoreProvider extends ScoreProvider {
 
     private static final BigDecimal MAX_ITEM_PRICE_COPPER = new BigDecimal("15000000");
     private final ItemPriceService itemPriceServiceImpl;
-    private final RecommendationProp prop;
+    private final BigDecimal itemPriceDefaultWeight;
 
+    @Autowired
+    public ItemPriceScoreProvider(ItemPriceService itemPriceServiceImpl, RecommendationProp prop) {
+        this.itemPriceServiceImpl = itemPriceServiceImpl;
+        this.itemPriceDefaultWeight = prop.itemPriceDefaultWeight();
+
+    }
 
     public Map<String, BigDecimal> getItemPriceScores(@Valid RecommendationRequest request, Set<String> servers) {
         validateInputs(request, servers);
 
-        BigDecimal itemWeight = getWeightOrDefault(request.itemPriceWeight(), prop.itemPriceDefaultWeight());
+        BigDecimal itemWeight = getWeightOrDefault(request.itemPriceWeight(), itemPriceDefaultWeight);
         ItemPriceRequest itemPriceRequest = buildItemPriceRequest(request.itemList(), servers);
-
         List<ItemPriceResponse> recentItemPrices = itemPriceServiceImpl.getRecentForItemListAndServers(itemPriceRequest, Pageable.unpaged()).prices();
-
 
         return request.marketValue()
                 ? createScoresForMarketValue(recentItemPrices, itemWeight)
@@ -72,7 +75,6 @@ class ItemPriceScoreProvider extends ScoreProvider {
                 .serverList(servers)
                 .build();
     }
-
 
 }
 

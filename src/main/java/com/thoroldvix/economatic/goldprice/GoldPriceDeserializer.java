@@ -29,8 +29,6 @@ class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
     private static final String NODE_TITLE = "title";
     private static final String NODE_PRICE = "converted_unit_price";
 
-
-
     public GoldPriceDeserializer() {
         this(null);
     }
@@ -44,7 +42,7 @@ class GoldPriceDeserializer extends StdDeserializer<List<GoldPriceResponse>> {
                 .orElseThrow(() -> new GoldPriceParsingException("Received JSON doesn't contain expected node: " + nodeName));
     }
 
-    public  List<GoldPriceResponse> extractPricesFromJson(String goldPriceJson) {
+    public List<GoldPriceResponse> extractPricesFromJson(String goldPriceJson) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonParser parser = objectMapper.getFactory().createParser(goldPriceJson);

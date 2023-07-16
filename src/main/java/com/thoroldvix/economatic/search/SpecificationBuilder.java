@@ -13,7 +13,6 @@ import static com.thoroldvix.economatic.common.util.ValidationUtils.isNonEmptySt
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY;
 
-
 public class SpecificationBuilder {
 
     private SpecificationBuilder() {
@@ -21,7 +20,7 @@ public class SpecificationBuilder {
 
     public static <E> Specification<E> from(SearchRequest request) {
         notEmpty(request.searchCriteria(),
-                () -> new InvalidSearchCriteriaException(SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY));
+                () -> new InvalidSearchCriteriaException(SEARCH_CRITERIA_CANNOT_BE_NULL_OR_EMPTY.message));
         return getSpecification(request.globalOperator(), request.searchCriteria());
     }
 
@@ -53,7 +52,6 @@ public class SpecificationBuilder {
         }
         return root.get(searchCriteria.column());
     }
-
 
 }
 

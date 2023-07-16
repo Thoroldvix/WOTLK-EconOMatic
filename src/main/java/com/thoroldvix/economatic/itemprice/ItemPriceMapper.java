@@ -13,7 +13,6 @@ import java.util.List;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.checkNullAndGet;
 
-
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface ItemPriceMapper {
 
@@ -22,9 +21,7 @@ interface ItemPriceMapper {
     @Mapping(target = "itemName", source = "item", qualifiedByName = "itemName")
     ItemPriceResponse toResponse(ItemPrice itemPrice);
 
-
-     List<ItemPriceResponse> toList(List<ItemPrice> prices);
-
+    List<ItemPriceResponse> toList(List<ItemPrice> prices);
 
     default ItemPriceListResponse toItemPriceList(List<ItemPrice> prices) {
         return new ItemPriceListResponse(toList(prices));
@@ -37,7 +34,7 @@ interface ItemPriceMapper {
 
     @Named("serverName")
     default String serverName(Server server) {
-       return checkNullAndGet(server::getUniqueName);
+        return checkNullAndGet(server::getUniqueName);
     }
 
     @Named("itemName")
@@ -47,6 +44,6 @@ interface ItemPriceMapper {
 
     @Named("id")
     default Integer itemId(Item item) {
-       return checkNullAndGet(item::getId);
+        return checkNullAndGet(item::getId);
     }
 }

@@ -43,7 +43,6 @@ public final class ValidationUtils {
         return collection == null || collection.isEmpty();
     }
 
-
     public static <T> T checkNullAndGet(Supplier<T> supplier) {
         try {
             return supplier.get();
@@ -51,6 +50,5 @@ public final class ValidationUtils {
             return null;
         }
     }
-
 
 }

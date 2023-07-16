@@ -1,6 +1,5 @@
 package com.thoroldvix.economatic.item;
 
-
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ItemType {

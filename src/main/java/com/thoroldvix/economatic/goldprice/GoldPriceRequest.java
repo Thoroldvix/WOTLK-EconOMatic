@@ -10,4 +10,5 @@ public record GoldPriceRequest(
         @NotEmpty(message = "Server list cannot be null or empty")
         Set<String> serverList
 ) {
+
 }

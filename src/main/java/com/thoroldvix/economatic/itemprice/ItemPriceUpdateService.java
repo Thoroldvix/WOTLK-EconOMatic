@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 
 import static com.thoroldvix.economatic.common.util.Utils.elapsedTimeInMillis;
 
-
 @Service
 @Slf4j
 class ItemPriceUpdateService {
+
     public static final String UPDATE_RATE = "${economatic.item-price.update-rate}";
     public static final String UPDATE_ON_STARTUP_OR_DEFAULT = "#{${economatic.update-on-startup} ? -1 : ${economatic.item-price.update-rate}}";
 

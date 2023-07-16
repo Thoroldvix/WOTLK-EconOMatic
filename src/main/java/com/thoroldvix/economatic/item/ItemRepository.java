@@ -8,8 +8,7 @@ import java.util.Optional;
 
 @Repository
 interface ItemRepository extends JpaRepository<Item, Integer>, JpaSpecificationExecutor<Item> {
-    
-    Optional<Item> findByUniqueName(String uniqueName);
 
+    Optional<Item> findByUniqueName(String uniqueName);
 
 }

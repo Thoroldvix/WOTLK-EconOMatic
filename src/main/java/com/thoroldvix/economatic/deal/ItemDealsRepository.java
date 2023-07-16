@@ -7,10 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 @Repository
 interface ItemDealsRepository extends JpaRepository<ItemPrice, Long> {
-
 
     @Query(value = """
                 select i.id as itemId,

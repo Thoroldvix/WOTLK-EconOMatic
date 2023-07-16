@@ -8,4 +8,5 @@ import java.util.List;
 public record GoldPriceListResponse(
         List<GoldPriceResponse> prices
 ) {
+
 }

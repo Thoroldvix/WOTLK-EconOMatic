@@ -11,6 +11,7 @@ public record PopulationProp(
         @DurationUnit(ChronoUnit.DAYS)
         Period updateRate
 ) {
+
     public PopulationProp {
         if (updateRate.getDays() < 1) {
             throw new InvalidPopulationPropertyException("Population update rate cannot be less than 1 day");

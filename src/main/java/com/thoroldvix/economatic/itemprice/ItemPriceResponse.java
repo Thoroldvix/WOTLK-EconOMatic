@@ -4,7 +4,6 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-
 @Builder
 public record ItemPriceResponse(
         Integer itemId,
@@ -17,4 +16,5 @@ public record ItemPriceResponse(
         int numAuctions,
         LocalDateTime updatedAt
 ) {
+
 }

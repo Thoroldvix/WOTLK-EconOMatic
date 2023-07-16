@@ -6,7 +6,6 @@ import jakarta.persistence.criteria.Predicate;
 
 class EqualsPredicateFactory implements PredicateFactory {
 
-
     @Override
     public Predicate getPredicate(CriteriaBuilder cb, Path<?> columnPath, String value) {
         Class<?> columnType = columnPath.getJavaType();

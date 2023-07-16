@@ -11,4 +11,5 @@ public record GoldPriceResponse(
         String server,
         LocalDateTime updatedAt
 ) {
+
 }

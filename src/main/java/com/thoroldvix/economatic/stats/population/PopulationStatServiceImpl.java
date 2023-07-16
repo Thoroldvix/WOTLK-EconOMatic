@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
-import static com.thoroldvix.economatic.error.ErrorMessages.TIME_RANGE_CANNOT_BE_NULL;
-import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
+import static com.thoroldvix.economatic.error.ErrorMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -29,11 +28,10 @@ public class PopulationStatServiceImpl implements PopulationStatService {
     private final PopulationStatMapper populationStatMapper;
     private final PopulationService populationServiceImpl;
 
-
     @Override
     public PopulationStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         StatsProjection statsProjection = findForServer(server, timeRange);
@@ -44,8 +42,8 @@ public class PopulationStatServiceImpl implements PopulationStatService {
 
     @Override
     public PopulationStatResponse getForRegion(String regionName, TimeRange timeRange) {
-        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         StatsProjection statsProjection = findForRegion(regionName, timeRange);
         validateStatsProjection(statsProjection);
@@ -55,8 +53,8 @@ public class PopulationStatServiceImpl implements PopulationStatService {
 
     @Override
     public PopulationStatResponse getForFaction(String factionName, TimeRange timeRange) {
-        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         StatsProjection statsProjection = findForFaction(factionName, timeRange);
         validateStatsProjection(statsProjection);
@@ -66,7 +64,7 @@ public class PopulationStatServiceImpl implements PopulationStatService {
 
     @Override
     public PopulationStatResponse getForAll(TimeRange timeRange) {
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         StatsProjection statsProjection = findForTimeRange(timeRange);
         validateStatsProjection(statsProjection);

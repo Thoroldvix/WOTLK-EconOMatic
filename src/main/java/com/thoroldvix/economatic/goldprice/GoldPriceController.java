@@ -67,7 +67,7 @@ class GoldPriceController {
         return ResponseEntity.ok(prices);
     }
 
-     @Operation(summary = "Retrieve most recent prices for the given server list",
+    @Operation(summary = "Retrieve most recent prices for the given server list",
             description = "Returns the most recent prices for the given server list")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of prices",
@@ -193,6 +193,5 @@ class GoldPriceController {
         var prices = goldPriceServiceImpl.getRecentForFaction(factionName);
         return ResponseEntity.ok(prices);
     }
-
 
 }

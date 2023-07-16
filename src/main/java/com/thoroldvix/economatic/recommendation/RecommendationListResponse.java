@@ -6,7 +6,7 @@ import java.util.List;
 
 @Builder
 public record RecommendationListResponse(
-      List<RecommendationResponse> recommendations
+        List<RecommendationResponse> recommendations
 ) {
 
 }

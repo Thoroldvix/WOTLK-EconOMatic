@@ -22,7 +22,6 @@ import java.util.Optional;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
-import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -37,7 +36,6 @@ class PopulationServiceImpl implements PopulationService {
     private final ServerService serverService;
     private final PopulationMapper populationMapper;
 
-
     @Override
     public PopulationResponse getForId(long id) {
         return populationRepository.findById(id).map(populationMapper::toResponse)
@@ -46,8 +44,8 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationPageResponse getAll(TimeRange timeRange, Pageable pageable) {
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
         Page<Population> page = findForTimeRange(timeRange, pageable);
 
@@ -63,9 +61,9 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationPageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         Page<Population> page = findAllForServer(server, timeRange, pageable);
@@ -103,8 +101,8 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationPageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
-        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
         Page<Population> populations = findAllForSearch(searchRequest, pageable);
         notEmpty(populations.getContent(),
@@ -120,7 +118,7 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationListResponse getRecentForRegion(String regionName) {
-        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
         List<Population> population = findRecentForRegion(regionName);
         notEmpty(population,
@@ -136,7 +134,7 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationListResponse getRecentForFaction(String factionName) {
-        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
         List<Population> population = findRecentForFaction(factionName);
         notEmpty(population, () -> new PopulationNotFoundException("No recent populations found for faction: " + factionName));
@@ -161,7 +159,7 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationResponse getRecentForServer(String serverIdentifier) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         Population population = findRecentForServer(server)

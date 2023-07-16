@@ -14,6 +14,5 @@ interface ServerRepository extends JpaRepository<Server, Integer>, JpaSpecificat
 
     List<Server> findAllByRegion(Region region);
 
-
     List<Server> findAllByFaction(Faction faction);
 }

@@ -1,6 +1,5 @@
 package com.thoroldvix.economatic.item;
 
-
 import com.thoroldvix.economatic.common.dto.PaginationInfo;
 import com.thoroldvix.economatic.common.util.StringEnumConverter;
 import org.mapstruct.Mapper;

@@ -13,4 +13,5 @@ public record PopulationPageResponse(
 
         List<PopulationResponse> populations
 ) {
+
 }

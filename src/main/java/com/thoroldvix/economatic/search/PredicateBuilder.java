@@ -6,7 +6,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
-
 public final class PredicateBuilder {
 
     private PredicateBuilder() {

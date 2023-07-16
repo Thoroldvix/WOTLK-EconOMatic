@@ -13,4 +13,5 @@ public record ItemDealsRequest(
         @Min(value = 1, message = "Limit must be a positive integer")
         int limit
 ) {
+
 }

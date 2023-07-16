@@ -23,7 +23,6 @@ interface GoldPriceStatMapper {
     @Mapping(target = "maximum", source = "max")
     GoldPriceStatResponse toResponse(StatsProjection statProj, GoldPriceResponse min, GoldPriceResponse max);
 
-
     @Named("mapCount")
     default long mapCount(long count) {
         return count;

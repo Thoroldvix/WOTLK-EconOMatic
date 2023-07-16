@@ -38,7 +38,6 @@ interface GoldPriceStatRepository extends JpaRepository<GoldPrice, Long> {
                            """ + STAT_SQL, nativeQuery = true)
     StatsProjection findForFaction(int faction, LocalDateTime start, LocalDateTime end);
 
-
     @Query(value = """
                                    WITH gold_prices AS (SELECT gp.value, gp.id, gp.updated_at
                                    FROM gold_price gp

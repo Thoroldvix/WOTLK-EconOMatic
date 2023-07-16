@@ -12,4 +12,5 @@ public record GoldPricePageResponse(
         PaginationInfo paginationInfo,
         List<GoldPriceResponse> prices
 ) {
+
 }

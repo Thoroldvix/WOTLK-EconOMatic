@@ -18,5 +18,4 @@ class LessThanPredicateFactory implements PredicateFactory {
         };
     }
 
-
 }

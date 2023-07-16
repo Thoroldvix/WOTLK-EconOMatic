@@ -8,4 +8,5 @@ import java.util.List;
 public record PopulationListResponse(
         List<PopulationResponse> populations
 ) {
+
 }

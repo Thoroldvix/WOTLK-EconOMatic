@@ -12,4 +12,5 @@ public record ItemPageResponse(
         PaginationInfo paginationInfo,
         List<ItemResponse> items
 ) {
+
 }

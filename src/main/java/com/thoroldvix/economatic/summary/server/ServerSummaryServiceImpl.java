@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class ServerSummaryServiceImpl implements ServerSummaryService {
 
-
     private final ServerSummaryRepository serverRepository;
     private final ServerSummaryMapper serverSummaryMapper;
 

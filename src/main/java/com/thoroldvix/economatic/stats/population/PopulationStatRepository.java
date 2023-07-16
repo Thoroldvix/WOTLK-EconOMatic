@@ -53,5 +53,4 @@ interface PopulationStatRepository extends JpaRepository<Population, Long> {
                            """ + STAT_SQL, nativeQuery = true)
     StatsProjection findStatsByFaction(int faction, LocalDateTime start, LocalDateTime end);
 
-
 }

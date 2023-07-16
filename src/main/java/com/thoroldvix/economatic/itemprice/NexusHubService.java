@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 class NexusHubService {
+
     private static final RateLimiter RATE_LIMITER = RateLimiter.create(4);
     private final NexusHubClient nexusHubClient;
     private final Set<Integer> itemIds;
@@ -35,7 +36,6 @@ class NexusHubService {
         return filterPriceList(nexusHubResponse.data());
     }
 
-
     private List<NexusHubResponse.NexusHubPrice> filterPriceList(List<NexusHubResponse.NexusHubPrice> prices) {
         return prices.stream()
                 .filter(this::filterPrice)
@@ -49,6 +49,5 @@ class NexusHubService {
                price.marketValue() > 0 &&
                price.numAuctions() > 0;
     }
-
 
 }

@@ -16,7 +16,7 @@ import static com.thoroldvix.economatic.common.util.ValidationUtils.checkNullAnd
 interface GoldPriceMapper {
 
     default GoldPriceListResponse toGoldPriceList(List<GoldPrice> prices) {
-         return new GoldPriceListResponse(toList(prices));
+        return new GoldPriceListResponse(toList(prices));
     }
 
     default GoldPricePageResponse toPageResponse(Page<GoldPrice> page) {
@@ -27,7 +27,6 @@ interface GoldPriceMapper {
     @Mapping(target = "price", source = "value")
     @Mapping(target = "server", source = "server", qualifiedByName = "mapServerName")
     GoldPriceResponse toResponse(GoldPrice goldPrice);
-
 
     List<GoldPriceResponse> toList(List<GoldPrice> prices);
 

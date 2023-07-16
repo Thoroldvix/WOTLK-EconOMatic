@@ -9,6 +9,6 @@ public record PopulationResponse(
         String server,
         int value,
         LocalDateTime updatedAt
-)  {
+) {
 
 }

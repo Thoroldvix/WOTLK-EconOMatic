@@ -10,6 +10,7 @@ import java.util.List;
 
 @Validated
 public interface ItemPriceService {
+
     ItemPricePageResponse getRecentForServer(String serverIdentifier, Pageable pageable);
 
     ItemPriceListResponse getRecentForRegion(String regionName, String itemIdentifier);

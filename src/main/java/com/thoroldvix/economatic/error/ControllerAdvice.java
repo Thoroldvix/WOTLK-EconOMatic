@@ -1,6 +1,5 @@
 package com.thoroldvix.economatic.error;
 
-
 import com.thoroldvix.economatic.item.ItemAlreadyExistsException;
 import com.thoroldvix.economatic.item.ItemDoesNotExistException;
 import feign.FeignException;

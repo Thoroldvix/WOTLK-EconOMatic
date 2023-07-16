@@ -10,6 +10,7 @@ import java.util.List;
 
 @Component
 class PopulationDeserializer {
+
     private final ObjectMapper mapper;
 
     public PopulationDeserializer() {

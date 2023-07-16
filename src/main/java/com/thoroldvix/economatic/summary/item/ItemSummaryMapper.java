@@ -50,7 +50,6 @@ interface ItemSummaryMapper {
                 .build();
     }
 
-
     private ItemSummaryResponse.Quality getSummaryQuality(ItemSummaryProjection summaryProjection) {
         return ItemSummaryResponse.Quality.builder()
                 .common(summaryProjection.getCommon())
@@ -60,7 +59,6 @@ interface ItemSummaryMapper {
                 .uncommon(summaryProjection.getUncommon())
                 .build();
     }
-
 
     private ItemSummaryResponse.Type getSummaryType(ItemSummaryProjection summaryProjection) {
         return ItemSummaryResponse.Type.builder()

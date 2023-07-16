@@ -2,11 +2,11 @@ package com.thoroldvix.economatic.itemprice;
 
 import java.util.List;
 
-
 public record NexusHubResponse(
         String slug,
         List<NexusHubResponse.NexusHubPrice> data
 ) {
+
     public record NexusHubPrice(
             int itemId,
             long minBuyout,
@@ -14,5 +14,7 @@ public record NexusHubResponse(
             long marketValue,
             int quantity,
             int numAuctions
-            ){}
+    ) {
+
+    }
 }

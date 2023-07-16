@@ -27,10 +27,7 @@ import java.util.stream.Collectors;
 import static com.thoroldvix.economatic.common.util.ValidationUtils.isCollectionEmpty;
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
-import static com.thoroldvix.economatic.item.ItemErrorMessages.ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
-import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
 import static java.util.Objects.requireNonNull;
-
 
 @Service
 @Cacheable("item-price-cache")
@@ -45,11 +42,10 @@ class ItemPriceServiceImpl implements ItemPriceService {
     private final ItemPriceMapper itemPriceMapper;
     private final ItemPriceJdbcRepository jdbcRepository;
 
-
     @Override
     public ItemPricePageResponse getRecentForServer(String serverIdentifier, Pageable pageable) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         Page<ItemPrice> page = findRecentForServer(server, pageable);
@@ -66,8 +62,8 @@ class ItemPriceServiceImpl implements ItemPriceService {
 
     @Override
     public ItemPriceListResponse getRecentForRegion(String regionName, String itemIdentifier) {
-        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
-        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ItemResponse item = itemService.getItem(itemIdentifier);
         List<ItemPrice> itemPrices = findRecentForRegionAndItem(regionName, item);
@@ -85,8 +81,8 @@ class ItemPriceServiceImpl implements ItemPriceService {
 
     @Override
     public ItemPriceListResponse getRecentForFaction(String factionName, String itemIdentifier) {
-        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
-        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ItemResponse item = itemService.getItem(itemIdentifier);
         List<ItemPrice> itemPrices = findRecentForFactionAndItem(factionName, item);
@@ -104,8 +100,8 @@ class ItemPriceServiceImpl implements ItemPriceService {
 
     @Override
     public ItemPriceListResponse getRecentForServer(String serverIdentifier, String itemIdentifier) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         ItemResponse item = itemService.getItem(itemIdentifier);
@@ -124,8 +120,8 @@ class ItemPriceServiceImpl implements ItemPriceService {
 
     @Override
     public ItemPricePageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
-        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
+        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
 
         Page<ItemPrice> page = findAllForSearch(searchRequest, pageable);
         notEmpty(page.getContent(), () -> new ItemPriceNotFoundException("No item prices found for search request"));
@@ -140,10 +136,10 @@ class ItemPriceServiceImpl implements ItemPriceService {
 
     @Override
     public ItemPricePageResponse getForServer(String serverIdentifier, String itemIdentifier, TimeRange timeRange, Pageable pageable) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
+        notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
+        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         ItemResponse item = itemService.getItem(itemIdentifier);
@@ -167,7 +163,7 @@ class ItemPriceServiceImpl implements ItemPriceService {
     @Override
     public ItemPricePageResponse getRecentForItemListAndServers(@Valid ItemPriceRequest request, Pageable pageable) {
         requireNonNull(request, "Item price request cannot be null");
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL);
+        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
         Set<Integer> itemIds = getItemIds(request.itemList());
         Set<Integer> serverIds = getServerIds(request.serverList());
@@ -203,6 +199,5 @@ class ItemPriceServiceImpl implements ItemPriceService {
         requireNonNull(itemPricesToSave, "Item prices cannot be null");
         jdbcRepository.saveAll(itemPricesToSave);
     }
-
 
 }

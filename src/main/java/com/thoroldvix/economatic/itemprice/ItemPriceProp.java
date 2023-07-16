@@ -11,9 +11,10 @@ public record ItemPriceProp(
         @DurationUnit(ChronoUnit.HOURS)
         Duration updateRate
 ) {
-         public ItemPriceProp {
-                if (updateRate.toHours() < 1) {
-                        throw new InvalidItemPricePropertyException("Item price update rate cannot be less than 1");
-                }
+
+    public ItemPriceProp {
+        if (updateRate.toHours() < 1) {
+            throw new InvalidItemPricePropertyException("Item price update rate cannot be less than 1");
         }
+    }
 }

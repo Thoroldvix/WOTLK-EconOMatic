@@ -8,4 +8,5 @@ import java.util.List;
 public record ItemDealsList(
         List<ItemDealResponse> deals
 ) {
+
 }

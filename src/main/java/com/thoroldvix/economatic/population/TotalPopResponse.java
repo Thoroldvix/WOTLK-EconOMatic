@@ -11,4 +11,5 @@ public record TotalPopResponse(
         @JsonAlias({"name"})
         String serverName
 ) {
+
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
-import static com.thoroldvix.economatic.server.ServerErrorMessages.*;
+import static com.thoroldvix.economatic.error.ErrorMessages.*;
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -29,7 +29,7 @@ class ServerServiceImpl implements ServerService {
 
     @Override
     public ServerResponse getServer(String serverIdentifier) {
-        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         Optional<Server> server = findServer(serverIdentifier);
 
@@ -39,7 +39,7 @@ class ServerServiceImpl implements ServerService {
 
     @Override
     public ServerListResponse search(@Valid SearchRequest searchRequest) {
-        requireNonNull(searchRequest, ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL);
+        requireNonNull(searchRequest, ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL.message);
 
         List<Server> servers = findForSearch(searchRequest);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
@@ -56,7 +56,7 @@ class ServerServiceImpl implements ServerService {
 
     @Override
     public ServerListResponse getAllForRegion(String regionName) {
-        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
         List<Server> servers = findAllByRegion(regionName);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + regionName));
@@ -66,7 +66,7 @@ class ServerServiceImpl implements ServerService {
 
     @Override
     public ServerListResponse getAllForFaction(String factionName) {
-        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY);
+        notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
         List<Server> servers = findAllByFaction(factionName);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for faction: " + factionName));

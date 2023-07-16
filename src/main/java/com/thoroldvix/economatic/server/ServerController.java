@@ -84,7 +84,6 @@ class ServerController {
         return ResponseEntity.ok(all);
     }
 
-
     @Operation(summary = "Retrieves all servers for a specified region",
             description = "Returns all servers for a specified region name")
     @ApiResponses(value = {

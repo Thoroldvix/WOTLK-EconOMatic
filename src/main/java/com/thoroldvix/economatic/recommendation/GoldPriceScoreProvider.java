@@ -3,7 +3,7 @@ package com.thoroldvix.economatic.recommendation;
 import com.thoroldvix.economatic.goldprice.GoldPriceRequest;
 import com.thoroldvix.economatic.goldprice.GoldPriceResponse;
 import com.thoroldvix.economatic.goldprice.GoldPriceService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,15 +13,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 class GoldPriceScoreProvider extends ScoreProvider {
 
     private static final BigDecimal MAX_GOLD_PRICE_USD = new BigDecimal("0.0025");
+    private final BigDecimal goldPriceDefaultWeight;
     private final GoldPriceService goldPriceServiceImpl;
-    private final RecommendationProp prop;
+
+    @Autowired
+    public GoldPriceScoreProvider(GoldPriceService goldPriceServiceImpl, RecommendationProp prop) {
+        this.goldPriceServiceImpl = goldPriceServiceImpl;
+        this.goldPriceDefaultWeight = prop.goldPriceDefaultWeight();
+    }
 
     public Map<String, BigDecimal> getGoldPriceScores(BigDecimal goldPriceWeight, Set<String> servers) {
-        BigDecimal weight = getWeightOrDefault(goldPriceWeight, prop.goldPriceDefaultWeight());
+        BigDecimal weight = getWeightOrDefault(goldPriceWeight, goldPriceDefaultWeight);
         GoldPriceRequest request = new GoldPriceRequest(servers);
         List<GoldPriceResponse> recentPrices = goldPriceServiceImpl.getRecentForServerList(request).prices();
 
@@ -36,6 +41,5 @@ class GoldPriceScoreProvider extends ScoreProvider {
                                 calculateWeightedValue(goldPriceResponse.price(), weight, MAX_GOLD_PRICE_USD)
                 ));
     }
-
 
 }

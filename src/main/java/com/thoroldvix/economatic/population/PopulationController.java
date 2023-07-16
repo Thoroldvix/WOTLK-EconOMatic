@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @Validated
 @Tag(name = "Populations API", description = "API for retrieving server population")
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 class PopulationController {
 
     private final PopulationService populationServiceImpl;
-
 
     @Operation(summary = "Retrieve all populations",
             description = "Returns all populations within the specified time range")
@@ -44,10 +42,10 @@ class PopulationController {
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PopulationPageResponse> getAll(@Parameter(description = "Time range in days to retrieve populations for",
-    example = "7")
-                                                           @RequestParam(defaultValue = "7") int timeRange,
+            example = "7")
+                                                             @RequestParam(defaultValue = "7") int timeRange,
                                                          @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
-                                                           @ParameterObject Pageable pageable) {
+                                                             @ParameterObject Pageable pageable) {
         var allPopulations = populationServiceImpl.getAll(new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(allPopulations);
     }
@@ -81,7 +79,7 @@ class PopulationController {
     @GetMapping(value = "/{serverIdentifier}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PopulationPageResponse> getForServer(
-             @Parameter(description = "Identifier of the server in the format server-faction or server ID",
+            @Parameter(description = "Identifier of the server in the format server-faction or server ID",
                     example = "everlook-alliance or 41003",
                     required = true)
             @PathVariable String serverIdentifier,
@@ -94,7 +92,7 @@ class PopulationController {
         return ResponseEntity.ok(populationsForServer);
     }
 
-        @Operation(summary = "Retrieve most recent population for a server",
+    @Operation(summary = "Retrieve most recent population for a server",
             description = "Returns most recent population for the specified server")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of server population",
@@ -107,7 +105,7 @@ class PopulationController {
     @GetMapping(value = "/{serverIdentifier}/recent",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PopulationResponse> getRecentForServer(
-             @Parameter(description = "Identifier of the server in the format server-faction or server ID",
+            @Parameter(description = "Identifier of the server in the format server-faction or server ID",
                     example = "everlook-alliance or 41003",
                     required = true)
             @PathVariable String serverIdentifier) {
@@ -130,8 +128,8 @@ class PopulationController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TotalPopResponse> getTotalForServer(
             @Parameter(description = "Server name for finding total population (case insensitive)",
-            example = "everlook",
-            required = true)
+                    example = "everlook",
+                    required = true)
             @PathVariable String serverName) {
         var totalPopulation = populationServiceImpl.getTotalPopulation(serverName);
         return ResponseEntity.ok(totalPopulation);
@@ -152,7 +150,7 @@ class PopulationController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PopulationPageResponse> search(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Search request for filtering populations",
-            required = true)
+                    required = true)
             @RequestBody @Valid SearchRequest searchRequest,
             @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
             @ParameterObject Pageable pageable) {
@@ -179,7 +177,7 @@ class PopulationController {
         var populationForRegion = populationServiceImpl.getRecentForRegion(regionName);
         return ResponseEntity.ok(populationForRegion);
     }
-    
+
     @Operation(summary = "Retrieve populations for the specified faction name",
             description = "Returns recent populations that match the given faction name")
     @ApiResponses(value = {
