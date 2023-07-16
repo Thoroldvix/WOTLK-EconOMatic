@@ -17,5 +17,4 @@ class G2GService {
         return goldPriceDeserializer.extractPricesFromJson(pricesJson);
     }
 
-
 }

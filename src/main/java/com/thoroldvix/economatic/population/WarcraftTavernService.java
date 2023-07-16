@@ -7,7 +7,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class WarcraftTavernService {
+class WarcraftTavernService {
 
     private final WarcraftTavernClient warcraftTavernClient;
     private final PopulationDeserializer populationDeserializer;

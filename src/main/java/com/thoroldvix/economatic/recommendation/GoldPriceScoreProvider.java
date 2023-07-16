@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class GoldPriceScoreProvider extends ScoreProvider {
+class GoldPriceScoreProvider extends ScoreProvider {
     private static final BigDecimal MAX_GOLD_PRICE_USD = new BigDecimal("0.0025");
     private final GoldPriceService goldPriceServiceImpl;
     private final RecommendationProp prop;
