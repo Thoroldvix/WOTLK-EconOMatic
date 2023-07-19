@@ -40,14 +40,14 @@ class PopulationUpdateService {
         log.info("Updating population");
         Instant start = Instant.now();
 
-        List<Population> populations = retrievePopulations();
+        List<Population> populations = getPopulations();
         populationServiceImpl.saveAll(populations);
 
         log.info("Finished updating population in {} ms", elapsedTimeInMillis(start));
     }
 
-    private List<Population> retrievePopulations() {
-        List<TotalPopResponse> totalPopulationsForServer = warcraftTavernService.retrievePopulations();
+    private List<Population> getPopulations() {
+        List<TotalPopResponse> totalPopulationsForServer = warcraftTavernService.getPopulations();
         List<ServerResponse> servers = serverServiceImpl.getAll().servers();
         return toPopulationList(totalPopulationsForServer, servers);
     }

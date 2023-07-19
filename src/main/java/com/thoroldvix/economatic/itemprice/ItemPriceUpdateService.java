@@ -59,15 +59,15 @@ class ItemPriceUpdateService {
 
         serverIdentifiers.keySet().parallelStream()
                 .forEach(serverName -> {
-                    List<ItemPrice> itemPrices = retrieveItemPricesForServer(serverName);
+                    List<ItemPrice> itemPrices = getItemPricesForServer(serverName);
                     itemPriceServiceImpl.saveAll(itemPrices);
                 });
 
         log.info("Finished updating item prices in {} ms", elapsedTimeInMillis(start));
     }
 
-    private List<ItemPrice> retrieveItemPricesForServer(String serverName) {
-        List<NexusHubResponse.NexusHubPrice> nexusHubPrices = nexusHubService.retrieveItemPricesForServer(serverName);
+    private List<ItemPrice> getItemPricesForServer(String serverName) {
+        List<NexusHubResponse.NexusHubPrice> nexusHubPrices = nexusHubService.getItemPricesForServer(serverName);
         Server server = getServer(serverName);
         return toItemPriceList(server, nexusHubPrices);
     }

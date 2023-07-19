@@ -30,7 +30,7 @@ class NexusHubService {
                 .collect(Collectors.toSet());
     }
 
-    public List<NexusHubResponse.NexusHubPrice> retrieveItemPricesForServer(String serverName) {
+    public List<NexusHubResponse.NexusHubPrice> getItemPricesForServer(String serverName) {
         RATE_LIMITER.acquire();
         NexusHubResponse nexusHubResponse = nexusHubClient.fetchAllItemPricesForServer(serverName);
         return filterPriceList(nexusHubResponse.data());

@@ -12,7 +12,7 @@ class WarcraftTavernService {
     private final WarcraftTavernClient warcraftTavernClient;
     private final PopulationDeserializer populationDeserializer;
 
-    public List<TotalPopResponse> retrievePopulations() {
+    public List<TotalPopResponse> getPopulations() {
         String populationsJson = warcraftTavernClient.getAll();
         return populationDeserializer.extractFromJson(populationsJson);
     }

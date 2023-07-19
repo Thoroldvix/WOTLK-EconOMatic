@@ -111,6 +111,7 @@ class GoldPriceControllerTest {
                 """;
         GoldPricePageResponse expected = buildGoldPricePageResponse(List.of(goldPriceResponse1, goldPriceResponse2, goldPriceResponse3));
         when(goldPriceServiceImpl.getAll(any(), any())).thenReturn(expected);
+
         mockMvc.perform(get(GOLD_PRICE_API_ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
