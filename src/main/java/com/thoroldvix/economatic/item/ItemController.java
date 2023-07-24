@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/wow-classic/api/v1/items")
 @Validated
 @RequiredArgsConstructor
-class ItemsController {
+class ItemController {
 
     private final ItemService itemService;
 
