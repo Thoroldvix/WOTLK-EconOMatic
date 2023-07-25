@@ -43,7 +43,7 @@ EconOMatic API has a bunch of useful features. Let's take a look at some of them
 4. ### Gold price Retrieval for Servers
    Stay updated with the current gold prices for each server. This feature tells you when gold prices go up or down,
    which can help you buy low and sell high or decide which server is better to sell gold on. Gold prices are
-   fetched from [G2G ](https://www.g2g.com).
+   fetched from [G2G](https://www.g2g.com).
 
 5. ### Auction House Information Retrieval
    Get detailed auction house information for a specific server. See how much different items are selling for and how
