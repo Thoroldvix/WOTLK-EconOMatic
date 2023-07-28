@@ -1,5 +1,5 @@
 # WOTLK EconOMatic
-[![CI](https://github.com/Thoroldvix/WOTLK-EconOMatic/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/Thoroldvix/WOTLK-EconOMatic/actions/workflows/gradle.yml)
+[![CI](https://github.com/Thoroldvix/WOTLK-EconOMatic/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Thoroldvix/WOTLK-EconOMatic/actions/workflows/ci.yml)
 
 EconOMatic is an API service designed to give easy access to economy related data for WoW Classic WOTLK.
 
