@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 
 @Service
 @Cacheable("item-cache")
-@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 class ItemServiceImpl implements ItemService {
