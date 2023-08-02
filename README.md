@@ -79,6 +79,7 @@ trading decisions and farm gold more effectively.
 * ### Hibernate
 * ### Liquibase
 * ### Gradle
+* ### Swagger
 
 ## Installation
 
