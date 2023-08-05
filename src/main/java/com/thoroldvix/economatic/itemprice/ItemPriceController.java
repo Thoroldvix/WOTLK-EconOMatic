@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 class ItemPriceController {
 
-    private final ItemPriceService itemPriceServiceImpl;
+    private final ItemPriceService itemPriceService;
 
     @Operation(summary = "Retrieve recent item prices for a server",
             description = "Returns all recent item prices for the specified server")
@@ -49,7 +49,7 @@ class ItemPriceController {
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
             Pageable pageable) {
 
-        var auctionHouseInfo = itemPriceServiceImpl.getRecentForServer(serverIdentifier, pageable);
+        var auctionHouseInfo = itemPriceService.getRecentForServer(serverIdentifier, pageable);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -74,7 +74,7 @@ class ItemPriceController {
                     required = true)
             @PathVariable String itemIdentifier) {
 
-        var auctionHouseInfo = itemPriceServiceImpl.getRecentForServer(serverIdentifier, itemIdentifier);
+        var auctionHouseInfo = itemPriceService.getRecentForServer(serverIdentifier, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -105,7 +105,7 @@ class ItemPriceController {
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
             Pageable pageable) {
 
-        var auctionHouseInfo = itemPriceServiceImpl.getForServer(serverIdentifier, itemIdentifier, new TimeRange(timeRange), pageable);
+        var auctionHouseInfo = itemPriceService.getForServer(serverIdentifier, itemIdentifier, new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -127,7 +127,7 @@ class ItemPriceController {
                                                         @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
                                                         @ParameterObject
                                                         Pageable pageable) {
-        var itemPrices = itemPriceServiceImpl.search(searchRequest, pageable);
+        var itemPrices = itemPriceService.search(searchRequest, pageable);
         return ResponseEntity.ok(itemPrices);
     }
 
@@ -149,7 +149,7 @@ class ItemPriceController {
     public ResponseEntity<ItemPricePageResponse> getRecentForItemList(@RequestBody @Valid ItemPriceRequest itemList,
                                                                       @PageableDefault(sort = "updated_at", direction = Sort.Direction.DESC, size = 100)
                                                                       @ParameterObject Pageable pageable) {
-        var itemPrices = itemPriceServiceImpl.getRecentForItemListAndServers(itemList, pageable);
+        var itemPrices = itemPriceService.getRecentForItemListAndServers(itemList, pageable);
         return ResponseEntity.ok(itemPrices);
     }
 
@@ -174,7 +174,7 @@ class ItemPriceController {
                     required = true)
             @PathVariable String itemIdentifier) {
 
-        var auctionHouseInfo = itemPriceServiceImpl.getRecentForRegion(regionName, itemIdentifier);
+        var auctionHouseInfo = itemPriceService.getRecentForRegion(regionName, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 
@@ -199,7 +199,7 @@ class ItemPriceController {
                     required = true)
             @PathVariable String itemIdentifier) {
 
-        var auctionHouseInfo = itemPriceServiceImpl.getRecentForFaction(factionName, itemIdentifier);
+        var auctionHouseInfo = itemPriceService.getRecentForFaction(factionName, itemIdentifier);
         return ResponseEntity.ok(auctionHouseInfo);
     }
 }

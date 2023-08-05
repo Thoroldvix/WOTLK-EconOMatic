@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/wow-classic/api/v1/servers/populations/stats")
 class PopulationStatController {
 
-    private final PopulationStatService populationStatServiceImpl;
+    private final PopulationStatService populationStatService;
 
     @Operation(summary = "Retrieves basic population statistics for all servers",
             description = "The statistics are based on all server population scans and the time range in days")
@@ -36,7 +36,7 @@ class PopulationStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForAll = populationStatServiceImpl.getForAll(new TimeRange(timeRange));
+        var statsForAll = populationStatService.getForAll(new TimeRange(timeRange));
         return ResponseEntity.ok(statsForAll);
     }
 
@@ -61,7 +61,7 @@ class PopulationStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForServer = populationStatServiceImpl.getForServer(serverIdentifier, new TimeRange(timeRange));
+        var statsForServer = populationStatService.getForServer(serverIdentifier, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForServer);
     }
 
@@ -85,7 +85,7 @@ class PopulationStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForRegion = populationStatServiceImpl.getForRegion(regionName, new TimeRange(timeRange));
+        var statsForRegion = populationStatService.getForRegion(regionName, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForRegion);
     }
 
@@ -110,7 +110,7 @@ class PopulationStatController {
                     example = "7")
             @RequestParam(defaultValue = "7") int timeRange) {
 
-        var statsForFaction = populationStatServiceImpl.getForFaction(factionName, new TimeRange(timeRange));
+        var statsForFaction = populationStatService.getForFaction(factionName, new TimeRange(timeRange));
         return ResponseEntity.ok(statsForFaction);
     }
 }

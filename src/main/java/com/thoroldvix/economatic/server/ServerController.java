@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 class ServerController {
 
-    private final ServerService serverServiceImpl;
+    private final ServerService serverService;
 
     @Operation(summary = "Retrieve server info for a specified search request",
             description = "Returns all servers that match given search request")
@@ -43,7 +43,7 @@ class ServerController {
             @RequestBody
             @Valid
             SearchRequest searchRequest) {
-        var searchResult = serverServiceImpl.search(searchRequest);
+        var searchResult = serverService.search(searchRequest);
         return ResponseEntity.ok(searchResult);
     }
 
@@ -65,7 +65,7 @@ class ServerController {
                     required = true)
             @PathVariable String serverIdentifier) {
 
-        var server = serverServiceImpl.getServer(serverIdentifier);
+        var server = serverService.getServer(serverIdentifier);
         return ResponseEntity.ok(server);
     }
 
@@ -80,7 +80,7 @@ class ServerController {
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ServerListResponse> getAll() {
-        var all = serverServiceImpl.getAll();
+        var all = serverService.getAll();
         return ResponseEntity.ok(all);
     }
 
@@ -99,7 +99,7 @@ class ServerController {
                     example = "eu",
                     required = true)
             @PathVariable String regionName) {
-        var servers = serverServiceImpl.getAllForRegion(regionName);
+        var servers = serverService.getAllForRegion(regionName);
         return ResponseEntity.ok(servers);
     }
 
@@ -118,7 +118,7 @@ class ServerController {
                     example = "alliance",
                     required = true)
             @PathVariable String factionName) {
-        var servers = serverServiceImpl.getAllForFaction(factionName);
+        var servers = serverService.getAllForFaction(factionName);
         return ResponseEntity.ok(servers);
     }
 }

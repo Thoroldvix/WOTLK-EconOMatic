@@ -28,7 +28,7 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
     private final ServerService serverService;
     private final GoldPriceStatRepository goldPriceStatRepository;
     private final GoldPriceStatMapper goldPriceStatMapper;
-    private final GoldPriceService goldPriceServiceImpl;
+    private final GoldPriceService goldPriceService;
 
     @Override
     public GoldPriceStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
@@ -101,12 +101,12 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
 
     private GoldPriceResponse getMax(StatsProjection goldPriceStat) {
         long maxId = goldPriceStat.getMaxId().longValue();
-        return goldPriceServiceImpl.getForId(maxId);
+        return goldPriceService.getForId(maxId);
     }
 
     private GoldPriceResponse getMin(StatsProjection goldPriceStat) {
         long minId = goldPriceStat.getMinId().longValue();
-        return goldPriceServiceImpl.getForId(minId);
+        return goldPriceService.getForId(minId);
     }
 
     private void validateStatsProjection(StatsProjection statsProjection) {

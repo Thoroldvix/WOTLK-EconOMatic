@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 class SummaryController {
 
-    private final ItemSummaryService itemSummaryServiceImpl;
-    private final ServerSummaryService serverSummaryServiceImpl;
+    private final ItemSummaryService itemSummaryService;
+    private final ServerSummaryService serverSummaryService;
 
     @Operation(summary = "Retrieves summary for all items",
             description = "Returns summary of all items. Includes amount of items in each category", tags = {"Summary API", "Items API"})
@@ -36,7 +36,7 @@ class SummaryController {
     })
     @GetMapping("/items")
     public ResponseEntity<ItemSummaryResponse> getItemSummary() {
-        var itemSummaryResponse = itemSummaryServiceImpl.getSummary();
+        var itemSummaryResponse = itemSummaryService.getSummary();
         return ResponseEntity.ok(itemSummaryResponse);
     }
 
@@ -50,7 +50,7 @@ class SummaryController {
     })
     @GetMapping("/servers")
     public ResponseEntity<ServerSummaryResponse> getSummary() {
-        var summary = serverSummaryServiceImpl.getSummary();
+        var summary = serverSummaryService.getSummary();
         return ResponseEntity.ok(summary);
     }
 }

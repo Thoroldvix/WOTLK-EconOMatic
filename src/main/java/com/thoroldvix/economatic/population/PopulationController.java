@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/wow-classic/api/v1/servers/populations")
 class PopulationController {
 
-    private final PopulationService populationServiceImpl;
+    private final PopulationService populationService;
 
     @Operation(summary = "Retrieve all populations",
             description = "Returns all populations within the specified time range")
@@ -46,7 +46,7 @@ class PopulationController {
                                                              @RequestParam(defaultValue = "7") int timeRange,
                                                          @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
                                                              @ParameterObject Pageable pageable) {
-        var allPopulations = populationServiceImpl.getAll(new TimeRange(timeRange), pageable);
+        var allPopulations = populationService.getAll(new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(allPopulations);
     }
 
@@ -62,7 +62,7 @@ class PopulationController {
     @GetMapping(value = "/recent",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PopulationListResponse> getAllRecent() {
-        var allPopulations = populationServiceImpl.getAllRecent();
+        var allPopulations = populationService.getAllRecent();
         return ResponseEntity.ok(allPopulations);
     }
 
@@ -88,7 +88,7 @@ class PopulationController {
             @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
             @ParameterObject Pageable pageable) {
 
-        var populationsForServer = populationServiceImpl.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
+        var populationsForServer = populationService.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(populationsForServer);
     }
 
@@ -110,7 +110,7 @@ class PopulationController {
                     required = true)
             @PathVariable String serverIdentifier) {
 
-        var priceResponse = populationServiceImpl.getRecentForServer(serverIdentifier);
+        var priceResponse = populationService.getRecentForServer(serverIdentifier);
         return ResponseEntity.ok(priceResponse);
     }
 
@@ -131,7 +131,7 @@ class PopulationController {
                     example = "everlook",
                     required = true)
             @PathVariable String serverName) {
-        var totalPopulation = populationServiceImpl.getTotalPopulation(serverName);
+        var totalPopulation = populationService.getTotalPopulation(serverName);
         return ResponseEntity.ok(totalPopulation);
     }
 
@@ -154,7 +154,7 @@ class PopulationController {
             @RequestBody @Valid SearchRequest searchRequest,
             @PageableDefault(size = 100, sort = "updatedAt", direction = Sort.Direction.DESC)
             @ParameterObject Pageable pageable) {
-        var responseForSearch = populationServiceImpl.search(searchRequest, pageable);
+        var responseForSearch = populationService.search(searchRequest, pageable);
         return ResponseEntity.ok(responseForSearch);
     }
 
@@ -174,7 +174,7 @@ class PopulationController {
                     example = "eu",
                     required = true)
             @PathVariable String regionName) {
-        var populationForRegion = populationServiceImpl.getRecentForRegion(regionName);
+        var populationForRegion = populationService.getRecentForRegion(regionName);
         return ResponseEntity.ok(populationForRegion);
     }
 
@@ -194,7 +194,7 @@ class PopulationController {
                     example = "alliance",
                     required = true)
             @PathVariable String factionName) {
-        var populationForFaction = populationServiceImpl.getRecentForFaction(factionName);
+        var populationForFaction = populationService.getRecentForFaction(factionName);
         return ResponseEntity.ok(populationForFaction);
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 class ItemDealsController {
 
-    private final ItemDealsService itemDealsServiceImpl;
+    private final ItemDealsService itemDealsService;
 
     @Operation(summary = "Retrieve deals for server",
             description = "Returns a list of deals for a specific server")
@@ -46,7 +46,7 @@ class ItemDealsController {
             @RequestParam(defaultValue = "0") int minQuality) {
 
         ItemDealsRequest request = new ItemDealsRequest(serverIdentifier, minQuantity, minQuality, limit);
-        var deals = itemDealsServiceImpl.getDealsForServer(request);
+        var deals = itemDealsService.getDealsForServer(request);
         return ResponseEntity.ok(deals);
     }
 }

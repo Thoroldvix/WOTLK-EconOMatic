@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 class GoldPriceController {
 
-    private final GoldPriceService goldPriceServiceImpl;
+    private final GoldPriceService goldPriceService;
 
     @Operation(summary = "Retrieve all prices",
             description = "Returns all prices within the specified time range")
@@ -48,7 +48,7 @@ class GoldPriceController {
             @ParameterObject
             @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100)
             Pageable pageable) {
-        var prices = goldPriceServiceImpl.getAll(new TimeRange(timeRange), pageable);
+        var prices = goldPriceService.getAll(new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(prices);
     }
 
@@ -63,7 +63,7 @@ class GoldPriceController {
     })
     @GetMapping(value = "/recent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GoldPriceListResponse> getAllRecent() {
-        var prices = goldPriceServiceImpl.getAllRecent();
+        var prices = goldPriceService.getAllRecent();
         return ResponseEntity.ok(prices);
     }
 
@@ -78,7 +78,7 @@ class GoldPriceController {
     })
     @PostMapping(value = "/recent", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GoldPriceListResponse> getRecentForServers(@RequestBody @Valid GoldPriceRequest request) {
-        var prices = goldPriceServiceImpl.getRecentForServerList(request);
+        var prices = goldPriceService.getRecentForServerList(request);
         return ResponseEntity.ok(prices);
     }
 
@@ -104,7 +104,7 @@ class GoldPriceController {
             @RequestParam(defaultValue = "7") int timeRange,
             @ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
 
-        var priceResponse = goldPriceServiceImpl.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
+        var priceResponse = goldPriceService.getForServer(serverIdentifier, new TimeRange(timeRange), pageable);
         return ResponseEntity.ok(priceResponse);
     }
 
@@ -126,7 +126,7 @@ class GoldPriceController {
                     required = true)
             @PathVariable String serverIdentifier) {
 
-        var priceResponse = goldPriceServiceImpl.getRecentForServer(serverIdentifier);
+        var priceResponse = goldPriceService.getRecentForServer(serverIdentifier);
         return ResponseEntity.ok(priceResponse);
     }
 
@@ -148,7 +148,7 @@ class GoldPriceController {
                     required = true)
             @Valid @RequestBody SearchRequest searchRequest,
             @ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
-        var responseDto = goldPriceServiceImpl.search(searchRequest, pageable);
+        var responseDto = goldPriceService.search(searchRequest, pageable);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -169,7 +169,7 @@ class GoldPriceController {
                     required = true)
             @PathVariable String regionName) {
 
-        var prices = goldPriceServiceImpl.getRecentForRegion(regionName);
+        var prices = goldPriceService.getRecentForRegion(regionName);
         return ResponseEntity.ok(prices);
     }
 
@@ -190,7 +190,7 @@ class GoldPriceController {
                     required = true)
             @PathVariable String factionName) {
 
-        var prices = goldPriceServiceImpl.getRecentForFaction(factionName);
+        var prices = goldPriceService.getRecentForFaction(factionName);
         return ResponseEntity.ok(prices);
     }
 
