@@ -28,9 +28,9 @@ class GoldPriceUpdateService {
 
     @PersistenceContext
     private final EntityManager entityManager;
-    private final GoldPriceServiceImpl goldPriceServiceImpl;
+    private final GoldPriceServiceImpl goldPriceService;
     private final G2GService g2gService;
-    private final ServerService serverServiceImpl;
+    private final ServerService serverService;
 
     @Scheduled(fixedRateString = UPDATE_RATE,
             initialDelayString = UPDATE_ON_STARTUP_OR_DEFAULT,
@@ -41,10 +41,10 @@ class GoldPriceUpdateService {
         Instant start = Instant.now();
 
         List<GoldPriceResponse> prices = g2gService.getGoldPrices();
-        List<ServerResponse> servers = serverServiceImpl.getAll().servers();
+        List<ServerResponse> servers = serverService.getAll().servers();
         List<GoldPrice> pricesToSave = getPriceList(servers, prices);
 
-        goldPriceServiceImpl.saveAll(pricesToSave);
+        goldPriceService.saveAll(pricesToSave);
         log.info("Finished updating gold prices in {} ms", elapsedTimeInMillis(start));
     }
 

@@ -29,17 +29,17 @@ class ItemPriceUpdateService {
 
     @PersistenceContext
     private final EntityManager entityManager;
-    private final ItemPriceService itemPriceServiceImpl;
+    private final ItemPriceService itemPriceService;
     private final NexusHubService nexusHubService;
     private final Map<String, Integer> serverIdentifiers;
 
     @Autowired
     public ItemPriceUpdateService(EntityManager entityManager,
-                                  ItemPriceService itemPriceServiceImpl,
+                                  ItemPriceService itemPriceService,
                                   NexusHubService nexusHubService,
                                   ServerService serverService) {
         this.entityManager = entityManager;
-        this.itemPriceServiceImpl = itemPriceServiceImpl;
+        this.itemPriceService = itemPriceService;
         this.nexusHubService = nexusHubService;
         this.serverIdentifiers = getServerIds(serverService);
     }
@@ -60,7 +60,7 @@ class ItemPriceUpdateService {
         serverIdentifiers.keySet().parallelStream()
                 .forEach(serverName -> {
                     List<ItemPrice> itemPrices = getItemPricesForServer(serverName);
-                    itemPriceServiceImpl.saveAll(itemPrices);
+                    itemPriceService.saveAll(itemPrices);
                 });
 
         log.info("Finished updating item prices in {} ms", elapsedTimeInMillis(start));

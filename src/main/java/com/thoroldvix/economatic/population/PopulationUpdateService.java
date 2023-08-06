@@ -28,8 +28,8 @@ class PopulationUpdateService {
 
     @PersistenceContext
     private final EntityManager entityManager;
-    private final ServerService serverServiceImpl;
-    private final PopulationService populationServiceImpl;
+    private final ServerService serverService;
+    private final PopulationService populationService;
     private final WarcraftTavernService warcraftTavernService;
 
     @Scheduled(fixedRateString = UPDATE_RATE,
@@ -41,14 +41,14 @@ class PopulationUpdateService {
         Instant start = Instant.now();
 
         List<Population> populations = getPopulations();
-        populationServiceImpl.saveAll(populations);
+        populationService.saveAll(populations);
 
         log.info("Finished updating population in {} ms", elapsedTimeInMillis(start));
     }
 
     private List<Population> getPopulations() {
         List<TotalPopResponse> totalPopulationsForServer = warcraftTavernService.getPopulations();
-        List<ServerResponse> servers = serverServiceImpl.getAll().servers();
+        List<ServerResponse> servers = serverService.getAll().servers();
         return toPopulationList(totalPopulationsForServer, servers);
     }
 

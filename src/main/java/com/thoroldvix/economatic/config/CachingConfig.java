@@ -17,78 +17,6 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class CachingConfig {
 
-    @Bean
-    CacheManager itemCache() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Collections.singletonList(("item-cache")));
-        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
-                .initialCapacity(100)
-                .maximumSize(20000)
-                .expireAfterWrite(5, TimeUnit.MINUTES);
-        cacheManager.setCaffeine(cacheBuilder);
-        return cacheManager;
-    }
-
-    @Bean
-    CacheManager goldPriceStatsCache() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Collections.singletonList(("gold-price-stats-cache")));
-        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
-                .initialCapacity(100)
-                .maximumSize(20000)
-                .expireAfterWrite(60, TimeUnit.SECONDS);
-        cacheManager.setCaffeine(cacheBuilder);
-        return cacheManager;
-    }
-
-    @Bean
-    CacheManager itemPriceCache() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Collections.singletonList(("item-price-cache")));
-        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
-                .initialCapacity(100)
-                .maximumSize(30000)
-                .expireAfterWrite(60, TimeUnit.SECONDS);
-        cacheManager.setCaffeine(cacheBuilder);
-        return cacheManager;
-    }
-
-    @Bean
-    CacheManager populationCache() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Collections.singletonList(("population-cache")));
-        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
-                .initialCapacity(100)
-                .maximumSize(30000)
-                .expireAfterWrite(60, TimeUnit.SECONDS);
-        cacheManager.setCaffeine(cacheBuilder);
-        return cacheManager;
-    }
-
-    @Bean
-    CacheManager goldPriceCache() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Collections.singletonList(("gold-price-cache")));
-        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
-                .initialCapacity(96)
-                .maximumSize(96)
-                .expireAfterWrite(60, TimeUnit.SECONDS);
-        cacheManager.setCaffeine(cacheBuilder);
-        return cacheManager;
-    }
-
-    @Bean
-    CacheManager serverCache() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCacheNames(Collections.singletonList(("server-cache")));
-        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
-                .initialCapacity(96)
-                .maximumSize(96)
-                .expireAfterWrite(5, TimeUnit.MINUTES);
-        cacheManager.setCaffeine(cacheBuilder);
-        return cacheManager;
-    }
-
     @Primary
     @Bean
     public CacheManager cacheManagerComposite() {
@@ -100,6 +28,47 @@ public class CachingConfig {
                 goldPriceCache(),
                 populationCache(),
                 goldPriceStatsCache()));
+        return cacheManager;
+    }
+
+    @Bean
+    CacheManager itemCache() {
+        return createCacheManager("item-cache", 100, 20000, 5, TimeUnit.MINUTES);
+    }
+
+    @Bean
+    CacheManager goldPriceStatsCache() {
+        return createCacheManager("gold-price-stats-cache", 100, 20000, 60, TimeUnit.SECONDS);
+    }
+
+    @Bean
+    CacheManager itemPriceCache() {
+        return createCacheManager("item-price-cache", 100, 30000, 60, TimeUnit.SECONDS);
+    }
+
+    @Bean
+    CacheManager populationCache() {
+        return createCacheManager("population-cache", 100, 30000, 60, TimeUnit.SECONDS);
+    }
+
+    @Bean
+    CacheManager goldPriceCache() {
+        return createCacheManager("gold-price-cache", 96, 96, 60, TimeUnit.SECONDS);
+    }
+
+    @Bean
+    CacheManager serverCache() {
+        return createCacheManager("server-cache", 96, 96, 5, TimeUnit.MINUTES);
+    }
+
+    private CacheManager createCacheManager(String name, int initialCapacity, int maxSize, long duration, TimeUnit timeUnit) {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCacheNames(Collections.singletonList(name));
+        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
+                .initialCapacity(initialCapacity)
+                .maximumSize(maxSize)
+                .expireAfterWrite(duration, timeUnit);
+        cacheManager.setCaffeine(cacheBuilder);
         return cacheManager;
     }
 }
