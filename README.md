@@ -110,13 +110,13 @@ Alternatively, utilize the Docker compose file provided. Before proceeding, plea
 In the code directory, use:
 
 ```shell
-docker-compose up -d
+docker compose up -d
 ```
 
 When you want to stop the application:
 
 ```shell
-docker-compose down
+docker compose down
 ```
 
 Docker helps in managing the application without the need for manual setup.
