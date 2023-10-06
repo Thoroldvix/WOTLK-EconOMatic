@@ -171,38 +171,7 @@ defaults, no action is needed.
 ## Contributing
 
 Contributions to this project are most welcome. If you have an idea for a feature, want to suggest an enhancement, or
-need to report a bug, feel free to open an issue or submit a pull request. Please follow these steps for contributing:
-
-1. Fork the project repository.
-
-2. Clone the forked repository to your local machine.
-
-3. Make your changes in your local repository.
-
-4. If you're suggesting a feature or an enhancement, write a clear and detailed proposal for how it should work.
-
-5. After making your changes, run the tests to ensure everything works as expected.
-
-6. Commit your changes with a clear and concise commit message.
-
-7. Push your changes to your forked repository.
-
-8. Submit a pull request, detailing the changes you made or the features you propose, and explain why they should be
-   included.
-
-All pull requests and feature suggestions will go through a review and feedback process. We aim to merge pull requests
-and implement useful features that align with the project's objectives as soon as possible.
-
-## License
-
-This project is licensed under the MIT License. This means you are free to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the software. However, you must include the following notice in all copies
-or substantial portions of the software:
-
-"The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the
-warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or
-copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or
-otherwise, arising from, out of or in connection with the software or the use or other dealings in the software."
+need to report a bug, feel free to open an issue or submit a pull request.
 
 
 
