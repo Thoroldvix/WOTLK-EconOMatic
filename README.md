@@ -99,7 +99,11 @@ Next, set up the environment variables. Defaults are provided, but you can adjus
 Navigate to the code directory and run:
 
 ```shell
-DB_URL=your_value DB_USERNAME=your_value DB_PASS=your_value PORT=your_value ./gradlew bootRun
+DB_URL=your_value \
+DB_USERNAME=your_value \
+DB_PASS=your_value \
+PORT=your_value \
+./gradlew bootRun
 ```
 
 Replace your_value with your values.
