@@ -36,9 +36,12 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
-        StatsProjection statsProjection = findForServer(server, timeRange);
+        StatsProjection statsProjection = goldPriceStatRepository.findStatsForServer(
+                server.id(),
+                timeRange.start(),
+                timeRange.end()
+        );
         validateStatsProjection(statsProjection);
-
         return getStatResponse(statsProjection);
     }
 
@@ -47,7 +50,12 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
-        StatsProjection statsProjection = findForRegion(regionName, timeRange);
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        StatsProjection statsProjection = goldPriceStatRepository.findForRegion(
+                region.ordinal(),
+                timeRange.start(),
+                timeRange.end()
+        );
         validateStatsProjection(statsProjection);
 
         return getStatResponse(statsProjection);
@@ -58,7 +66,12 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
-        StatsProjection statsProjection = findForFaction(factionName, timeRange);
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        StatsProjection statsProjection = goldPriceStatRepository.findForFaction(
+                faction.ordinal(),
+                timeRange.start(),
+                timeRange.end()
+        );
         validateStatsProjection(statsProjection);
 
         return getStatResponse(statsProjection);
@@ -68,9 +81,8 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
     public GoldPriceStatResponse getForAll(TimeRange timeRange) {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
-        StatsProjection statsProjection = findForTimeRange(timeRange);
+        StatsProjection statsProjection = goldPriceStatRepository.findStatsForAll(timeRange.start(), timeRange.end());
         validateStatsProjection(statsProjection);
-
         return getStatResponse(statsProjection);
     }
 
@@ -79,24 +91,6 @@ class GoldPriceStatServiceImpl implements GoldPriceStatService {
         GoldPriceResponse max = getMax(statsProjection);
 
         return goldPriceStatMapper.toResponse(statsProjection, min, max);
-    }
-
-    private StatsProjection findForServer(ServerResponse server, TimeRange timeRange) {
-        return goldPriceStatRepository.findStatsForServer(server.id(), timeRange.start(), timeRange.end());
-    }
-
-    private StatsProjection findForRegion(String regionName, TimeRange timeRange) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return goldPriceStatRepository.findForRegion(region.ordinal(), timeRange.start(), timeRange.end());
-    }
-
-    private StatsProjection findForTimeRange(TimeRange timeRange) {
-        return goldPriceStatRepository.findStatsForAll(timeRange.start(), timeRange.end());
-    }
-
-    private StatsProjection findForFaction(String factionName, TimeRange timeRange) {
-        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        return goldPriceStatRepository.findForFaction(faction.ordinal(), timeRange.start(), timeRange.end());
     }
 
     private GoldPriceResponse getMax(StatsProjection goldPriceStat) {

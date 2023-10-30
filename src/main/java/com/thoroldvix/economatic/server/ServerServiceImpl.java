@@ -31,7 +31,7 @@ class ServerServiceImpl implements ServerService {
     public ServerResponse getServer(String serverIdentifier) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
-        Optional<Server> server = findServer(serverIdentifier);
+        Optional<Server> server = findServerByIdentifier(serverIdentifier);
 
         return server.map(serverMapper::toResponse)
                 .orElseThrow(() -> new ServerNotFoundException("No server found for identifier: " + serverIdentifier));
@@ -41,7 +41,8 @@ class ServerServiceImpl implements ServerService {
     public ServerListResponse search(@Valid SearchRequest searchRequest) {
         requireNonNull(searchRequest, ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL.message);
 
-        List<Server> servers = findForSearch(searchRequest);
+        Specification<Server> spec = SpecificationBuilder.from(searchRequest);
+        List<Server> servers = serverRepository.findAll(spec);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));
 
         return serverMapper.toServerListResponse(servers);
@@ -58,7 +59,8 @@ class ServerServiceImpl implements ServerService {
     public ServerListResponse getAllForRegion(String regionName) {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
-        List<Server> servers = findAllByRegion(regionName);
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        List<Server> servers = serverRepository.findAllByRegion(region);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for region: " + regionName));
 
         return serverMapper.toServerListResponse(servers);
@@ -68,28 +70,14 @@ class ServerServiceImpl implements ServerService {
     public ServerListResponse getAllForFaction(String factionName) {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
-        List<Server> servers = findAllByFaction(factionName);
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        List<Server> servers = serverRepository.findAllByFaction(faction);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for faction: " + factionName));
 
         return serverMapper.toServerListResponse(servers);
     }
 
-    private List<Server> findForSearch(SearchRequest searchRequest) {
-        Specification<Server> spec = SpecificationBuilder.from(searchRequest);
-        return serverRepository.findAll(spec);
-    }
-
-    private List<Server> findAllByRegion(String regionName) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return serverRepository.findAllByRegion(region);
-    }
-
-    private List<Server> findAllByFaction(String factionName) {
-        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        return serverRepository.findAllByFaction(faction);
-    }
-
-    private Optional<Server> findServer(String serverIdentifier) {
+    private Optional<Server> findServerByIdentifier(String serverIdentifier) {
         try {
             int serverId = Integer.parseInt(serverIdentifier);
             return serverRepository.findById(serverId);

@@ -4,7 +4,6 @@ import com.thoroldvix.economatic.search.SearchRequest;
 import com.thoroldvix.economatic.search.SpecificationBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,15 +32,11 @@ class ItemServiceImpl implements ItemService {
         requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
-        Page<Item> items = findAllForSearch(searchRequest, pageable);
+        Specification<Item> spec = SpecificationBuilder.from(searchRequest);
+        Page<Item> items = itemRepository.findAll(spec, pageable);
         notEmpty(items.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
 
         return itemMapper.toPageResponse(items);
-    }
-
-    private Page<Item> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<Item> spec = SpecificationBuilder.from(searchRequest);
-        return itemRepository.findAll(spec, pageable);
     }
 
     @Override

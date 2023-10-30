@@ -48,16 +48,12 @@ class ItemPriceServiceImpl implements ItemPriceService {
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
-        Page<ItemPrice> page = findRecentForServer(server, pageable);
+        Page<ItemPrice> page = itemPriceRepository.findRecentForServer(server.id(), pageable);
 
         notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No recent item prices found for server identifier " + serverIdentifier));
 
         return itemPriceMapper.toPageResponse(page);
-    }
-
-    private Page<ItemPrice> findRecentForServer(ServerResponse server, Pageable pageable) {
-        return itemPriceRepository.findRecentForServer(server.id(), pageable);
     }
 
     @Override
@@ -66,17 +62,13 @@ class ItemPriceServiceImpl implements ItemPriceService {
         notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ItemResponse item = itemService.getItem(itemIdentifier);
-        List<ItemPrice> itemPrices = findRecentForRegionAndItem(regionName, item);
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        List<ItemPrice> itemPrices = itemPriceRepository.findRecentForRegionAndItem(region.ordinal(), item.id());
 
         notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for region and item identifier " + regionName + " " + itemIdentifier));
 
         return itemPriceMapper.toItemPriceList(itemPrices);
-    }
-
-    private List<ItemPrice> findRecentForRegionAndItem(String regionName, ItemResponse item) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return itemPriceRepository.findRecentForRegionAndItem(region.ordinal(), item.id());
     }
 
     @Override
@@ -85,17 +77,13 @@ class ItemPriceServiceImpl implements ItemPriceService {
         notEmpty(itemIdentifier, ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ItemResponse item = itemService.getItem(itemIdentifier);
-        List<ItemPrice> itemPrices = findRecentForFactionAndItem(factionName, item);
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        List<ItemPrice> itemPrices = itemPriceRepository.findRecentForFactionAndItem(faction.ordinal(), item.id());
 
         notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for faction and item identifier " + factionName + " " + itemIdentifier));
 
         return itemPriceMapper.toItemPriceList(itemPrices);
-    }
-
-    private List<ItemPrice> findRecentForFactionAndItem(String factionName, ItemResponse item) {
-        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        return itemPriceRepository.findRecentForFactionAndItem(faction.ordinal(), item.id());
     }
 
     @Override
@@ -105,7 +93,7 @@ class ItemPriceServiceImpl implements ItemPriceService {
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         ItemResponse item = itemService.getItem(itemIdentifier);
-        List<ItemPrice> itemPrices = findRecentForServerAndItem(server, item);
+        List<ItemPrice> itemPrices = itemPriceRepository.findRecentForServerAndItem(server.id(), item.id());
 
         notEmpty(itemPrices,
                 () -> new ItemPriceNotFoundException("No item prices found for server identifier %s and item identifier %s"
@@ -114,24 +102,16 @@ class ItemPriceServiceImpl implements ItemPriceService {
         return itemPriceMapper.toItemPriceList(itemPrices);
     }
 
-    private List<ItemPrice> findRecentForServerAndItem(ServerResponse server, ItemResponse item) {
-        return itemPriceRepository.findRecentForServerAndItem(server.id(), item.id());
-    }
-
     @Override
     public ItemPricePageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
         requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
 
-        Page<ItemPrice> page = findAllForSearch(searchRequest, pageable);
+        Specification<ItemPrice> specification = SpecificationBuilder.from(searchRequest);
+        Page<ItemPrice> page = itemPriceRepository.findAll(specification, pageable);
         notEmpty(page.getContent(), () -> new ItemPriceNotFoundException("No item prices found for search request"));
 
         return itemPriceMapper.toPageResponse(page);
-    }
-
-    private Page<ItemPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<ItemPrice> specification = SpecificationBuilder.from(searchRequest);
-        return itemPriceRepository.findAll(specification, pageable);
     }
 
     @Override
@@ -143,21 +123,20 @@ class ItemPriceServiceImpl implements ItemPriceService {
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         ItemResponse item = itemService.getItem(itemIdentifier);
-        Page<ItemPrice> page = findForServerAndTimeRange(server, item, timeRange, pageable);
+
+        Page<ItemPrice> page = itemPriceRepository.findForServerAndTimeRange(
+                server.id(),
+                item.id(),
+                timeRange.start(),
+                timeRange.end(),
+                pageable
+        );
 
         notEmpty(page.getContent(),
                 () -> new ItemPriceNotFoundException("No item prices found for time range %s for server identifier %s and item identifier %s"
                         .formatted(timeRange, serverIdentifier, itemIdentifier)));
 
         return itemPriceMapper.toPageResponse(page);
-    }
-
-    private Page<ItemPrice> findForServerAndTimeRange(ServerResponse server,
-                                                      ItemResponse item,
-                                                      TimeRange timeRange,
-                                                      Pageable pageable) {
-
-        return itemPriceRepository.findForServerAndTimeRange(server.id(), item.id(), timeRange.start(), timeRange.end(), pageable);
     }
 
     @Override

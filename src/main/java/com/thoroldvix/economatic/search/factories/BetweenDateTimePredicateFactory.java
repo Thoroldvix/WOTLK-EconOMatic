@@ -15,7 +15,7 @@ class BetweenDateTimePredicateFactory extends AbstractBetweenPredicateFactory {
         if (columnType.equals(LocalDateTime.class)) {
             return getLocalDateTimeBetweenPredicate(cb, columnPath, lowerBound, upperBound);
         }
-        throw new IllegalArgumentException("Invalid operation: BETWEEN_DATE_TIME is only applicable to  date-time column types.");
+        throw new IllegalArgumentException("Invalid operation: BETWEEN_DATE_TIME is only applicable to date-time column types.");
     }
 
     private static Predicate getLocalDateTimeBetweenPredicate(CriteriaBuilder cb, Path<?> columnPath, String lowerBound, String upperBound) {

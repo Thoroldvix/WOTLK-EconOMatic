@@ -27,7 +27,12 @@ class ItemDealsServiceImpl implements ItemDealsService {
         Objects.requireNonNull(request, "Item deals request cannot be null or empty");
 
         ServerResponse server = serverService.getServer(request.serverIdentifier());
-        List<ItemDealProjection> deals = findDealsForServer(request, server);
+        List<ItemDealProjection> deals = itemDealsRepository.findDealsForServer(
+                server.id(),
+                request.minQuantity(),
+                request.minQuality(),
+                request.limit()
+        );
 
         notEmpty(deals,
                 () -> new ItemDealsNotFoundException("No deal found for server " + request.serverIdentifier()));
@@ -35,7 +40,4 @@ class ItemDealsServiceImpl implements ItemDealsService {
         return itemDealsMapper.toItemDealsList(deals);
     }
 
-    private List<ItemDealProjection> findDealsForServer(ItemDealsRequest request, ServerResponse server) {
-        return itemDealsRepository.findDealsForServer(server.id(), request.minQuantity(), request.minQuality(), request.limit());
-    }
 }

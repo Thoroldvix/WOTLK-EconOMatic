@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
@@ -47,16 +46,12 @@ class PopulationServiceImpl implements PopulationService {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
-        Page<Population> page = findForTimeRange(timeRange, pageable);
+        Page<Population> page = populationRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
 
         notEmpty(page.getContent(),
                 () -> new PopulationNotFoundException(NO_POPULATIONS_FOUND));
 
         return populationMapper.toPageResponse(page);
-    }
-
-    private Page<Population> findForTimeRange(TimeRange timeRange, Pageable pageable) {
-        return populationRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
     }
 
     @Override
@@ -66,16 +61,16 @@ class PopulationServiceImpl implements PopulationService {
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
-        Page<Population> page = findAllForServer(server, timeRange, pageable);
+        Page<Population> page = populationRepository.findAllForServer(server.id(),
+                timeRange.start(),
+                timeRange.end(),
+                pageable
+        );
 
         notEmpty(page.getContent(),
                 () -> new PopulationNotFoundException("No populations found for server identifier: " + serverIdentifier));
 
         return populationMapper.toPageResponse(page);
-    }
-
-    private Page<Population> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
-        return populationRepository.findAllForServer(server.id(), timeRange.start(), timeRange.end(), pageable);
     }
 
     @Override
@@ -104,48 +99,35 @@ class PopulationServiceImpl implements PopulationService {
         requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
-        Page<Population> populations = findAllForSearch(searchRequest, pageable);
+        Specification<Population> spec = SpecificationBuilder.from(searchRequest);
+        Page<Population> populations = populationRepository.findAll(spec, pageable);
         notEmpty(populations.getContent(),
                 () -> new PopulationNotFoundException("No populations found for search request"));
 
         return populationMapper.toPageResponse(populations);
     }
 
-    private Page<Population> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<Population> spec = SpecificationBuilder.from(searchRequest);
-        return populationRepository.findAll(spec, pageable);
-    }
-
     @Override
     public PopulationListResponse getRecentForRegion(String regionName) {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
-        List<Population> population = findRecentForRegion(regionName);
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        List<Population> population = populationRepository.findRecentForRegion(region);
         notEmpty(population,
                 () -> new PopulationNotFoundException("No recent populations found for region: " + regionName));
 
         return populationMapper.toPopulationList(population);
     }
 
-    private List<Population> findRecentForRegion(String regionName) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return populationRepository.findRecentForRegion(region);
-    }
-
     @Override
     public PopulationListResponse getRecentForFaction(String factionName) {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
-        List<Population> population = findRecentForFaction(factionName);
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        List<Population> population = populationRepository.findRecentForFaction(faction);
         notEmpty(population, () -> new PopulationNotFoundException("No recent populations found for faction: " + factionName));
 
         return populationMapper.toPopulationList(population);
-    }
-
-    private List<Population> findRecentForFaction(String factionName) {
-        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-
-        return populationRepository.findRecentForFaction(faction);
     }
 
     @Override
@@ -162,14 +144,10 @@ class PopulationServiceImpl implements PopulationService {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
-        Population population = findRecentForServer(server)
+        Population population = populationRepository.findRecentForServer(server.id())
                 .orElseThrow(() -> new PopulationNotFoundException("No recent populations found for server: " + serverIdentifier));
 
         return populationMapper.toResponse(population);
-    }
-
-    private Optional<Population> findRecentForServer(ServerResponse server) {
-        return populationRepository.findRecentForServer(server.id());
     }
 
     @Override

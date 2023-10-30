@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,14 +48,10 @@ class GoldPriceServiceImpl implements GoldPriceService {
     @Override
     public GoldPricePageResponse getAll(TimeRange timeRange, Pageable pageable) {
         validateInputs(timeRange, pageable);
-        Page<GoldPrice> page = findAllForTimeRange(timeRange, pageable);
+        Page<GoldPrice> page = goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
         notEmpty(page.getContent(),
                 () -> new GoldPriceNotFoundException("No prices found for time range: %s-%s".formatted(timeRange.start(), timeRange.end())));
         return goldPriceMapper.toPageResponse(page);
-    }
-
-    private Page<GoldPrice> findAllForTimeRange(TimeRange timeRange, Pageable pageable) {
-        return goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
     }
 
     @Override
@@ -65,7 +60,8 @@ class GoldPriceServiceImpl implements GoldPriceService {
         validateInputs(timeRange, pageable);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
-        Page<GoldPrice> prices = findAllForServer(server, timeRange, pageable);
+        Page<GoldPrice> prices = goldPriceRepository
+                .findAllForServerAndTimeRange(server.id(), timeRange.start(), timeRange.end(), pageable);
 
         notEmpty(prices.getContent(),
                 () -> new GoldPriceNotFoundException("No prices found for server identifier %s and time range: %s-%s".formatted(
@@ -77,10 +73,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
     private void validateInputs(TimeRange timeRange, Pageable pageable) {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
-    }
-
-    private Page<GoldPrice> findAllForServer(ServerResponse server, TimeRange timeRange, Pageable pageable) {
-        return goldPriceRepository.findAllForServerAndTimeRange(server.id(), timeRange.start(), timeRange.end(), pageable);
     }
 
     @Override
@@ -97,16 +89,12 @@ class GoldPriceServiceImpl implements GoldPriceService {
         requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
         requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
 
-        Page<GoldPrice> prices = findAllForSearch(searchRequest, pageable);
+        Specification<GoldPrice> spec = SpecificationBuilder.from(searchRequest);
+        Page<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable);
         notEmpty(prices.getContent(),
                 () -> new GoldPriceNotFoundException(NO_PRICES_FOUND));
 
         return goldPriceMapper.toPageResponse(prices);
-    }
-
-    private Page<GoldPrice> findAllForSearch(SearchRequest searchRequest, Pageable pageable) {
-        Specification<GoldPrice> spec = SpecificationBuilder.from(searchRequest);
-        return goldPriceRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -114,44 +102,32 @@ class GoldPriceServiceImpl implements GoldPriceService {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
-        GoldPrice price = findRecentForServer(server)
+        GoldPrice price = goldPriceRepository.findRecentForServer(server.id())
                 .orElseThrow(() -> new GoldPriceNotFoundException("No prices found for server " + serverIdentifier));
 
         return goldPriceMapper.toResponse(price);
-    }
-
-    private Optional<GoldPrice> findRecentForServer(ServerResponse server) {
-        return goldPriceRepository.findRecentForServer(server.id());
     }
 
     @Override
     public GoldPriceListResponse getRecentForRegion(String regionName) {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
-        List<GoldPrice> prices = findRecentForRegion(regionName);
+        Region region = StringEnumConverter.fromString(regionName, Region.class);
+        List<GoldPrice> prices = goldPriceRepository.findRecentForRegion(region.ordinal());
         notEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for region " + regionName));
 
         return goldPriceMapper.toGoldPriceList(prices);
-    }
-
-    private List<GoldPrice> findRecentForRegion(String regionName) {
-        Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return goldPriceRepository.findRecentForRegion(region.ordinal());
     }
 
     @Override
     public GoldPriceListResponse getRecentForFaction(String factionName) {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
 
-        List<GoldPrice> prices = findRecentForFaction(factionName);
+        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
+        List<GoldPrice> prices = goldPriceRepository.findRecentForFaction(faction.ordinal());
         notEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for faction " + factionName));
 
         return goldPriceMapper.toGoldPriceList(prices);
-    }
-
-    private List<GoldPrice> findRecentForFaction(String factionName) {
-        Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        return goldPriceRepository.findRecentForFaction(faction.ordinal());
     }
 
     @Override
@@ -159,7 +135,7 @@ class GoldPriceServiceImpl implements GoldPriceService {
         requireNonNull(request, "Gold price request cannot be null");
 
         Set<Integer> serverIds = getServerIds(request.serverList());
-        List<GoldPrice> prices = findRecentForServerIds(serverIds);
+        List<GoldPrice> prices = goldPriceRepository.findRecentForServerIds(serverIds);
         notEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for server list"));
 
         return goldPriceMapper.toGoldPriceList(prices);
@@ -169,10 +145,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
         return serverList.stream()
                 .map(server -> serverService.getServer(server).id())
                 .collect(Collectors.toSet());
-    }
-
-    private List<GoldPrice> findRecentForServerIds(Set<Integer> serverIds) {
-        return goldPriceRepository.findRecentForServerIds(serverIds);
     }
 
     @Override

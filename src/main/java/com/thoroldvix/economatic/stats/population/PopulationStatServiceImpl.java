@@ -34,14 +34,12 @@ class PopulationStatServiceImpl implements PopulationStatService {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
-        StatsProjection statsProjection = findForServer(server, timeRange);
+        StatsProjection statsProjection = statRepository.findStatsByServer(server.id(),
+                timeRange.start(),
+                timeRange.end()
+        );
         validateStatsProjection(statsProjection);
-
         return getStatResponse(statsProjection);
-    }
-
-    private StatsProjection findForServer(ServerResponse server, TimeRange timeRange) {
-        return statRepository.findStatsByServer(server.id(), timeRange.start(), timeRange.end());
     }
 
     private PopulationStatResponse getStatResponse(StatsProjection statsProjection) {
@@ -63,9 +61,9 @@ class PopulationStatServiceImpl implements PopulationStatService {
 
     private void validateStatsProjection(StatsProjection statsProjection) {
         boolean isInvalid = statsProjection.getMean() == null
-                            || statsProjection.getMaxId() == null
-                            || statsProjection.getMinId() == null
-                            || statsProjection.getMedian() == null;
+                || statsProjection.getMaxId() == null
+                || statsProjection.getMinId() == null
+                || statsProjection.getMedian() == null;
         if (isInvalid) {
             throw new StatisticsNotFoundException(NO_STATISTICS_FOUND.message);
         }
@@ -76,15 +74,15 @@ class PopulationStatServiceImpl implements PopulationStatService {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
-        StatsProjection statsProjection = findForRegion(regionName, timeRange);
-        validateStatsProjection(statsProjection);
-
-        return getStatResponse(statsProjection);
-    }
-
-    private StatsProjection findForRegion(String regionName, TimeRange timeRange) {
         Region region = StringEnumConverter.fromString(regionName, Region.class);
-        return statRepository.findStatsByRegion(region.ordinal(), timeRange.start(), timeRange.end());
+        StatsProjection statsProjection = statRepository.findStatsByRegion(
+                region.ordinal(),
+                timeRange.start(),
+                timeRange.end()
+        );
+
+        validateStatsProjection(statsProjection);
+        return getStatResponse(statsProjection);
     }
 
     @Override
@@ -92,28 +90,28 @@ class PopulationStatServiceImpl implements PopulationStatService {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
-        StatsProjection statsProjection = findForFaction(factionName, timeRange);
-        validateStatsProjection(statsProjection);
-
-        return getStatResponse(statsProjection);
-    }
-
-    private StatsProjection findForFaction(String factionName, TimeRange timeRange) {
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
-        return statRepository.findStatsByFaction(faction.ordinal(), timeRange.start(), timeRange.end());
+        StatsProjection statsProjection = statRepository.findStatsByFaction(
+                faction.ordinal(),
+                timeRange.start(),
+                timeRange.end()
+        );
+
+        validateStatsProjection(statsProjection);
+        return getStatResponse(statsProjection);
     }
 
     @Override
     public PopulationStatResponse getForAll(TimeRange timeRange) {
         requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
-        StatsProjection statsProjection = findForTimeRange(timeRange);
+        StatsProjection statsProjection = statRepository.findForTimeRange(
+                timeRange.start(),
+                timeRange.end()
+        );
         validateStatsProjection(statsProjection);
 
         return getStatResponse(statsProjection);
     }
 
-    private StatsProjection findForTimeRange(TimeRange timeRange) {
-        return statRepository.findForTimeRange(timeRange.start(), timeRange.end());
-    }
 }
