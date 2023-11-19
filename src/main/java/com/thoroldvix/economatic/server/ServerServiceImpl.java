@@ -1,7 +1,6 @@
 package com.thoroldvix.economatic.server;
 
 import com.thoroldvix.economatic.common.util.StringEnumConverter;
-import com.thoroldvix.economatic.error.ErrorMessages;
 import com.thoroldvix.economatic.search.SearchRequest;
 import com.thoroldvix.economatic.search.SpecificationBuilder;
 import jakarta.validation.Valid;
@@ -16,7 +15,6 @@ import java.util.Optional;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
-import static java.util.Objects.requireNonNull;
 
 @Service
 @Cacheable("server-cache")
@@ -39,8 +37,6 @@ class ServerServiceImpl implements ServerService {
 
     @Override
     public ServerListResponse search(@Valid SearchRequest searchRequest) {
-        requireNonNull(searchRequest, ErrorMessages.SEARCH_REQUEST_CANNOT_BE_NULL.message);
-
         Specification<Server> spec = SpecificationBuilder.from(searchRequest);
         List<Server> servers = serverRepository.findAll(spec);
         notEmpty(servers, () -> new ServerNotFoundException("No servers found for search request"));

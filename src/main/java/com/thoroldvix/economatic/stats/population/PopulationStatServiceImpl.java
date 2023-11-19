@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
-import static java.util.Objects.requireNonNull;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,7 +30,6 @@ class PopulationStatServiceImpl implements PopulationStatService {
     @Override
     public PopulationStatResponse getForServer(String serverIdentifier, TimeRange timeRange) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         StatsProjection statsProjection = statRepository.findStatsByServer(server.id(),
@@ -72,7 +70,6 @@ class PopulationStatServiceImpl implements PopulationStatService {
     @Override
     public PopulationStatResponse getForRegion(String regionName, TimeRange timeRange) {
         notEmpty(regionName, REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         Region region = StringEnumConverter.fromString(regionName, Region.class);
         StatsProjection statsProjection = statRepository.findStatsByRegion(
@@ -88,7 +85,6 @@ class PopulationStatServiceImpl implements PopulationStatService {
     @Override
     public PopulationStatResponse getForFaction(String factionName, TimeRange timeRange) {
         notEmpty(factionName, FACTION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
 
         Faction faction = StringEnumConverter.fromString(factionName, Faction.class);
         StatsProjection statsProjection = statRepository.findStatsByFaction(
@@ -103,8 +99,6 @@ class PopulationStatServiceImpl implements PopulationStatService {
 
     @Override
     public PopulationStatResponse getForAll(TimeRange timeRange) {
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
-
         StatsProjection statsProjection = statRepository.findForTimeRange(
                 timeRange.start(),
                 timeRange.end()
