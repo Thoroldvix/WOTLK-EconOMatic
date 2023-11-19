@@ -41,7 +41,6 @@ class GoldPriceServiceImplTest {
 
     public static final String SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY = "Server identifier cannot be null or empty";
     private static final LocalDateTime UPDATE_DATE = LocalDateTime.now();
-    public static final String PAGEABLE_CANNOT_BE_NULL = "Pageable cannot be null";
     private static List<GoldPriceResponse> priceResponses;
     private static List<GoldPrice> prices;
     private static PageImpl<GoldPrice> page;
@@ -140,20 +139,6 @@ class GoldPriceServiceImplTest {
     }
 
     @Test
-    void getAll_throwsNullPointerException_whenTimeRangeIsNull() {
-        assertThatThrownBy(() -> goldPriceServiceImpl.getAll(null, pageRequest))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("Time range cannot be null");
-    }
-
-    @Test
-    void getAll_throwsNullPointerException_whenPageableIsNull() {
-        assertThatThrownBy(() -> goldPriceServiceImpl.getAll(timeRange, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("Pageable cannot be null");
-    }
-
-    @Test
     void getAll_throwsGoldPriceNotFoundException_whenRepositoryReturnsEmptyGoldPricePage() {
         when(goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageRequest))
                 .thenReturn(getEmptyPage());
@@ -197,20 +182,6 @@ class GoldPriceServiceImplTest {
     }
 
     @Test
-    void search_throwsNullPointerException_whenPageableIsNull() {
-        assertThatThrownBy(() -> goldPriceServiceImpl.search(searchRequest, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(PAGEABLE_CANNOT_BE_NULL);
-    }
-
-    @Test
-    void search_throwsNullPointerException_whenSearchRequestIsNull() {
-        assertThatThrownBy(() -> goldPriceServiceImpl.search(null, pageRequest))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("Search request cannot be null");
-    }
-
-    @Test
     void search_throwsGoldPriceNotFoundException_whenRepositoryReturnsEmptyGoldPricePage() {
         when(goldPriceRepository.findAll(ArgumentMatchers.<Specification<GoldPrice>>any(), any(Pageable.class)))
                 .thenReturn(getEmptyPage());
@@ -244,25 +215,6 @@ class GoldPriceServiceImplTest {
         assertThatThrownBy(() -> goldPriceServiceImpl.getForServer(serverIdentifier, timeRange, pageRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY);
-    }
-
-    @Test
-    void getForServer_throwsNullPointerException_whenTimeRangeIsNull() {
-        String serverIdentifier = "123";
-
-        assertThatThrownBy(() -> goldPriceServiceImpl.getForServer(serverIdentifier, null, pageRequest))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("Time range cannot be null");
-    }
-
-    @Test
-    void getForServer_throwsNullPointerException_whenPageableIsNull() {
-        TimeRange timeRange = new TimeRange(7);
-        String serverIdentifier = "123";
-
-        assertThatThrownBy(() -> goldPriceServiceImpl.getForServer(serverIdentifier, timeRange, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(PAGEABLE_CANNOT_BE_NULL);
     }
 
     @Test
@@ -399,12 +351,6 @@ class GoldPriceServiceImplTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    void getRecentForServerList_throwsNullPointerException_whenGoldPriceRequestIsNull() {
-        assertThatThrownBy(() -> goldPriceServiceImpl.getRecentForServerList(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("Gold price request cannot be null");
-    }
 
     @Test
     void getRecentForServerList_throwsGoldPriceNotFoundException_whenRepositoryReturnsEmptyGoldPriceList() {

@@ -14,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
-import static com.thoroldvix.economatic.error.ErrorMessages.*;
-import static java.util.Objects.requireNonNull;
+import static com.thoroldvix.economatic.error.ErrorMessages.ITEM_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY;
 
 @Service
 @Cacheable("item-cache")
@@ -29,9 +28,6 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemPageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
-        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
-
         Specification<Item> spec = SpecificationBuilder.from(searchRequest);
         Page<Item> items = itemRepository.findAll(spec, pageable);
         notEmpty(items.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
@@ -41,8 +37,6 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemPageResponse getAll(Pageable pageable) {
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
-
         Page<Item> page = itemRepository.findAll(pageable);
         notEmpty(page.getContent(), () -> new ItemNotFoundException(ITEMS_NOT_FOUND));
 
@@ -82,8 +76,6 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemResponse addItem(@Valid ItemRequest itemRequest) {
-        requireNonNull(itemRequest, "Item request cannot be null");
-
         Item item = itemMapper.fromRequest(itemRequest);
         itemRepository.findById(item.getId()).ifPresent(i -> {
             throw new ItemAlreadyExistsException("Item with id " + item.getId() + " already exists");

@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
-import static java.util.Objects.requireNonNull;
 
 @Service
 @Validated
@@ -47,7 +46,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
 
     @Override
     public GoldPricePageResponse getAll(TimeRange timeRange, Pageable pageable) {
-        validateInputs(timeRange, pageable);
         Page<GoldPrice> page = goldPriceRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
         notEmpty(page.getContent(),
                 () -> new GoldPriceNotFoundException("No prices found for time range: %s-%s".formatted(timeRange.start(), timeRange.end())));
@@ -57,7 +55,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
     @Override
     public GoldPricePageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
-        validateInputs(timeRange, pageable);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         Page<GoldPrice> prices = goldPriceRepository
@@ -68,11 +65,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
                         serverIdentifier, timeRange.start(), timeRange.end())));
 
         return goldPriceMapper.toPageResponse(prices);
-    }
-
-    private void validateInputs(TimeRange timeRange, Pageable pageable) {
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
     }
 
     @Override
@@ -86,9 +78,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
 
     @Override
     public GoldPricePageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
-        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
-
         Specification<GoldPrice> spec = SpecificationBuilder.from(searchRequest);
         Page<GoldPrice> prices = goldPriceRepository.findAll(spec, pageable);
         notEmpty(prices.getContent(),
@@ -132,8 +121,6 @@ class GoldPriceServiceImpl implements GoldPriceService {
 
     @Override
     public GoldPriceListResponse getRecentForServerList(@Valid GoldPriceRequest request) {
-        requireNonNull(request, "Gold price request cannot be null");
-
         Set<Integer> serverIds = getServerIds(request.serverList());
         List<GoldPrice> prices = goldPriceRepository.findRecentForServerIds(serverIds);
         notEmpty(prices, () -> new GoldPriceNotFoundException("No prices found for server list"));

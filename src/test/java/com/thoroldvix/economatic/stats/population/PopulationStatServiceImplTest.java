@@ -105,14 +105,6 @@ class PopulationStatServiceImplTest {
     }
 
     @Test
-    void getForServer_throwsNullPointerException_whenTimeRangeIsNull() {
-        String serverIdentifier = "server1";
-        assertThatThrownBy(() -> underTest.getForServer(serverIdentifier, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
-    }
-
-    @Test
     void getForServer_throwsStatisticsNotFoundException_whenRepositoryReturnsEmptyStatProjection() {
         String serverIdentifier = "server1";
         TimeRange timeRange = new TimeRange(7);
@@ -190,14 +182,6 @@ class PopulationStatServiceImplTest {
         assertThatThrownBy(() -> underTest.getForRegion(regionName, timeRange))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(ErrorMessages.REGION_NAME_CANNOT_BE_NULL_OR_EMPTY.message);
-    }
-
-    @Test
-    void getForRegion_throwsNullPointerException_whenTimeRangeIsNull() {
-        String regionName = "eu";
-        assertThatThrownBy(() -> underTest.getForRegion(regionName, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
     }
 
     @Test
@@ -279,14 +263,6 @@ class PopulationStatServiceImplTest {
     }
 
     @Test
-    void getForFaction_throwsNullPointerException_whenTimeRangeIsNull() {
-        String factionName = "alliance";
-        assertThatThrownBy(() -> underTest.getForFaction(factionName, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
-    }
-
-    @Test
     void getForFaction_throwsStatisticsNotFoundException_whenRepositoryReturnsEmptyStatProjection() {
         String factionName = "alliance";
         TimeRange timeRange = new TimeRange(7);
@@ -323,13 +299,6 @@ class PopulationStatServiceImplTest {
         PopulationStatResponse actual = underTest.getForAll(timeRange);
 
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void getForAll_throwsNullPointerException_whenTimeRangeIsNull() {
-        assertThatThrownBy(() -> underTest.getForAll(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
     }
 
     @Test

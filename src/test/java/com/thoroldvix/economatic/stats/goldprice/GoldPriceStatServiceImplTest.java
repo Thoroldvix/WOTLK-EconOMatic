@@ -112,13 +112,6 @@ class GoldPriceStatServiceImplTest {
     }
 
     @Test
-    void getForServer_throwsNullPointerException_whenTimeRangeIsNull() {
-        assertThatThrownBy(() -> goldPriceStatServiceImpl.getForServer(serverIdentifier, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
-    }
-
-    @Test
     void getForServer_throwsStatisticsNotFoundException_whenRepositoryReturnsInvalidStatProjection() {
         ServerResponse server = ServerResponse.builder().id(1).build();
         when(serverService.getServer(serverIdentifier)).thenReturn(server);
@@ -184,13 +177,6 @@ class GoldPriceStatServiceImplTest {
     }
 
     @Test
-    void getForRegion_throwsNullPointerException_whenTimeRangeIsNull() {
-        assertThatThrownBy(() -> goldPriceStatServiceImpl.getForRegion("eu", null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
-    }
-
-    @Test
     void getForFaction_returnsCorrectGoldPriceStatResponse_whenAllianceFaction() {
         long count = 5;
         StatsProjection statsProjection = getStatsProjection(BigDecimal.TEN, BigDecimal.TEN, 1, 2, count);
@@ -243,13 +229,6 @@ class GoldPriceStatServiceImplTest {
     }
 
     @Test
-    void getForFaction_throwsNullPointerException_whenTimeRangeIsNull() {
-        assertThatThrownBy(() -> goldPriceStatServiceImpl.getForFaction("alliance", null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
-    }
-
-    @Test
     void getForAll_returnsCorrectGoldPriceStatResponse() {
         long count = 5;
         StatsProjection statsProjection = getStatsProjection(BigDecimal.TEN, BigDecimal.TEN, 1, 2, count);
@@ -269,13 +248,6 @@ class GoldPriceStatServiceImplTest {
 
 
         assertThat(actual).isEqualTo(expectedResponse);
-    }
-
-    @Test
-    void getForAll_throwsNullPointerException_whenTimeRangeIsNull() {
-        assertThatThrownBy(() -> goldPriceStatServiceImpl.getForAll(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage(ErrorMessages.TIME_RANGE_CANNOT_BE_NULL.message);
     }
 
     private GoldPriceStatResponse getStatResponse(GoldPriceResponse min, GoldPriceResponse max, long count) {

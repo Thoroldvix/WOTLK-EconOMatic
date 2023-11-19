@@ -21,7 +21,6 @@ import java.util.List;
 
 import static com.thoroldvix.economatic.common.util.ValidationUtils.notEmpty;
 import static com.thoroldvix.economatic.error.ErrorMessages.*;
-import static java.util.Objects.requireNonNull;
 
 @Service
 @Cacheable("population-cache")
@@ -43,9 +42,6 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationPageResponse getAll(TimeRange timeRange, Pageable pageable) {
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
-
         Page<Population> page = populationRepository.findAllForTimeRange(timeRange.start(), timeRange.end(), pageable);
 
         notEmpty(page.getContent(),
@@ -57,8 +53,6 @@ class PopulationServiceImpl implements PopulationService {
     @Override
     public PopulationPageResponse getForServer(String serverIdentifier, TimeRange timeRange, Pageable pageable) {
         notEmpty(serverIdentifier, SERVER_IDENTIFIER_CANNOT_BE_NULL_OR_EMPTY.message);
-        requireNonNull(timeRange, TIME_RANGE_CANNOT_BE_NULL.message);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
 
         ServerResponse server = serverService.getServer(serverIdentifier);
         Page<Population> page = populationRepository.findAllForServer(server.id(),
@@ -96,9 +90,6 @@ class PopulationServiceImpl implements PopulationService {
 
     @Override
     public PopulationPageResponse search(@Valid SearchRequest searchRequest, Pageable pageable) {
-        requireNonNull(searchRequest, SEARCH_REQUEST_CANNOT_BE_NULL.message);
-        requireNonNull(pageable, PAGEABLE_CANNOT_BE_NULL.message);
-
         Specification<Population> spec = SpecificationBuilder.from(searchRequest);
         Page<Population> populations = populationRepository.findAll(spec, pageable);
         notEmpty(populations.getContent(),
