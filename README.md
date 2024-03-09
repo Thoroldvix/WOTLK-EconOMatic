@@ -68,19 +68,6 @@ EconOMatic API has a bunch of useful features. Let's take a look at some of them
    You can integrate the API into your own projects and applications. This allows you to take full advantage of all the
    features and build custom tools that suit your needs.
 
-Using the EconOMatic API, you can learn a lot about the WoW Classic WOTLK economy and use that knowledge to make smarter
-trading decisions and farm gold more effectively.
-
-## Technologies
-
-* ### Java 17
-* ### Spring Boot
-* ### Postgresql
-* ### Hibernate
-* ### Liquibase
-* ### Gradle
-* ### Swagger
-
 ## Installation
 
 The EconOMatic application can be set up in multiple ways. Here are the two most common ways to run the service:
