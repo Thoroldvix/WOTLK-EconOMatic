@@ -7,7 +7,6 @@ EconOMatic is an API service designed to give easy access to economy related dat
 
 * [Project Description](#project-description)
 * [Features](#features)
-* [Technologies](#technologies)
 * [Installation](#installation)
 * [Usage](#usage)
 * [API Reference](#api-reference)
