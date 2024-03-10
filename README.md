@@ -161,8 +161,7 @@ defaults, no action is needed.
 
 ## Contributing
 
-Contributions to this project are most welcome. If you have an idea for a feature, want to suggest an enhancement, or
-need to report a bug, feel free to open an issue or submit a pull request.
+Submit a pull request
 
 
 
